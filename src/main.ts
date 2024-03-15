@@ -1,19 +1,3 @@
-/*
-Copyright 2022-present The maxGraph project Contributors
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-*/
-
 import "@maxgraph/core/css/common.css";
 import "./style.css";
 import {
@@ -44,7 +28,7 @@ const initializeGraph = (container: HTMLElement) => {
 	});
 
 	// Gets the default parent for inserting new cells. This
-	// is normally the first child of the root (ie. layer 0).
+	// is normally the first child of the root (i.e., layer 0).
 	const parent = graph.getDefaultParent();
 
 	// Adds cells to the model in a single step
@@ -59,6 +43,10 @@ const initializeGraph = (container: HTMLElement) => {
 			100,
 			100,
 		);
+
+		// You can edit the label with setValue
+		vertex01.setValue("Test");
+
 		const vertex02 = graph.insertVertex(
 			parent,
 			null,
@@ -72,6 +60,7 @@ const initializeGraph = (container: HTMLElement) => {
 				fillColor: "orange",
 			},
 		);
+
 		// use the legacy insertEdge method
 		graph.insertEdge(
 			parent,
@@ -80,9 +69,6 @@ const initializeGraph = (container: HTMLElement) => {
 			vertex01,
 			vertex02,
 			{
-				// TODO cannot use constants.EDGESTYLE.ORTHOGONAL
-				// TS2748: Cannot access ambient const enums when the '--isolatedModules' flag is provided.
-				// See https://github.com/maxGraph/maxGraph/issues/205
 				edgeStyle: "orthogonalEdgeStyle",
 				rounded: true,
 			},
@@ -96,6 +82,7 @@ const initializeGraph = (container: HTMLElement) => {
 			size: [100, 100],
 			style: { shape: "customRectangle" },
 		});
+
 		// use the new insertVertex method using position and size parameters
 		const vertex12 = graph.insertVertex({
 			parent,
@@ -109,6 +96,7 @@ const initializeGraph = (container: HTMLElement) => {
 				shape: "customEllipse",
 			},
 		});
+
 		// use the new insertEdge method
 		graph.insertEdge({
 			parent,
@@ -117,6 +105,25 @@ const initializeGraph = (container: HTMLElement) => {
 			target: vertex12,
 			style: { endArrow: "block" },
 		});
+	});
+
+	// Add a button to the HTML structure
+	const addButton = document.createElement("button");
+	addButton.textContent = "Add Vertex";
+	container.appendChild(addButton);
+
+	// Add event listener to the button to add a vertex node
+	addButton.addEventListener("click", () => {
+		// Add a new vertex node to the graph
+		const newVertex = graph.insertVertex(
+			parent,
+			null,
+			"New Vertex",
+			200, // X coordinate
+			200, // Y coordinate
+			100, // Width
+			50, // Height
+		);
 	});
 };
 
