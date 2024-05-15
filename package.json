@@ -23,6 +23,12 @@
     "format": "npx @biomejs/biome format --write ./src",
     "lint": "npx @biomejs/biome lint --apply ./src"
   },
+  "jest": {
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "tests/e2e/"
+    ]
+  },
   "browserslist": [
     ">0.2%",
     "not dead",
