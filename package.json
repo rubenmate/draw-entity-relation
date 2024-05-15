@@ -19,7 +19,9 @@
     "start": "react-scripts start",
     "build": "GENERATE_SOURCEMAP=false react-scripts build",
     "test": "react-scripts test --env=jsdom",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "format": "npx @biomejs/biome format --write ./src",
+    "lint": "npx @biomejs/biome lint --apply ./src"
   },
   "browserslist": [
     ">0.2%",
