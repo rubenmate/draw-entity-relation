@@ -6,7 +6,7 @@ export default function addToolbarItem(graph, toolbar, prototype, image) {
     // Function that is executed when the image is dropped on
     // the graph. The cell argument points to the cell under
     // the mousepointer if there is one.
-    var funct = function(graph, evt, cell, x, y) {
+    var funct = (graph, evt, cell, x, y) => {
         graph.stopEditing(false);
 
         var vertex = graph.getModel().cloneCell(prototype);
@@ -18,7 +18,7 @@ export default function addToolbarItem(graph, toolbar, prototype, image) {
     };
 
     // Creates the image which is used as the drag icon (preview)
-    var img = toolbar.addMode(null, image, function(evt, cell) {
+    var img = toolbar.addMode(null, image, function (evt, cell) {
         var pt = this.graph.getPointForEvent(evt);
         funct(graph, evt, cell, pt.x, pt.y);
     });
@@ -26,13 +26,13 @@ export default function addToolbarItem(graph, toolbar, prototype, image) {
     // Disables dragging if element is disabled. This is a workaround
     // for wrong event order in IE. Following is a dummy listener that
     // is invoked as the last listener in IE.
-    mxEvent.addListener(img, "mousedown", function(evt) {
+    mxEvent.addListener(img, "mousedown", (evt) => {
         // do nothing
     });
 
     // This listener is always called first before any other listener
     // in all browsers.
-    mxEvent.addListener(img, "mousedown", function(evt) {
+    mxEvent.addListener(img, "mousedown", (evt) => {
         if (!img.enabled) {
             mxEvent.consume(evt);
         }

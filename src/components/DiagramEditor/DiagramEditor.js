@@ -5,13 +5,10 @@ import { CompactPicker } from "react-color";
 import {
     getStyleByKey,
     setInitialConfiguration,
-    configureKeyBindings
+    configureKeyBindings,
 } from "./utils";
 
-const {
-    mxGraph,
-    mxEvent,
-} = MxGraph();
+const { mxGraph, mxEvent } = MxGraph();
 
 export default function App(props) {
     const containerRef = React.useRef(null);
@@ -22,31 +19,43 @@ export default function App(props) {
     const [graph, setGraph] = React.useState(null);
 
     // Define event handlers using useCallback to stabilize their identities
-    const onChange = React.useCallback((evt) => {
-        if (props.onChange) {
-            props.onChange(evt);
-        }
-    }, [props]);
+    const onChange = React.useCallback(
+        (evt) => {
+            if (props.onChange) {
+                props.onChange(evt);
+            }
+        },
+        [props],
+    );
 
-    const onSelected = React.useCallback((evt) => {
-        if (props.onSelected) {
-            props.onSelected(evt);
-        }
-        setSelected(evt.cells[0]);
-        setColorPickerVisible(false);
-    }, [props, setSelected, setColorPickerVisible]);
+    const onSelected = React.useCallback(
+        (evt) => {
+            if (props.onSelected) {
+                props.onSelected(evt);
+            }
+            setSelected(evt.cells[0]);
+            setColorPickerVisible(false);
+        },
+        [props, setSelected, setColorPickerVisible],
+    );
 
-    const onElementAdd = React.useCallback((evt) => {
-        if (props.onElementAdd) {
-            props.onElementAdd(evt);
-        }
-    }, [props]);
+    const onElementAdd = React.useCallback(
+        (evt) => {
+            if (props.onElementAdd) {
+                props.onElementAdd(evt);
+            }
+        },
+        [props],
+    );
 
-    const onDragEnd = React.useCallback((evt) => {
-        if (props.onDragEnd) {
-            props.onDragEnd(evt);
-        }
-    }, [props]);
+    const onDragEnd = React.useCallback(
+        (evt) => {
+            if (props.onDragEnd) {
+                props.onDragEnd(evt);
+            }
+        },
+        [props],
+    );
 
     React.useEffect(() => {
         if (!graph) {
@@ -54,7 +63,7 @@ export default function App(props) {
             setGraph(new mxGraph(containerRef.current));
         }
         if (graph) {
-            console.log(graph)
+            console.log(graph);
             setInitialConfiguration(graph, toolbarRef);
             configureKeyBindings(graph);
 
@@ -68,9 +77,9 @@ export default function App(props) {
 
     React.useEffect(() => {
         if (graph) {
-            console.log(graph.model.cells)
+            console.log(graph.model.cells);
         }
-    })
+    });
 
     const updateCellColor = (type, color) => {
         graph.setCellStyles(type, color.hex);
@@ -80,11 +89,23 @@ export default function App(props) {
         graph.orderCells(moveBack);
     };
 
-    const renderMoveBackAndFrontButtons = () => selected &&
-        <React.Fragment>
-            <button className="button-toolbar-action" onClick={pushCellsBack(true)}>Move back</button>
-            <button className="button-toolbar-action" onClick={pushCellsBack(false)}>Move front</button>
-        </React.Fragment>;
+    const renderMoveBackAndFrontButtons = () =>
+        selected && (
+            <React.Fragment>
+                <button
+                    className="button-toolbar-action"
+                    onClick={pushCellsBack(true)}
+                >
+                    Move back
+                </button>
+                <button
+                    className="button-toolbar-action"
+                    onClick={pushCellsBack(false)}
+                >
+                    Move front
+                </button>
+            </React.Fragment>
+        );
 
     const renderColorChange = (type, content) => {
         if (!selected) {
@@ -98,7 +119,8 @@ export default function App(props) {
                     setColorPickerType(type);
                 }}
                 style={{
-                    backgroundColor: selected.style && getStyleByKey(selected.style, type)
+                    backgroundColor:
+                        selected.style && getStyleByKey(selected.style, type),
                 }}
             >
                 {content}
@@ -112,8 +134,11 @@ export default function App(props) {
             <div>
                 <div className="toolbar-separator" />
                 <CompactPicker
-                    color={selected.style && getStyleByKey(selected.style, "fillColor")}
-                    onChange={color => {
+                    color={
+                        selected.style &&
+                        getStyleByKey(selected.style, "fillColor")
+                    }
+                    onChange={(color) => {
                         updateCellColor(colorPickerType, color);
                     }}
                 />

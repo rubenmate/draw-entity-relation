@@ -29,7 +29,7 @@ export default function initToolbar(graph, tbContainer) {
     // Allow multiple edges between two vertices
     graph.setMultigraph(false);
 
-    var addVertex = function(icon, w, h, style, value = null) {
+    var addVertex = (icon, w, h, style, value = null) => {
         var vertex = new mxCell(null, new mxGeometry(0, 0, w, h), style);
         if (value) {
             vertex.value = value;
@@ -39,7 +39,7 @@ export default function initToolbar(graph, tbContainer) {
         var img = addToolbarItem(graph, toolbar, vertex, icon);
         img.enabled = true;
 
-        graph.getSelectionModel().addListener(mxEvent.CHANGE, function() {
+        graph.getSelectionModel().addListener(mxEvent.CHANGE, () => {
             var tmp = graph.isSelectionEmpty();
             mxUtils.setOpacity(img, tmp ? 100 : 20);
             img.enabled = tmp;
@@ -53,8 +53,8 @@ export default function initToolbar(graph, tbContainer) {
         100,
         40,
         getStyleStringByObj({
-            ...baseStyle
-        })
+            ...baseStyle,
+        }),
     );
     addVertex(
         "images/ellipse.gif",
@@ -62,8 +62,8 @@ export default function initToolbar(graph, tbContainer) {
         40,
         getStyleStringByObj({
             ...baseStyle,
-            [mxConstants.STYLE_SHAPE]: "ellipse"
-        })
+            [mxConstants.STYLE_SHAPE]: "ellipse",
+        }),
     );
     // console.log(mxText.getTextCss());
     addVertex(
@@ -71,6 +71,6 @@ export default function initToolbar(graph, tbContainer) {
         0,
         0,
         "text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];",
-        "Text"
+        "Text",
     );
 }

@@ -8,9 +8,7 @@ export default function App() {
     return (
         <div className="App">
             <div className="container">
-                <DiagramEditor
-                    data={data}
-                />
+                <DiagramEditor data={data} />
             </div>
         </div>
     );

@@ -1,9 +1,4 @@
-import {
-    mxRubberband,
-    mxClient,
-    mxUtils,
-    mxEdgeHandler
-} from "mxgraph-js";
+import { mxRubberband, mxClient, mxUtils, mxEdgeHandler } from "mxgraph-js";
 import initToolbar from "./initToolbar";
 
 export default function setInitialConfiguration(graph, toolbarRef) {

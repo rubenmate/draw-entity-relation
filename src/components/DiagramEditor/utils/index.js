@@ -11,5 +11,5 @@ export {
     getStyleByKey,
     getStyleStringByObj,
     setInitialConfiguration,
-    configureKeyBindings
+    configureKeyBindings,
 };
