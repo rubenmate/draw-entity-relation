@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 test('add entities to the canvas', async ({ page }) => {
-    await page.goto('http://localhost:3000/');
+    await page.goto('/');
     // TODO: Improve this using better ids for the elements
     // This is the canvas
     const canvas = page.locator("svg")
