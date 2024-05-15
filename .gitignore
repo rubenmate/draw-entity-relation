@@ -350,3 +350,7 @@ TSWLatexianTemp*
 # expex forward references with \gathertags
 
 # End of https://www.gitignore.io/api/latex,tex
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
