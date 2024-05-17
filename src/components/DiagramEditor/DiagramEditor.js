@@ -147,12 +147,46 @@ export default function App(props) {
                 />
             </div>
         );
+    const renderAddAttribute = () =>
+        selected?.style.includes(";shape=rectangle") && (
+            <button
+                type="button"
+                className="button-toolbar-action"
+                onClick={addAttribute}
+            >
+                Añadir atributo
+            </button>
+        );
+
+    const addAttribute = (primary) => {
+        if (selected.style.includes(";shape=rectangle")) {
+            const color = primary ? "yellow" : "blue";
+            const source = selected;
+
+            const newX = selected.geometry.x + 120;
+            const newY = selected.geometry.y;
+
+            const target = graph.insertVertex(
+                null,
+                null,
+                "Test",
+                newX,
+                newY,
+                20,
+                20,
+                `shape=ellipse;fillColor=${color}`,
+            );
+            graph.insertEdge(selected, null, null, source, target);
+            // TODO: Increment the offset so that new attributes are not added on top of others
+        }
+    };
 
     return (
         <div className="mxgraph-container">
             <div className="mxgraph-toolbar-container">
                 <div className="mxgraph-toolbar-container" ref={toolbarRef} />
                 <div>
+                    {renderAddAttribute()}
                     {renderMoveBackAndFrontButtons()}
                     {renderColorChange("fillColor", "Change fill color")}
                     {renderColorChange("fontColor", "Change font color")}
