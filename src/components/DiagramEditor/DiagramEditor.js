@@ -1,6 +1,7 @@
 import * as React from "react";
 import "./styles/diagramEditor.css";
 import { default as MxGraph } from "mxgraph";
+import { mxConstants } from "mxgraph-js";
 import { CompactPicker } from "react-color";
 import {
     configureKeyBindings,
@@ -166,15 +167,23 @@ export default function App(props) {
             const newX = selected.geometry.x + 120;
             const newY = selected.geometry.y;
 
+            // Define a style with labelPosition set to ALIGN_RIGHT, additional right spacing
+            const style = {};
+            style[mxConstants.STYLE_LABEL_POSITION] = mxConstants.ALIGN_RIGHT;
+            style[mxConstants.STYLE_SPACING_RIGHT] = -40; // Adjust this value to control the extra space to the right
+
+            // Apply the style to the vertex
+            graph.getStylesheet().putCellStyle("rightLabelStyle", style);
+
             const target = graph.insertVertex(
                 null,
                 null,
-                "Test",
+                "Atributo", // Placeholder attribute
                 newX,
                 newY,
-                20,
-                20,
-                `shape=ellipse;fillColor=${color}`,
+                10,
+                10,
+                `shape=ellipse;rightLabelStyle;fillColor=${color}`,
             );
             graph.insertEdge(selected, null, null, source, target);
             // TODO: Increment the offset so that new attributes are not added on top of others
