@@ -15,10 +15,13 @@ const { mxGraph, mxEvent } = MxGraph();
 export default function App(props) {
     const containerRef = React.useRef(null);
     const toolbarRef = React.useRef(null);
-    const [colorPickerVisible, setColorPickerVisible] = React.useState(false);
-    const [selected, setSelected] = React.useState(null);
-    const [colorPickerType, setColorPickerType] = React.useState(null);
+
     const [graph, setGraph] = React.useState(null);
+    const [selected, setSelected] = React.useState(null);
+
+    const [showPrimaryButton, setShowPrimaryButton] = React.useState(false);
+    const [colorPickerVisible, setColorPickerVisible] = React.useState(false);
+    const [colorPickerType, setColorPickerType] = React.useState(null);
 
     // Define event handlers using useCallback to stabilize their identities
     const onChange = React.useCallback(
@@ -75,11 +78,13 @@ export default function App(props) {
             graph.getModel().addListener(mxEvent.ADD, onElementAdd);
             graph.getModel().addListener(mxEvent.MOVE_END, onDragEnd);
         }
-    }, [graph, onChange, onSelected, onElementAdd, onDragEnd]); // Dependencies are now stable
+    }, [graph, onChange, onSelected, onElementAdd, onDragEnd]);
 
+    // TODO: Remove this useEffect since it's just for debugging
     React.useEffect(() => {
         if (graph) {
             console.log(graph.model.cells);
+            console.log(selected);
         }
     });
 
