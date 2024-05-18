@@ -149,16 +149,40 @@ export default function App(props) {
                 />
             </div>
         );
-    const renderAddAttribute = () =>
-        selected?.style.includes(";shape=rectangle") && (
-            <button
-                type="button"
-                className="button-toolbar-action"
-                onClick={addAttribute}
-            >
-                Añadir atributo
-            </button>
-        );
+
+    const renderAddAttribute = () => {
+        if (selected?.style.includes(";shape=rectangle") && showPrimaryButton) {
+            return (
+                <>
+                    <button
+                        type="button"
+                        className="button-toolbar-action"
+                        onClick={() => addAttribute(true)}
+                    >
+                        Añadir atributo primario
+                    </button>
+                    <button
+                        type="button"
+                        className="button-toolbar-action"
+                        onClick={() => addAttribute(false)}
+                    >
+                        Añadir atributo
+                    </button>
+                </>
+            );
+        }
+        if (selected?.style.includes(";shape=rectangle")) {
+            return (
+                <button
+                    type="button"
+                    className="button-toolbar-action"
+                    onClick={() => setShowPrimaryButton(true)}
+                >
+                    Añadir atributo
+                </button>
+            );
+        }
+    };
 
     const addAttribute = (primary) => {
         if (selected.style.includes(";shape=rectangle")) {
@@ -188,6 +212,9 @@ export default function App(props) {
             );
             graph.insertEdge(selected, null, null, source, target);
             graph.orderCells(false); // Move front the selected entity so the new vertex aren't on top
+
+            setShowPrimaryButton(false); // After adding go back to show the normal button
+
             // TODO: Instead of toasting here set a listener that toast every time a cell is added
             toast.success("Atributo insertado");
             // TODO: Increment the offset so that new attributes are not added on top of others
