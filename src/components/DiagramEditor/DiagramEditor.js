@@ -3,6 +3,7 @@ import "./styles/diagramEditor.css";
 import { default as MxGraph } from "mxgraph";
 import { mxConstants } from "mxgraph-js";
 import { CompactPicker } from "react-color";
+import toast, { Toaster } from "react-hot-toast";
 import {
     configureKeyBindings,
     getStyleByKey,
@@ -186,6 +187,8 @@ export default function App(props) {
                 `shape=ellipse;rightLabelStyle;fillColor=${color}`,
             );
             graph.insertEdge(selected, null, null, source, target);
+            // TODO: Instead of toasting here set a listener that toast every time a cell is added
+            toast.success("Atributo insertado");
             // TODO: Increment the offset so that new attributes are not added on top of others
         }
     };
@@ -204,6 +207,7 @@ export default function App(props) {
                 {renderColorPicker()}
             </div>
             <div ref={containerRef} className="mxgraph-drawing-container" />
+            <Toaster position="bottom-left" />
         </div>
     );
 }
