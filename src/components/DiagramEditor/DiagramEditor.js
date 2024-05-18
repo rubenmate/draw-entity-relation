@@ -187,6 +187,7 @@ export default function App(props) {
                 `shape=ellipse;rightLabelStyle;fillColor=${color}`,
             );
             graph.insertEdge(selected, null, null, source, target);
+            graph.orderCells(false); // Move front the selected entity so the new vertex aren't on top
             // TODO: Instead of toasting here set a listener that toast every time a cell is added
             toast.success("Atributo insertado");
             // TODO: Increment the offset so that new attributes are not added on top of others
