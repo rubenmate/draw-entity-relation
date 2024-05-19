@@ -102,14 +102,14 @@ export default function App(props) {
                         className="button-toolbar-action"
                         onClick={() => addAttribute(true)}
                     >
-                        Añadir atributo primario
+                        Atributo primario
                     </button>
                     <button
                         type="button"
                         className="button-toolbar-action"
                         onClick={() => addAttribute(false)}
                     >
-                        Añadir atributo
+                        Atributo
                     </button>
                 </>
             );
@@ -122,6 +122,20 @@ export default function App(props) {
                     onClick={() => setShowPrimaryButton(true)}
                 >
                     Añadir atributo
+                </button>
+            );
+        }
+    };
+
+    const renderToggleAttributes = () => {
+        if (selected?.style?.includes(";shape=rectangle")) {
+            return (
+                <button
+                    type="button"
+                    className="button-toolbar-action"
+                    onClick={toggleAttributes}
+                >
+                    Ocultar atributos
                 </button>
             );
         }
@@ -164,11 +178,17 @@ export default function App(props) {
         }
     };
 
+    const toggleAttributes = () => {
+        console.log("Muestro/oculto atributos");
+    };
+
     return (
         <div className="mxgraph-container">
             <div className="mxgraph-toolbar-container">
                 <div className="mxgraph-toolbar-container" ref={toolbarRef} />
                 <div>{renderMoveBackAndFrontButtons()}</div>
+                <div>{renderAddAttribute()}</div>
+                <div>{renderToggleAttributes()}</div>
             </div>
             <div ref={containerRef} className="mxgraph-drawing-container" />
             <Toaster position="bottom-left" />
