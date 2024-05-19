@@ -2,7 +2,14 @@ import { default as MxGraph } from "mxgraph";
 
 const { mxEvent, mxUtils } = MxGraph();
 
-export default function addToolbarItem(graph, toolbar, prototype, image) {
+export default function addToolbarItem(
+    graph,
+    toolbar,
+    prototype,
+    image,
+    diagram,
+    addToDiagram,
+) {
     // Function that is executed when the image is dropped on
     // the graph. The cell argument points to the cell under
     // the mousepointer if there is one.
@@ -15,6 +22,14 @@ export default function addToolbarItem(graph, toolbar, prototype, image) {
 
         graph.addCell(vertex);
         graph.setSelectionCell(vertex);
+        if (addToDiagram) {
+            diagram.entities.push({
+                idMx: vertex.id,
+                name: vertex.value,
+                position: { x: vertex.geometry.x, y: vertex.geometry.y },
+                attributes: [],
+            });
+        }
     };
 
     // Creates the image which is used as the drag icon (preview)

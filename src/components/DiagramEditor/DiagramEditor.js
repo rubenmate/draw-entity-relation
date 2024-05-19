@@ -12,6 +12,10 @@ export default function App(props) {
     const toolbarRef = React.useRef(null);
 
     const [graph, setGraph] = React.useState(null);
+    const [diagram, setDiagram] = React.useState({
+        entities: [],
+        relations: [],
+    });
     const [selected, setSelected] = React.useState(null);
 
     const [showPrimaryButton, setShowPrimaryButton] = React.useState(false);
@@ -50,8 +54,7 @@ export default function App(props) {
             setGraph(new mxGraph(containerRef.current));
         }
         if (graph) {
-            console.log(graph);
-            setInitialConfiguration(graph, toolbarRef);
+            setInitialConfiguration(graph, diagram, toolbarRef);
             configureKeyBindings(graph);
 
             graph.getModel().endUpdate();
@@ -59,13 +62,43 @@ export default function App(props) {
             graph.getModel().addListener(mxEvent.ADD, onElementAdd);
             graph.getModel().addListener(mxEvent.MOVE_END, onDragEnd);
         }
-    }, [graph, onSelected, onElementAdd, onDragEnd]);
+    }, [graph, diagram, onSelected, onElementAdd, onDragEnd]);
 
     // TODO: Remove this useEffect since it's just for debugging
     React.useEffect(() => {
         if (graph) {
             console.log(graph.model.cells);
             console.log(selected);
+            diagram.entities.forEach((entity) => {
+                // Check if the current entity's idMx exists in graph.model.cells
+                if (graph.model.cells.hasOwn(entity.idMx)) {
+                    // Access the values from graph.model.cells using the entity's idMx
+                    const cellData = graph.model.cells[entity.idMx];
+
+                    // Update the entity's name and position
+                    entity.name = cellData.value; // Assuming 'value' is the new name
+                    entity.position.x = cellData.geometry.x; // Assuming 'geometry.x' is the new x position
+                    entity.position.y = cellData.geometry.y; // Assuming 'geometry.y' is the new y position
+
+                    // Check if the entity has attributes
+                    if (entity.attributes) {
+                        // Iterate over each attribute
+                        entity.attributes.forEach((attr) => {
+                            // Check if the attribute's idMx exists in graph.model.cells
+                            if (graph.model.cells.hasOwnProperty(attr.idMx)) {
+                                // Access the values from graph.model.cells using the attribute's idMx
+                                const cellDataAttr =
+                                    graph.model.cells[attr.idMx];
+
+                                // Update the attribute's name and position
+                                attr.name = cellDataAttr.value; // Assuming 'value' is the new name
+                                attr.position.x = cellDataAttr.geometry.x; // Assuming 'geometry.x' is the new x position
+                                attr.position.y = cellDataAttr.geometry.y; // Assuming 'geometry.y' is the new y position
+                            }
+                        });
+                    }
+                }
+            });
         }
     });
 
@@ -169,6 +202,17 @@ export default function App(props) {
             );
             graph.insertEdge(selected, null, null, source, target);
             graph.orderCells(false); // Move front the selected entity so the new vertex aren't on top
+
+            diagram.entities
+                .find((entity) => entity.idMx === selected.id)
+                .attributes.push({
+                    idMx: target.id,
+                    name: target.value,
+                    position: {
+                        x: target.geometry.x,
+                        y: target.geometry.y,
+                    },
+                });
 
             setShowPrimaryButton(false); // After adding go back to show the normal button
 

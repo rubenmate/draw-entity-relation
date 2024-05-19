@@ -12,7 +12,7 @@ const {
     mxConstants,
 } = MxGraph();
 
-export default function initToolbar(graph, tbContainer) {
+export default function initToolbar(graph, diagram, tbContainer) {
     // Creates new toolbar without event processing
     const toolbar = new mxToolbar(tbContainer);
     toolbar.enabled = false;
@@ -29,14 +29,28 @@ export default function initToolbar(graph, tbContainer) {
     // Allow multiple edges between two vertices
     graph.setMultigraph(false);
 
-    const addVertex = (icon, w, h, style, value = null) => {
+    const addVertex = (
+        icon,
+        w,
+        h,
+        style,
+        value = null,
+        addToDiagram = null,
+    ) => {
         const vertex = new mxCell(null, new mxGeometry(0, 0, w, h), style);
         if (value) {
             vertex.value = value;
         }
         vertex.setVertex(true);
 
-        const img = addToolbarItem(graph, toolbar, vertex, icon);
+        const img = addToolbarItem(
+            graph,
+            toolbar,
+            vertex,
+            icon,
+            diagram,
+            addToDiagram,
+        );
         img.enabled = true;
 
         graph.getSelectionModel().addListener(mxEvent.CHANGE, () => {
@@ -56,6 +70,7 @@ export default function initToolbar(graph, tbContainer) {
             ...baseStyle,
         }),
         "Entidad",
+        true,
     );
     addVertex(
         "images/ellipse.gif",

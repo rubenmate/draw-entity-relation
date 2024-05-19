@@ -1,12 +1,12 @@
 import { mxClient, mxEdgeHandler, mxRubberband, mxUtils } from "mxgraph-js";
 import initToolbar from "./initToolbar";
 
-export default function setInitialConfiguration(graph, toolbarRef) {
+export default function setInitialConfiguration(graph, diagram, toolbarRef) {
     if (!mxClient.isBrowserSupported()) {
         // Displays an error message if the browser is not supported.
         mxUtils.error("Browser is not supported!", 200, false);
     } else {
-        initToolbar(graph, toolbarRef.current);
+        initToolbar(graph, diagram, toolbarRef.current);
 
         // Enables rubberband selection
         new mxRubberband(graph);
