@@ -61,6 +61,13 @@ export default function App(props) {
             graph.getSelectionModel().addListener(mxEvent.CHANGE, onSelected);
             graph.getModel().addListener(mxEvent.ADD, onElementAdd);
             graph.getModel().addListener(mxEvent.MOVE_END, onDragEnd);
+
+            // Cleanup function to remove the listener
+            return () => {
+                graph.getModel().removeListener(mxEvent.ADD, onSelected);
+                graph.getModel().removeListener(mxEvent.MOVE_END, onElementAdd);
+                graph.getModel().removeListener(mxEvent.CHANGE, onSelected);
+            };
         }
     }, [graph, diagram, onSelected, onElementAdd, onDragEnd]);
 
@@ -68,10 +75,10 @@ export default function App(props) {
     React.useEffect(() => {
         if (graph) {
             console.log(graph.model.cells);
-            console.log(selected);
+            console.log(diagram);
             diagram.entities.forEach((entity) => {
                 // Check if the current entity's idMx exists in graph.model.cells
-                if (graph.model.cells.hasOwn(entity.idMx)) {
+                if (graph.model.cells.hasOwnProperty(entity.idMx)) {
                     // Access the values from graph.model.cells using the entity's idMx
                     const cellData = graph.model.cells[entity.idMx];
 
@@ -99,6 +106,7 @@ export default function App(props) {
                     }
                 }
             });
+            console.log(diagram);
         }
     });
 
@@ -127,7 +135,10 @@ export default function App(props) {
         );
 
     const renderAddAttribute = () => {
-        if (selected?.style.includes(";shape=rectangle") && showPrimaryButton) {
+        if (
+            selected?.style?.includes(";shape=rectangle") &&
+            showPrimaryButton
+        ) {
             return (
                 <>
                     <button
@@ -147,7 +158,7 @@ export default function App(props) {
                 </>
             );
         }
-        if (selected?.style.includes(";shape=rectangle")) {
+        if (selected?.style?.includes(";shape=rectangle")) {
             return (
                 <button
                     type="button"
@@ -175,7 +186,7 @@ export default function App(props) {
     };
 
     const addAttribute = (primary) => {
-        if (selected.style.includes(";shape=rectangle")) {
+        if (selected?.style?.includes(";shape=rectangle")) {
             const color = primary ? "yellow" : "blue";
             const source = selected;
 
