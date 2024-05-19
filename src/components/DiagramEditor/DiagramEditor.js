@@ -2,13 +2,8 @@ import * as React from "react";
 import "./styles/diagramEditor.css";
 import { default as MxGraph } from "mxgraph";
 import { mxConstants } from "mxgraph-js";
-import { CompactPicker } from "react-color";
 import toast, { Toaster } from "react-hot-toast";
-import {
-    configureKeyBindings,
-    getStyleByKey,
-    setInitialConfiguration,
-} from "./utils";
+import { configureKeyBindings, setInitialConfiguration } from "./utils";
 
 const { mxGraph, mxEvent } = MxGraph();
 
@@ -20,18 +15,6 @@ export default function App(props) {
     const [selected, setSelected] = React.useState(null);
 
     const [showPrimaryButton, setShowPrimaryButton] = React.useState(false);
-    const [colorPickerVisible, setColorPickerVisible] = React.useState(false);
-    const [colorPickerType, setColorPickerType] = React.useState(null);
-
-    // Define event handlers using useCallback to stabilize their identities
-    const onChange = React.useCallback(
-        (evt) => {
-            if (props.onChange) {
-                props.onChange(evt);
-            }
-        },
-        [props],
-    );
 
     const onSelected = React.useCallback(
         (evt) => {
@@ -39,7 +22,6 @@ export default function App(props) {
                 props.onSelected(evt);
             }
             setSelected(evt.cells[0]);
-            setColorPickerVisible(false);
         },
         [props],
     );
@@ -73,12 +55,11 @@ export default function App(props) {
             configureKeyBindings(graph);
 
             graph.getModel().endUpdate();
-            graph.getModel().addListener(mxEvent.CHANGE, onChange);
             graph.getSelectionModel().addListener(mxEvent.CHANGE, onSelected);
             graph.getModel().addListener(mxEvent.ADD, onElementAdd);
             graph.getModel().addListener(mxEvent.MOVE_END, onDragEnd);
         }
-    }, [graph, onChange, onSelected, onElementAdd, onDragEnd]);
+    }, [graph, onSelected, onElementAdd, onDragEnd]);
 
     // TODO: Remove this useEffect since it's just for debugging
     React.useEffect(() => {
@@ -87,10 +68,6 @@ export default function App(props) {
             console.log(selected);
         }
     });
-
-    const updateCellColor = (type, color) => {
-        graph.setCellStyles(type, color.hex);
-    };
 
     const pushCellsBack = (moveBack) => () => {
         graph.orderCells(moveBack);
@@ -114,45 +91,6 @@ export default function App(props) {
                     Move front
                 </button>
             </React.Fragment>
-        );
-
-    const renderColorChange = (type, content) => {
-        if (!selected) {
-            return null;
-        }
-        return (
-            <button
-                type="button"
-                className={"button-toolbar-action"}
-                onClick={() => {
-                    setColorPickerVisible(!colorPickerVisible);
-                    setColorPickerType(type);
-                }}
-                style={{
-                    backgroundColor:
-                        selected.style && getStyleByKey(selected.style, type),
-                }}
-            >
-                {content}
-            </button>
-        );
-    };
-
-    const renderColorPicker = () =>
-        colorPickerVisible &&
-        selected && (
-            <div>
-                <div className="toolbar-separator" />
-                <CompactPicker
-                    color={
-                        selected.style &&
-                        getStyleByKey(selected.style, "fillColor")
-                    }
-                    onChange={(color) => {
-                        updateCellColor(colorPickerType, color);
-                    }}
-                />
-            </div>
         );
 
     const renderAddAttribute = () => {
@@ -230,14 +168,7 @@ export default function App(props) {
         <div className="mxgraph-container">
             <div className="mxgraph-toolbar-container">
                 <div className="mxgraph-toolbar-container" ref={toolbarRef} />
-                <div>
-                    {renderAddAttribute()}
-                    {renderMoveBackAndFrontButtons()}
-                    {renderColorChange("fillColor", "Change fill color")}
-                    {renderColorChange("fontColor", "Change font color")}
-                    {renderColorChange("strokeColor", "Change border color")}
-                </div>
-                {renderColorPicker()}
+                <div>{renderMoveBackAndFrontButtons()}</div>
             </div>
             <div ref={containerRef} className="mxgraph-drawing-container" />
             <Toaster position="bottom-left" />
