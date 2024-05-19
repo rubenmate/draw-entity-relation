@@ -26,7 +26,7 @@ test('add attributes to an entity', async ({ page }) => {
     // Añadir un atributo primario
     await page.getByText('Entidad').first().click();
     await page.getByText('Añadir atributo').first().click();
-    await page.getByText('Añadir atributo primario').first().click();
+    await page.getByText('Atributo primario').first().click();
 
     await page.getByText('Atributo', {exact: true}).first().dblclick();
     await page.keyboard.type('Atributo primario');
@@ -35,5 +35,5 @@ test('add attributes to an entity', async ({ page }) => {
     // Añadir un atributo secundario
     await page.getByText('Entidad').first().click();
     await page.getByText('Añadir atributo').first().click();
-    await page.getByText('Añadir atributo', {exact: true}).first().click();
+    await page.getByText('Atributo', {exact: true}).first().click();
 });
