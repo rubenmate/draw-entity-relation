@@ -74,8 +74,9 @@ export default function App(props) {
     // TODO: Remove this useEffect since it's just for debugging
     React.useEffect(() => {
         if (graph) {
-            console.log(graph.model.cells);
-            console.log(diagram);
+            console.log("Graph", graph);
+            console.log("Cells", graph.model.cells);
+            console.log("Diagram", diagram);
             diagram.entities.forEach((entity) => {
                 // Check if the current entity's idMx exists in graph.model.cells
                 if (graph.model.cells.hasOwnProperty(entity.idMx)) {
@@ -106,7 +107,6 @@ export default function App(props) {
                     }
                 }
             });
-            console.log(diagram);
         }
     });
 
