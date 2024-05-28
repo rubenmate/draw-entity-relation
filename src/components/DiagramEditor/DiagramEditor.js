@@ -17,6 +17,8 @@ export default function App(props) {
         relations: [],
     });
     const [selected, setSelected] = React.useState(null);
+    const [entityWithAttributesHidden, setEntityWithAttributesHidden] =
+        React.useState(null);
 
     const [showPrimaryButton, setShowPrimaryButton] = React.useState(false);
 
@@ -62,6 +64,10 @@ export default function App(props) {
             graph.getModel().addListener(mxEvent.ADD, onElementAdd);
             graph.getModel().addListener(mxEvent.MOVE_END, onDragEnd);
 
+            graph.stylesheet.styles.defaultEdge.endArrow = ""; // NOTE: Edges are not directed
+            //     mxConstants.EDGESTYLE_ENTITY_RELATION;
+            console.log(mxConstants.EDGESTYLE_ENTITY_RELATION);
+
             // Cleanup function to remove the listener
             return () => {
                 graph.getModel().removeListener(mxEvent.ADD, onSelected);
@@ -87,6 +93,7 @@ export default function App(props) {
                     entity.name = cellData.value; // Assuming 'value' is the new name
                     entity.position.x = cellData.geometry.x; // Assuming 'geometry.x' is the new x position
                     entity.position.y = cellData.geometry.y; // Assuming 'geometry.y' is the new y position
+                    entity.cell = cellData;
 
                     // Check if the entity has attributes
                     if (entity.attributes) {
@@ -98,10 +105,15 @@ export default function App(props) {
                                 const cellDataAttr =
                                     graph.model.cells[attr.idMx];
 
+                                const numEdgeIdMx = +attr.idMx + 1;
+                                const cellEdgeAttr =
+                                    graph.model.cells[numEdgeIdMx];
+
                                 // Update the attribute's name and position
                                 attr.name = cellDataAttr.value; // Assuming 'value' is the new name
                                 attr.position.x = cellDataAttr.geometry.x; // Assuming 'geometry.x' is the new x position
                                 attr.position.y = cellDataAttr.geometry.y; // Assuming 'geometry.y' is the new y position
+                                attr.cell = [cellDataAttr, cellEdgeAttr];
                             }
                         });
                     }
@@ -173,13 +185,35 @@ export default function App(props) {
 
     const renderToggleAttributes = () => {
         if (selected?.style?.includes(";shape=rectangle")) {
+            if (
+                entityWithAttributesHidden &&
+                !entityWithAttributesHidden.hasOwnProperty(selected.id)
+            ) {
+                const updatedAttributesHidden = {
+                    ...entityWithAttributesHidden,
+                };
+                updatedAttributesHidden[selected.id] = false;
+                setEntityWithAttributesHidden(updatedAttributesHidden);
+            }
+            const attributesHidden = entityWithAttributesHidden?.[selected.id];
+            if (attributesHidden !== true) {
+                return (
+                    <button
+                        type="button"
+                        className="button-toolbar-action"
+                        onClick={hideAttributes}
+                    >
+                        Ocultar atributos
+                    </button>
+                );
+            }
             return (
                 <button
                     type="button"
                     className="button-toolbar-action"
-                    onClick={toggleAttributes}
+                    onClick={showAttributes}
                 >
-                    Ocultar atributos
+                    Mostrar atributos
                 </button>
             );
         }
@@ -233,8 +267,36 @@ export default function App(props) {
         }
     };
 
-    const toggleAttributes = () => {
-        console.log("Muestro/oculto atributos");
+    const hideAttributes = () => {
+        const selectedEntity = diagram.entities.find(
+            ({ idMx }) => idMx === selected.id,
+        );
+        const mxAttributesToRemove = [];
+        selectedEntity.attributes.forEach(({ idMx }) => {
+            mxAttributesToRemove.push(graph.model.cells[idMx]);
+        });
+        graph.removeCells(mxAttributesToRemove);
+
+        const updatedAttributesHidden = { ...entityWithAttributesHidden };
+        updatedAttributesHidden[selected.id] = true;
+        setEntityWithAttributesHidden(updatedAttributesHidden);
+    };
+
+    const showAttributes = () => {
+        const selectedEntity = diagram.entities.find(
+            ({ idMx }) => idMx === selected.id,
+        );
+        const mxAttributesToAdd = [];
+        selectedEntity.attributes.forEach(({ cell }) => {
+            mxAttributesToAdd.push(cell.at(0));
+            mxAttributesToAdd.push(cell.at(1));
+        });
+        graph.addCells(mxAttributesToAdd);
+        graph.orderCells(true, mxAttributesToAdd); // back = true
+
+        const updatedAttributesHidden = { ...entityWithAttributesHidden };
+        updatedAttributesHidden[selected.id] = false;
+        setEntityWithAttributesHidden(updatedAttributesHidden);
     };
 
     return (
