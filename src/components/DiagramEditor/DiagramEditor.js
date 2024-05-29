@@ -221,19 +221,27 @@ export default function App(props) {
 
     const addAttribute = (primary) => {
         if (selected?.style?.includes(";shape=rectangle")) {
-            const color = primary ? "yellow" : "blue";
             const source = selected;
 
             const newX = selected.geometry.x + 120;
             const newY = selected.geometry.y;
 
             // Define a style with labelPosition set to ALIGN_RIGHT, additional right spacing
-            const style = {};
-            style[mxConstants.STYLE_LABEL_POSITION] = mxConstants.ALIGN_RIGHT;
-            style[mxConstants.STYLE_SPACING_RIGHT] = -40; // Adjust this value to control the extra space to the right
+            const rightLabelStyle = {};
+            rightLabelStyle[mxConstants.STYLE_LABEL_POSITION] =
+                mxConstants.ALIGN_RIGHT;
+            rightLabelStyle[mxConstants.STYLE_SPACING_RIGHT] = -40; // Adjust this value to control the extra space to the right
 
             // Apply the style to the vertex
-            graph.getStylesheet().putCellStyle("rightLabelStyle", style);
+            graph
+                .getStylesheet()
+                .putCellStyle("rightLabelStyle", rightLabelStyle);
+
+            const keyAttrStyle = {};
+            // Apply font underline to the label text
+            keyAttrStyle[mxConstants.STYLE_FONTSTYLE] =
+                mxConstants.FONT_UNDERLINE;
+            graph.getStylesheet().putCellStyle("keyAttrStyle", keyAttrStyle);
 
             const target = graph.insertVertex(
                 null,
@@ -243,7 +251,9 @@ export default function App(props) {
                 newY,
                 10,
                 10,
-                `shape=ellipse;rightLabelStyle;fillColor=${color}`,
+                `shape=ellipse;rightLabelStyle;${
+                    primary ? "keyAttrStyle" : ""
+                }`,
             );
             graph.insertEdge(selected, null, null, source, target);
             graph.orderCells(false); // Move front the selected entity so the new vertex aren't on top
