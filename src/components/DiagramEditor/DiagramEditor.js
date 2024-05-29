@@ -65,8 +65,6 @@ export default function App(props) {
             graph.getModel().addListener(mxEvent.MOVE_END, onDragEnd);
 
             graph.stylesheet.styles.defaultEdge.endArrow = ""; // NOTE: Edges are not directed
-            //     mxConstants.EDGESTYLE_ENTITY_RELATION;
-            console.log(mxConstants.EDGESTYLE_ENTITY_RELATION);
 
             // Cleanup function to remove the listener
             return () => {
