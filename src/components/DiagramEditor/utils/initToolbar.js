@@ -12,7 +12,7 @@ const {
     mxConstants,
 } = MxGraph();
 
-export default function initToolbar(graph, diagram, tbContainer) {
+export default function initToolbar(graph, diagram, setDiagram, tbContainer) {
     // Creates new toolbar without event processing
     const toolbar = new mxToolbar(tbContainer);
     toolbar.enabled = false;
@@ -49,6 +49,7 @@ export default function initToolbar(graph, diagram, tbContainer) {
             vertex,
             icon,
             diagram,
+            setDiagram,
             addToDiagram,
         );
         img.enabled = true;

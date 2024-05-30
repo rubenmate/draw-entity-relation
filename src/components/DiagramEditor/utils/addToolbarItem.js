@@ -8,6 +8,7 @@ export default function addToolbarItem(
     prototype,
     image,
     diagram,
+    setDiagram,
     addToDiagram,
 ) {
     // Function that is executed when the image is dropped on
@@ -29,6 +30,7 @@ export default function addToolbarItem(
                 position: { x: vertex.geometry.x, y: vertex.geometry.y },
                 attributes: [],
             });
+            setDiagram(diagram);
         }
     };
 

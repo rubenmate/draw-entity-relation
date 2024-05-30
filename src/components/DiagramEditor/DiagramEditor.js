@@ -19,8 +19,7 @@ export default function App(props) {
     const [selected, setSelected] = React.useState(null);
     const [entityWithAttributesHidden, setEntityWithAttributesHidden] =
         React.useState(null);
-
-    const [showPrimaryButton, setShowPrimaryButton] = React.useState(false);
+    const addPrimaryAttrRef = React.useRef(null);
 
     const onSelected = React.useCallback(
         (evt) => {
@@ -56,7 +55,7 @@ export default function App(props) {
             setGraph(new mxGraph(containerRef.current));
         }
         if (graph) {
-            setInitialConfiguration(graph, diagram, toolbarRef);
+            setInitialConfiguration(graph, diagram, setDiagram, toolbarRef);
             configureKeyBindings(graph);
 
             graph.getModel().endUpdate();
@@ -73,14 +72,11 @@ export default function App(props) {
                 graph.getModel().removeListener(mxEvent.CHANGE, onSelected);
             };
         }
-    }, [graph, diagram, onSelected, onElementAdd, onDragEnd]);
+    }, [graph, onSelected, onElementAdd, onDragEnd]);
 
-    // TODO: Remove this useEffect since it's just for debugging
     React.useEffect(() => {
         if (graph) {
-            console.log("Graph", graph);
-            console.log("Cells", graph.model.cells);
-            console.log("Diagram", diagram);
+            console.log(diagram);
             diagram.entities.forEach((entity) => {
                 // Check if the current entity's idMx exists in graph.model.cells
                 if (graph.model.cells.hasOwnProperty(entity.idMx)) {
@@ -118,7 +114,7 @@ export default function App(props) {
                 }
             });
         }
-    });
+    }, [diagram, selected]);
 
     const pushCellsBack = (moveBack) => () => {
         graph.orderCells(moveBack);
@@ -145,35 +141,12 @@ export default function App(props) {
         );
 
     const renderAddAttribute = () => {
-        if (
-            selected?.style?.includes(";shape=rectangle") &&
-            showPrimaryButton
-        ) {
-            return (
-                <>
-                    <button
-                        type="button"
-                        className="button-toolbar-action"
-                        onClick={() => addAttribute(true)}
-                    >
-                        Atributo primario
-                    </button>
-                    <button
-                        type="button"
-                        className="button-toolbar-action"
-                        onClick={() => addAttribute(false)}
-                    >
-                        Atributo
-                    </button>
-                </>
-            );
-        }
         if (selected?.style?.includes(";shape=rectangle")) {
             return (
                 <button
                     type="button"
                     className="button-toolbar-action"
-                    onClick={() => setShowPrimaryButton(true)}
+                    onClick={addAttribute}
                 >
                     Añadir atributo
                 </button>
@@ -217,8 +190,13 @@ export default function App(props) {
         }
     };
 
-    const addAttribute = (primary) => {
+    const addAttribute = () => {
         if (selected?.style?.includes(";shape=rectangle")) {
+            const selectedDiag = diagram.entities.find(
+                (entity) => entity.idMx === selected.id,
+            );
+            const addKey = selectedDiag?.attributes?.length === 0;
+            addPrimaryAttrRef.current = addKey;
             const source = selected;
 
             const newX = selected.geometry.x + 120;
@@ -250,12 +228,13 @@ export default function App(props) {
                 10,
                 10,
                 `shape=ellipse;rightLabelStyle;${
-                    primary ? "keyAttrStyle" : ""
+                    addPrimaryAttrRef.current ? "keyAttrStyle" : ""
                 }`,
             );
             graph.insertEdge(selected, null, null, source, target);
             graph.orderCells(false); // Move front the selected entity so the new vertex aren't on top
 
+            // Update diagram state
             diagram.entities
                 .find((entity) => entity.idMx === selected.id)
                 .attributes.push({
@@ -265,9 +244,9 @@ export default function App(props) {
                         x: target.geometry.x,
                         y: target.geometry.y,
                     },
+                    key: addPrimaryAttrRef.current,
                 });
-
-            setShowPrimaryButton(false); // After adding go back to show the normal button
+            setDiagram(diagram);
 
             // TODO: Instead of toasting here set a listener that toast every time a cell is added
             toast.success("Atributo insertado");
