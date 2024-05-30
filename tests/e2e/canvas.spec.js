@@ -23,22 +23,16 @@ test('add attributes to an entity', async ({ page }) => {
 
     await canvas.click();
 
-
-    // Añadir un atributo primario
-    // await page.locator('rect').first().dblclick();
     await page.getByText('Entidad').first().dblclick();
     await page.getByText('Añadir atributo').first().click();
-    await page.getByText('Atributo primario').first().click();
 
     await page.getByText('Atributo', {exact: true}).first().dblclick();
-    await page.keyboard.type('Atributo primario');
+    await page.keyboard.type('Clave');
     await canvas.click();
 
     // Añadir un atributo secundario
-    // await page.locator('rect').first().dblclick();
     await page.getByText('Entidad').first().dblclick();
     await page.getByText('Añadir atributo').first().click();
-    await page.getByText('Atributo', {exact: true}).first().click();
 });
 
 test('hide/show attributes', async ({ page }) => {
@@ -51,7 +45,6 @@ test('hide/show attributes', async ({ page }) => {
     // Add a primary attribute
     await page.getByText('Entidad').first().dblclick();
     await page.getByText('Añadir atributo').first().click();
-    await page.getByText('Atributo primario').first().click();
 
     await page.getByText('Atributo', {exact: true}).first().dblclick();
     await page.keyboard.type('Clave');
