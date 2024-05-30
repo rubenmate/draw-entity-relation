@@ -74,16 +74,6 @@ export default function initToolbar(graph, diagram, setDiagram, tbContainer) {
         true,
     );
     addVertex(
-        "images/ellipse.gif",
-        40,
-        40,
-        getStyleStringByObj({
-            ...baseStyle,
-            [mxConstants.STYLE_SHAPE]: "ellipse",
-        }),
-    );
-    // console.log(mxText.getTextCss());
-    addVertex(
         "images/text.gif",
         0,
         0,
