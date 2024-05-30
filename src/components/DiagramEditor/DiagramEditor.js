@@ -12,6 +12,7 @@ export default function App(props) {
     const toolbarRef = React.useRef(null);
 
     const [graph, setGraph] = React.useState(null);
+    // TODO: This would be better with a useRef, no need to trigger rerenders
     const [diagram, setDiagram] = React.useState({
         entities: [],
         relations: [],
