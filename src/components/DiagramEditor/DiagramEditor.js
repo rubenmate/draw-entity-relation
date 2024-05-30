@@ -121,78 +121,8 @@ export default function App(props) {
         graph.orderCells(moveBack);
     };
 
-    const renderMoveBackAndFrontButtons = () =>
-        selected && (
-            <React.Fragment>
-                <button
-                    type="button"
-                    className="button-toolbar-action"
-                    onClick={pushCellsBack(true)}
-                >
-                    Move back
-                </button>
-                <button
-                    type="button"
-                    className="button-toolbar-action"
-                    onClick={pushCellsBack(false)}
-                >
-                    Move front
-                </button>
-            </React.Fragment>
-        );
-
-    const renderAddAttribute = () => {
-        if (selected?.style?.includes(";shape=rectangle")) {
-            return (
-                <button
-                    type="button"
-                    className="button-toolbar-action"
-                    onClick={addAttribute}
-                >
-                    Añadir atributo
-                </button>
-            );
-        }
-    };
-
-    const renderToggleAttributes = () => {
-        if (selected?.style?.includes(";shape=rectangle")) {
-            if (
-                entityWithAttributesHidden &&
-                !entityWithAttributesHidden.hasOwnProperty(selected.id)
-            ) {
-                const updatedAttributesHidden = {
-                    ...entityWithAttributesHidden,
-                };
-                updatedAttributesHidden[selected.id] = false;
-                setEntityWithAttributesHidden(updatedAttributesHidden);
-            }
-            const attributesHidden = entityWithAttributesHidden?.[selected.id];
-            if (attributesHidden !== true) {
-                return (
-                    <button
-                        type="button"
-                        className="button-toolbar-action"
-                        onClick={hideAttributes}
-                    >
-                        Ocultar atributos
-                    </button>
-                );
-            }
-            return (
-                <button
-                    type="button"
-                    className="button-toolbar-action"
-                    onClick={showAttributes}
-                >
-                    Mostrar atributos
-                </button>
-            );
-        }
-    };
-
     const addAttribute = () => {
-        if (selected?.style?.includes(";shape=rectangle")) {
+        if (selected?.style?.includes("shape=rectangle")) {
             const selectedDiag = diagram.entities.find(
                 (entity) => entity.idMx === selected.id,
             );
@@ -287,6 +217,94 @@ export default function App(props) {
         setEntityWithAttributesHidden(updatedAttributesHidden);
     };
 
+    const toggleAttrKey = () => {
+        console.log("TODO: Implement the correct functionality");
+    };
+
+    const renderMoveBackAndFrontButtons = () =>
+        selected && (
+            <React.Fragment>
+                <button
+                    type="button"
+                    className="button-toolbar-action"
+                    onClick={pushCellsBack(true)}
+                >
+                    Move back
+                </button>
+                <button
+                    type="button"
+                    className="button-toolbar-action"
+                    onClick={pushCellsBack(false)}
+                >
+                    Move front
+                </button>
+            </React.Fragment>
+        );
+
+    const renderAddAttribute = () => {
+        if (selected?.style?.includes("shape=rectangle")) {
+            return (
+                <button
+                    type="button"
+                    className="button-toolbar-action"
+                    onClick={addAttribute}
+                >
+                    Añadir atributo
+                </button>
+            );
+        }
+    };
+
+    const renderToggleAttributes = () => {
+        if (selected?.style?.includes("shape=rectangle")) {
+            if (
+                entityWithAttributesHidden &&
+                !entityWithAttributesHidden.hasOwnProperty(selected.id)
+            ) {
+                const updatedAttributesHidden = {
+                    ...entityWithAttributesHidden,
+                };
+                updatedAttributesHidden[selected.id] = false;
+                setEntityWithAttributesHidden(updatedAttributesHidden);
+            }
+            const attributesHidden = entityWithAttributesHidden?.[selected.id];
+            if (attributesHidden !== true) {
+                return (
+                    <button
+                        type="button"
+                        className="button-toolbar-action"
+                        onClick={hideAttributes}
+                    >
+                        Ocultar atributos
+                    </button>
+                );
+            }
+            return (
+                <button
+                    type="button"
+                    className="button-toolbar-action"
+                    onClick={showAttributes}
+                >
+                    Mostrar atributos
+                </button>
+            );
+        }
+    };
+
+    const renderToggleAttrKey = () => {
+        if (selected?.style?.includes("shape=ellipse")) {
+            return (
+                <button
+                    type="button"
+                    className="button-toolbar-action"
+                    onClick={toggleAttrKey}
+                >
+                    Convertir en clave
+                </button>
+            );
+        }
+    };
+
     return (
         <div className="mxgraph-container">
             <div className="mxgraph-toolbar-container">
@@ -294,6 +312,7 @@ export default function App(props) {
                 <div>{renderMoveBackAndFrontButtons()}</div>
                 <div>{renderAddAttribute()}</div>
                 <div>{renderToggleAttributes()}</div>
+                <div>{renderToggleAttrKey()}</div>
             </div>
             <div ref={containerRef} className="mxgraph-drawing-container" />
             <Toaster position="bottom-left" />
