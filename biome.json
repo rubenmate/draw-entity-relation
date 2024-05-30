@@ -19,6 +19,9 @@
             },
             "suspicious": {
                 "noPrototypeBuiltins": "off"
+            },
+            "correctness": {
+                "useExhaustiveDependencies": "off"
             }
         }
     }
