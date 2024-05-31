@@ -10,6 +10,13 @@ const { mxGraph, mxEvent } = MxGraph();
 export default function App(props) {
     const containerRef = React.useRef(null);
     const toolbarRef = React.useRef(null);
+    // Define a style with labelPosition set to ALIGN_RIGHT, additional right spacing
+    const rightLabelStyle = {};
+    rightLabelStyle[mxConstants.STYLE_LABEL_POSITION] = mxConstants.ALIGN_RIGHT;
+    rightLabelStyle[mxConstants.STYLE_SPACING_RIGHT] = -40; // Adjust this value to control the extra space to the right
+    const keyAttrStyle = {};
+    // Apply font underline to the label text
+    keyAttrStyle[mxConstants.STYLE_FONTSTYLE] = mxConstants.FONT_UNDERLINE;
 
     const [graph, setGraph] = React.useState(null);
     // TODO: This would be better with a useRef, no need to trigger rerenders
@@ -65,6 +72,11 @@ export default function App(props) {
             graph.getModel().addListener(mxEvent.MOVE_END, onDragEnd);
 
             graph.stylesheet.styles.defaultEdge.endArrow = ""; // NOTE: Edges are not directed
+            graph
+                .getStylesheet()
+                .putCellStyle("rightLabelStyle", rightLabelStyle);
+
+            graph.getStylesheet().putCellStyle("keyAttrStyle", keyAttrStyle);
 
             // Cleanup function to remove the listener
             return () => {
@@ -133,22 +145,7 @@ export default function App(props) {
             const newX = selected.geometry.x + 120;
             const newY = selected.geometry.y;
 
-            // Define a style with labelPosition set to ALIGN_RIGHT, additional right spacing
-            const rightLabelStyle = {};
-            rightLabelStyle[mxConstants.STYLE_LABEL_POSITION] =
-                mxConstants.ALIGN_RIGHT;
-            rightLabelStyle[mxConstants.STYLE_SPACING_RIGHT] = -40; // Adjust this value to control the extra space to the right
-
             // Apply the style to the vertex
-            graph
-                .getStylesheet()
-                .putCellStyle("rightLabelStyle", rightLabelStyle);
-
-            const keyAttrStyle = {};
-            // Apply font underline to the label text
-            keyAttrStyle[mxConstants.STYLE_FONTSTYLE] =
-                mxConstants.FONT_UNDERLINE;
-            graph.getStylesheet().putCellStyle("keyAttrStyle", keyAttrStyle);
 
             const target = graph.insertVertex(
                 null,
