@@ -292,7 +292,23 @@ export default function App(props) {
     };
 
     const renderToggleAttrKey = () => {
-        if (selected?.style?.includes("shape=ellipse")) {
+        const isAttribute = selected?.style?.includes("shape=ellipse");
+        let isKey;
+
+        for (const entity of diagram.entities) {
+            for (const attribute of entity.attributes) {
+                if (attribute.idMx === selected?.id) {
+                    isKey = attribute.key;
+                    break; // Exit the inner loop once the matching attribute is found
+                }
+            }
+
+            if (isKey !== undefined) {
+                break; // Exit the outer loop once the matching attribute is found
+            }
+        }
+
+        if (isAttribute && !isKey) {
             return (
                 <button
                     type="button"
