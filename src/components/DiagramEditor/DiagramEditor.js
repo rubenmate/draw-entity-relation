@@ -215,7 +215,36 @@ export default function App(props) {
     };
 
     const toggleAttrKey = () => {
-        console.log("TODO: Implement the correct functionality");
+        // TODO: Missing the visual change
+        // - Remove keyAttrStyle from the previous key cell
+        // - Add keyAttrStyle to the new key cell
+
+        // Find the selected attribute and mark it as key
+        const updatedEntities = diagram.entities.map((entity) => {
+            return {
+                ...entity,
+                attributes: entity.attributes.map((attribute) => {
+                    if (attribute.idMx === selected.id) {
+                        // Mark the selected attribute as key
+                        return { ...attribute, key: true };
+                    }
+                    // If the attribute is not the selected one, check if it was previously marked as key
+                    if (attribute.key && attribute.idMx !== selected.id) {
+                        return { ...attribute, key: false };
+                    }
+                    return attribute; // Return the attribute unchanged
+                }),
+            };
+        });
+
+        // Create a new diagram object with the updated entities
+        const updatedDiagram = {
+            ...diagram,
+            entities: updatedEntities,
+        };
+
+        // Update the diagram state using setDiagram
+        setDiagram(updatedDiagram);
     };
 
     const renderMoveBackAndFrontButtons = () =>
