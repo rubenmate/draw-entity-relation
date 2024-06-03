@@ -19,7 +19,6 @@ export default function App(props) {
     keyAttrStyle[mxConstants.STYLE_FONTSTYLE] = mxConstants.FONT_UNDERLINE;
 
     const [graph, setGraph] = React.useState(null);
-    // TODO: This would be better with a useRef, no need to trigger rerenders
     const diagramRef = React.useRef({
         entities: [],
         relations: [],
@@ -219,6 +218,9 @@ export default function App(props) {
         // TODO: Missing the visual change
         // - Remove keyAttrStyle from the previous key cell
         // - Add keyAttrStyle to the new key cell
+        // I think the most straightforward way of doing this will be to edit the
+        // styles and then toggle the hide/show attrs so when they are recreated
+        // will be with the new styles.
 
         // Find the selected attribute and mark it as key
         let entityIndexToUpdate;
@@ -237,12 +239,19 @@ export default function App(props) {
         diagramRef.current.entities
             .at(entityIndexToUpdate)
             .attributes.forEach((attribute) => {
+                console.log(attribute.cell.at(0));
                 if (attribute.idMx === selected.id) {
                     attribute.key = true;
+                    attribute.value = "Clave";
                 } else {
                     attribute.key = false;
                 }
             });
+        // TODO: Cant use this methods so we need to save which attrs
+        // to remove and which ones to save (save the ones that we modified with the
+        // updated style)
+        // hideAttributes();
+        // showAttributes();
         setRefreshDiagram((prevState) => !prevState);
     };
 
