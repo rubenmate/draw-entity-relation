@@ -20,13 +20,15 @@ export default function App(props) {
 
     const [graph, setGraph] = React.useState(null);
     // TODO: This would be better with a useRef, no need to trigger rerenders
-    const [diagram, setDiagram] = React.useState({
+    const diagramRef = React.useRef({
         entities: [],
         relations: [],
     });
     const [selected, setSelected] = React.useState(null);
     const [entityWithAttributesHidden, setEntityWithAttributesHidden] =
         React.useState(null);
+
+    const [refreshDiagram, setRefreshDiagram] = React.useState(false);
     const addPrimaryAttrRef = React.useRef(null);
 
     const onSelected = React.useCallback(
@@ -63,7 +65,7 @@ export default function App(props) {
             setGraph(new mxGraph(containerRef.current));
         }
         if (graph) {
-            setInitialConfiguration(graph, diagram, setDiagram, toolbarRef);
+            setInitialConfiguration(graph, diagramRef, toolbarRef);
             configureKeyBindings(graph);
 
             graph.getModel().endUpdate();
@@ -89,8 +91,8 @@ export default function App(props) {
 
     React.useEffect(() => {
         if (graph) {
-            console.log(diagram);
-            diagram.entities.forEach((entity) => {
+            console.log("Diagram", diagramRef.current);
+            diagramRef.current.entities.forEach((entity) => {
                 // Check if the current entity's idMx exists in graph.model.cells
                 if (graph.model.cells.hasOwnProperty(entity.idMx)) {
                     // Access the values from graph.model.cells using the entity's idMx
@@ -127,7 +129,7 @@ export default function App(props) {
                 }
             });
         }
-    }, [diagram, selected]);
+    }, [selected, refreshDiagram]);
 
     const pushCellsBack = (moveBack) => () => {
         graph.orderCells(moveBack);
@@ -135,7 +137,7 @@ export default function App(props) {
 
     const addAttribute = () => {
         if (selected?.style?.includes("shape=rectangle")) {
-            const selectedDiag = diagram.entities.find(
+            const selectedDiag = diagramRef.current.entities.find(
                 (entity) => entity.idMx === selected.id,
             );
             const addKey = selectedDiag?.attributes?.length === 0;
@@ -163,7 +165,7 @@ export default function App(props) {
             graph.orderCells(false); // Move front the selected entity so the new vertex aren't on top
 
             // Update diagram state
-            diagram.entities
+            diagramRef.current.entities
                 .find((entity) => entity.idMx === selected.id)
                 .attributes.push({
                     idMx: target.id,
@@ -174,7 +176,6 @@ export default function App(props) {
                     },
                     key: addPrimaryAttrRef.current,
                 });
-            setDiagram(diagram);
 
             // TODO: Instead of toasting here set a listener that toast every time a cell is added
             toast.success("Atributo insertado");
@@ -183,7 +184,7 @@ export default function App(props) {
     };
 
     const hideAttributes = () => {
-        const selectedEntity = diagram.entities.find(
+        const selectedEntity = diagramRef.current.entities.find(
             ({ idMx }) => idMx === selected.id,
         );
         const mxAttributesToRemove = [];
@@ -198,7 +199,7 @@ export default function App(props) {
     };
 
     const showAttributes = () => {
-        const selectedEntity = diagram.entities.find(
+        const selectedEntity = diagramRef.current.entities.find(
             ({ idMx }) => idMx === selected.id,
         );
         const mxAttributesToAdd = [];
@@ -220,31 +221,29 @@ export default function App(props) {
         // - Add keyAttrStyle to the new key cell
 
         // Find the selected attribute and mark it as key
-        const updatedEntities = diagram.entities.map((entity) => {
-            return {
-                ...entity,
-                attributes: entity.attributes.map((attribute) => {
-                    if (attribute.idMx === selected.id) {
-                        // Mark the selected attribute as key
-                        return { ...attribute, key: true };
-                    }
-                    // If the attribute is not the selected one, check if it was previously marked as key
-                    if (attribute.key && attribute.idMx !== selected.id) {
-                        return { ...attribute, key: false };
-                    }
-                    return attribute; // Return the attribute unchanged
-                }),
-            };
+        let entityIndexToUpdate;
+
+        diagramRef.current.entities.find((entity, index) => {
+            entity.attributes.forEach((attribute) => {
+                if (attribute.idMx === selected.id) {
+                    // Found the matching entity, assign its idMx to entityIdToUpdate
+                    entityIndexToUpdate = index;
+                    // No need to continue searching after finding the match
+                    return true; // This will exit the find loop early
+                }
+            });
         });
 
-        // Create a new diagram object with the updated entities
-        const updatedDiagram = {
-            ...diagram,
-            entities: updatedEntities,
-        };
-
-        // Update the diagram state using setDiagram
-        setDiagram(updatedDiagram);
+        diagramRef.current.entities
+            .at(entityIndexToUpdate)
+            .attributes.forEach((attribute) => {
+                if (attribute.idMx === selected.id) {
+                    attribute.key = true;
+                } else {
+                    attribute.key = false;
+                }
+            });
+        setRefreshDiagram((prevState) => !prevState);
     };
 
     const renderMoveBackAndFrontButtons = () =>
@@ -321,7 +320,7 @@ export default function App(props) {
         const isAttribute = selected?.style?.includes("shape=ellipse");
         let isKey;
 
-        for (const entity of diagram.entities) {
+        for (const entity of diagramRef.current.entities) {
             for (const attribute of entity.attributes) {
                 if (attribute.idMx === selected?.id) {
                     isKey = attribute.key;
