@@ -14,7 +14,7 @@ export default function setInitialConfiguration(graph, diagramRef, toolbarRef) {
         // Enables tooltips, new connections and panning
         graph.setPanning(true);
         graph.setTooltips(true);
-        graph.setConnectable(true);
+        graph.setConnectable(false); // The connections will be managed internally so no manual connections for the user
         graph.setEnabled(true);
         graph.setEdgeLabelsMovable(false);
         graph.setVertexLabelsMovable(false);
