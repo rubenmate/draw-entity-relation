@@ -63,7 +63,7 @@ export default function initToolbar(graph, diagramRef, tbContainer) {
     const baseStyle = { ...graph.getStylesheet().getDefaultVertexStyle() };
 
     addVertex(
-        "images/rectangle.gif",
+        "images/rectangle.png",
         100,
         40,
         getStyleStringByObj({
@@ -73,10 +73,20 @@ export default function initToolbar(graph, diagramRef, tbContainer) {
         true,
     );
     addVertex(
-        "images/text.gif",
-        0,
-        0,
-        "text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];",
-        "Text",
+        "images/rhombus.png",
+        100,
+        40,
+        getStyleStringByObj({
+            ...baseStyle,
+        }),
+        "Entidad",
+        true,
     );
+    // addVertex(
+    //     "images/text.gif",
+    //     0,
+    //     0,
+    //     "text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];",
+    //     "Text",
+    // );
 }
