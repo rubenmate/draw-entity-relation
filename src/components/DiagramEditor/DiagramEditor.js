@@ -553,11 +553,12 @@ export default function App(props) {
         <div className="mxgraph-container">
             <div className="mxgraph-toolbar-container">
                 <div className="mxgraph-toolbar-container" ref={toolbarRef} />
-                <div>{renderMoveBackAndFrontButtons()}</div>
                 <div>{renderAddAttribute()}</div>
                 <div>{renderToggleAttributes()}</div>
                 <div>{renderToggleAttrKey()}</div>
                 <div>{renderRelationConfiguration()}</div>
+                <div>{renderRelationCardinalities()}</div>
+                <div>{renderMoveBackAndFrontButtons()}</div>
             </div>
             <div ref={containerRef} className="mxgraph-drawing-container" />
             <Toaster position="bottom-left" />
