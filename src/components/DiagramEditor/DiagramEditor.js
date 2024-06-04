@@ -115,7 +115,8 @@ export default function App(props) {
 
     React.useEffect(() => {
         if (graph) {
-            console.log("Diagram", diagramRef.current);
+            console.log("Graph", diagramRef.current);
+            // TODO: Update diagram also for the relations
             diagramRef.current.entities.forEach((entity) => {
                 // Check if the current entity's idMx exists in graph.model.cells
                 if (graph.model.cells.hasOwnProperty(entity.idMx)) {
@@ -386,6 +387,7 @@ export default function App(props) {
         }
     };
 
+    // TODO: This component is highly refactorizable
     const renderRelationConfiguration = () => {
         const isRelation = selected?.style?.includes("shape=rhombus");
         const [open, setOpen] = React.useState(false);
@@ -401,6 +403,9 @@ export default function App(props) {
 
         const handleAccept = () => {
             console.log(`${side1} se relaciona con ${side2}`);
+            // TODO: Implementar funcionalidad
+            // - Crear edges (visual)
+            // - Reflejar relación creada en `diagram`
         };
 
         const [side1, setSide1] = React.useState("");
@@ -523,7 +528,7 @@ export default function App(props) {
                         type="button"
                         className="button-toolbar-action"
                         onClick={() =>
-                            console.log("Configurar cardinalidad derecha")
+                            console.log("TODO: Configurar cardinalidad derecha")
                         }
                     >
                         Cardinalidad derecha
@@ -532,7 +537,9 @@ export default function App(props) {
                         type="button"
                         className="button-toolbar-action"
                         onClick={() =>
-                            console.log("Configurar cardinalidad izquierda")
+                            console.log(
+                                "TODO: Configurar cardinalidad izquierda",
+                            )
                         }
                     >
                         Cardinalidad izquierda
