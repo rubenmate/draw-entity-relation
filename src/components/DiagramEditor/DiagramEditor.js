@@ -14,8 +14,8 @@ export default function App(props) {
     const rightLabelStyle = {};
     rightLabelStyle[mxConstants.STYLE_LABEL_POSITION] = mxConstants.ALIGN_RIGHT;
     rightLabelStyle[mxConstants.STYLE_SPACING_RIGHT] = -40; // Adjust this value to control the extra space to the right
+    // Apply font underline to the key attribute label text
     const keyAttrStyle = {};
-    // Apply font underline to the label text
     keyAttrStyle[mxConstants.STYLE_FONTSTYLE] = mxConstants.FONT_UNDERLINE;
 
     const [graph, setGraph] = React.useState(null);
