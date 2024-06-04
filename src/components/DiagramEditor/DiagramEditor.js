@@ -8,8 +8,6 @@ import { configureKeyBindings, setInitialConfiguration } from "./utils";
 const { mxGraph, mxEvent } = MxGraph();
 
 export default function App(props) {
-    const containerRef = React.useRef(null);
-    const toolbarRef = React.useRef(null);
     // Define a style with labelPosition set to ALIGN_RIGHT, additional right spacing
     const rightLabelStyle = {};
     rightLabelStyle[mxConstants.STYLE_LABEL_POSITION] = mxConstants.ALIGN_RIGHT;
@@ -17,6 +15,15 @@ export default function App(props) {
     // Apply font underline to the key attribute label text
     const keyAttrStyle = {};
     keyAttrStyle[mxConstants.STYLE_FONTSTYLE] = mxConstants.FONT_UNDERLINE;
+    // Define a style that makes a cell non-resizable and non-movable
+    const notResizeableStyle = {};
+    notResizeableStyle[mxConstants.STYLE_RESIZABLE] = 0; // Makes the cell non-resizable
+    //
+    const transparentColor = {};
+    transparentColor[mxConstants.STYLE_FILLCOLOR] = "transparent";
+
+    const containerRef = React.useRef(null);
+    const toolbarRef = React.useRef(null);
 
     const [graph, setGraph] = React.useState(null);
     const diagramRef = React.useRef({
@@ -78,7 +85,12 @@ export default function App(props) {
                 .putCellStyle("rightLabelStyle", rightLabelStyle);
 
             graph.getStylesheet().putCellStyle("keyAttrStyle", keyAttrStyle);
-
+            graph
+                .getStylesheet()
+                .putCellStyle("notResizeableStyle", notResizeableStyle);
+            graph
+                .getStylesheet()
+                .putCellStyle("transparentColor", transparentColor);
             // Cleanup function to remove the listener
             return () => {
                 graph.getModel().removeListener(mxEvent.ADD, onSelected);
@@ -156,7 +168,7 @@ export default function App(props) {
                 newY,
                 10,
                 10,
-                `shape=ellipse;rightLabelStyle;${
+                `shape=ellipse;rightLabelStyle;notResizeableStyle;transparentColor;${
                     addPrimaryAttrRef.current ? "keyAttrStyle" : ""
                 }`,
             );
