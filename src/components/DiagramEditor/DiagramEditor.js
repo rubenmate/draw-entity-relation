@@ -224,6 +224,8 @@ export default function App(props) {
 
         // Find the selected attribute and mark it as key
         let entityIndexToUpdate;
+        const cellsToDelete = [];
+        const cellsToRecreate = [];
 
         diagramRef.current.entities.find((entity, index) => {
             entity.attributes.forEach((attribute) => {
@@ -240,18 +242,37 @@ export default function App(props) {
             .at(entityIndexToUpdate)
             .attributes.forEach((attribute) => {
                 console.log(attribute.cell.at(0));
+                cellsToDelete.push(attribute.cell.at(0));
+                cellsToDelete.push(attribute.cell.at(1));
+                const originalString = attribute.cell.at(0).style;
                 if (attribute.idMx === selected.id) {
                     attribute.key = true;
                     attribute.value = "Clave";
+                    const modifiedString = `${originalString}keyAttrStyle`;
+                    attribute.cell.at(0).style = modifiedString;
                 } else {
                     attribute.key = false;
+                    const stringWithoutKeyAttrStyle = originalString.replace(
+                        /keyAttrStyle(;|$)/,
+                        "",
+                    );
+                    attribute.cell.at(0).style = stringWithoutKeyAttrStyle;
                 }
+                cellsToRecreate.push(attribute.cell.at(0));
+                cellsToRecreate.push(attribute.cell.at(1));
             });
         // TODO: Cant use this methods so we need to save which attrs
         // to remove and which ones to save (save the ones that we modified with the
         // updated style)
         // hideAttributes();
         // showAttributes();
+        // The easiest way to change the style it's to modify it and then
+        // remove the old cells and create the modified ones
+        graph.removeCells(cellsToDelete);
+        graph.addCells(cellsToRecreate);
+        graph.orderCells(true, cellsToRecreate);
+
+        // This triggers a rerender
         setRefreshDiagram((prevState) => !prevState);
     };
 
