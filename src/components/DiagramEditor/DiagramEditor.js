@@ -1,5 +1,18 @@
 import * as React from "react";
 import "./styles/diagramEditor.css";
+import {
+    Box,
+    Button,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogContentText,
+    DialogTitle,
+    FormControl,
+    InputLabel,
+    MenuItem,
+    Select,
+} from "@mui/material";
 import { default as MxGraph } from "mxgraph";
 import { mxConstants } from "mxgraph-js";
 import toast, { Toaster } from "react-hot-toast";
@@ -374,6 +387,133 @@ export default function App(props) {
     };
 
     const renderRelationConfiguration = () => {
+        const isRelation = selected?.style?.includes("shape=rhombus");
+        const [open, setOpen] = React.useState(false);
+        const [acceptDisabled, setAcceptDisabled] = React.useState(true);
+
+        const handleClickOpen = () => {
+            setOpen(true);
+        };
+
+        const handleClose = () => {
+            setOpen(false);
+        };
+
+        const handleAccept = () => {
+            console.log(`${side1} se relaciona con ${side2}`);
+        };
+
+        const [side1, setSide1] = React.useState("");
+        const [side2, setSide2] = React.useState("");
+
+        const handleChangeSide1 = (event) => {
+            setSide1(event.target.value);
+        };
+        const handleChangeSide2 = (event) => {
+            setSide2(event.target.value);
+        };
+
+        React.useEffect(() => {
+            if (side1 !== "" && side2 !== "") {
+                setAcceptDisabled(false);
+            }
+        }, [side1, side2]);
+
+        if (isRelation) {
+            return (
+                <>
+                    <button
+                        type="button"
+                        className="button-toolbar-action"
+                        onClick={handleClickOpen}
+                    >
+                        Configurar relación
+                    </button>
+                    <Dialog
+                        open={open}
+                        onClose={handleClose}
+                        aria-labelledby="alert-dialog-title"
+                        aria-describedby="alert-dialog-description"
+                    >
+                        <DialogTitle id="alert-dialog-title">
+                            {"Configurar relación"}
+                        </DialogTitle>
+                        <DialogContent>
+                            <DialogContentText id="alert-dialog-description">
+                                Escoger los lados de esta relación
+                            </DialogContentText>
+                            <Box sx={{ minHeight: 10 }} />
+                            <Box sx={{ minWidth: 120 }}>
+                                <FormControl fullWidth>
+                                    <InputLabel id="demo-simple-select-label">
+                                        Lado 1
+                                    </InputLabel>
+                                    <Select
+                                        labelId="demo-simple-select-label"
+                                        id="demo-simple-select"
+                                        value={side1}
+                                        label="Age"
+                                        onChange={handleChangeSide1}
+                                    >
+                                        {diagramRef.current.entities.map(
+                                            (entity) => {
+                                                return (
+                                                    <MenuItem
+                                                        key={entity.idMx}
+                                                        value={entity.name}
+                                                    >
+                                                        {entity.name}
+                                                    </MenuItem>
+                                                );
+                                            },
+                                        )}
+                                    </Select>
+                                </FormControl>
+                                <Box sx={{ minHeight: 10 }} />
+                                <FormControl fullWidth>
+                                    <InputLabel id="demo-simple-select-label">
+                                        Lado 2
+                                    </InputLabel>
+                                    <Select
+                                        labelId="demo-simple-select-label"
+                                        id="demo-simple-select"
+                                        value={side2}
+                                        label="Lado 2"
+                                        onChange={handleChangeSide2}
+                                    >
+                                        {diagramRef.current.entities.map(
+                                            (entity) => {
+                                                return (
+                                                    <MenuItem
+                                                        key={entity.idMx}
+                                                        value={entity.name}
+                                                    >
+                                                        {entity.name}
+                                                    </MenuItem>
+                                                );
+                                            },
+                                        )}
+                                    </Select>
+                                </FormControl>
+                            </Box>
+                        </DialogContent>
+                        <DialogActions>
+                            <Button onClick={handleClose}>Cancelar</Button>
+                            <Button
+                                onClick={handleAccept}
+                                autoFocus
+                                disabled={acceptDisabled}
+                            >
+                                Aceptar
+                            </Button>
+                        </DialogActions>
+                    </Dialog>
+                </>
+            );
+        }
+    };
+
+    const renderRelationCardinalities = () => {
         const isRelation = selected?.style?.includes("shape=rhombus");
 
         if (isRelation) {
