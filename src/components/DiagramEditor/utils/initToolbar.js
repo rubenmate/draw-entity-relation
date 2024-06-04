@@ -78,8 +78,9 @@ export default function initToolbar(graph, diagramRef, tbContainer) {
         40,
         getStyleStringByObj({
             ...baseStyle,
+            [mxConstants.STYLE_SHAPE]: "rhombus",
         }),
-        "Entidad",
+        "Relación",
         true,
     );
     // addVertex(
