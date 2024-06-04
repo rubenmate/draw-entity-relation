@@ -361,6 +361,35 @@ export default function App(props) {
         }
     };
 
+    const renderRelationConfiguration = () => {
+        const isRelation = selected?.style?.includes("shape=rhombus");
+
+        if (isRelation) {
+            return (
+                <>
+                    <button
+                        type="button"
+                        className="button-toolbar-action"
+                        onClick={() =>
+                            console.log("Configurar cardinalidad derecha")
+                        }
+                    >
+                        Cardinalidad derecha
+                    </button>
+                    <button
+                        type="button"
+                        className="button-toolbar-action"
+                        onClick={() =>
+                            console.log("Configurar cardinalidad izquierda")
+                        }
+                    >
+                        Cardinalidad izquierda
+                    </button>
+                </>
+            );
+        }
+    };
+
     return (
         <div className="mxgraph-container">
             <div className="mxgraph-toolbar-container">
@@ -369,6 +398,7 @@ export default function App(props) {
                 <div>{renderAddAttribute()}</div>
                 <div>{renderToggleAttributes()}</div>
                 <div>{renderToggleAttrKey()}</div>
+                <div>{renderRelationConfiguration()}</div>
             </div>
             <div ref={containerRef} className="mxgraph-drawing-container" />
             <Toaster position="bottom-left" />
