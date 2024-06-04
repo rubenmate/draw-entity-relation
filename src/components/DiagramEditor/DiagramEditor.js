@@ -215,14 +215,6 @@ export default function App(props) {
     };
 
     const toggleAttrKey = () => {
-        // TODO: Missing the visual change
-        // - Remove keyAttrStyle from the previous key cell
-        // - Add keyAttrStyle to the new key cell
-        // I think the most straightforward way of doing this will be to edit the
-        // styles and then toggle the hide/show attrs so when they are recreated
-        // will be with the new styles.
-
-        // Find the selected attribute and mark it as key
         let entityIndexToUpdate;
         const cellsToDelete = [];
         const cellsToRecreate = [];
@@ -230,10 +222,8 @@ export default function App(props) {
         diagramRef.current.entities.find((entity, index) => {
             entity.attributes.forEach((attribute) => {
                 if (attribute.idMx === selected.id) {
-                    // Found the matching entity, assign its idMx to entityIdToUpdate
                     entityIndexToUpdate = index;
-                    // No need to continue searching after finding the match
-                    return true; // This will exit the find loop early
+                    return true;
                 }
             });
         });
@@ -241,7 +231,6 @@ export default function App(props) {
         diagramRef.current.entities
             .at(entityIndexToUpdate)
             .attributes.forEach((attribute) => {
-                console.log(attribute.cell.at(0));
                 cellsToDelete.push(attribute.cell.at(0));
                 cellsToDelete.push(attribute.cell.at(1));
                 const originalString = attribute.cell.at(0).style;
@@ -261,11 +250,7 @@ export default function App(props) {
                 cellsToRecreate.push(attribute.cell.at(0));
                 cellsToRecreate.push(attribute.cell.at(1));
             });
-        // TODO: Cant use this methods so we need to save which attrs
-        // to remove and which ones to save (save the ones that we modified with the
-        // updated style)
-        // hideAttributes();
-        // showAttributes();
+
         // The easiest way to change the style it's to modify it and then
         // remove the old cells and create the modified ones
         graph.removeCells(cellsToDelete);
