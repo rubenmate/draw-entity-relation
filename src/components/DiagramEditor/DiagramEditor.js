@@ -116,7 +116,6 @@ export default function App(props) {
     React.useEffect(() => {
         if (graph) {
             console.log("Graph", diagramRef.current);
-            // TODO: Update diagram also for the relations
             diagramRef.current.entities.forEach((entity) => {
                 // Check if the current entity's idMx exists in graph.model.cells
                 if (graph.model.cells.hasOwnProperty(entity.idMx)) {
@@ -151,6 +150,19 @@ export default function App(props) {
                             }
                         });
                     }
+                }
+            });
+            diagramRef.current.relations.forEach((relation) => {
+                // Check if the current entity's idMx exists in graph.model.cells
+                if (graph.model.cells.hasOwnProperty(relation.idMx)) {
+                    // Access the values from graph.model.cells using the entity's idMx
+                    const cellData = graph.model.cells[relation.idMx];
+
+                    // Update the entity's name and position
+                    relation.name = cellData.value; // Assuming 'value' is the new name
+                    relation.position.x = cellData.geometry.x; // Assuming 'geometry.x' is the new x position
+                    relation.position.y = cellData.geometry.y; // Assuming 'geometry.y' is the new y position
+                    relation.cell = cellData;
                 }
             });
         }

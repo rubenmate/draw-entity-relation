@@ -36,7 +36,8 @@ export default function addToolbarItem(
                 idMx: vertex.id,
                 name: vertex.value,
                 position: { x: vertex.geometry.x, y: vertex.geometry.y },
-                // TODO: Add more keys for the relations
+                side1: { idMx: "", cardinality: "" },
+                side2: { idMx: "", cardinality: "" },
             });
         }
     };
