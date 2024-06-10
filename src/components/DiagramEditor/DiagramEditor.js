@@ -28,6 +28,8 @@ export default function App(props) {
     // Apply font underline to the key attribute label text
     const keyAttrStyle = {};
     keyAttrStyle[mxConstants.STYLE_FONTSTYLE] = mxConstants.FONT_UNDERLINE;
+    // TODO: Define a style that makes an edge non reassignable
+
     // Define a style that makes a cell non-resizable and non-movable
     const notResizeableStyle = {};
     notResizeableStyle[mxConstants.STYLE_RESIZABLE] = 0; // Makes the cell non-resizable
