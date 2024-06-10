@@ -14,7 +14,7 @@ import {
     Select,
 } from "@mui/material";
 import { default as MxGraph } from "mxgraph";
-import { mxConstants } from "mxgraph-js";
+import { mxConstants, mxPoint } from "mxgraph-js";
 import toast, { Toaster } from "react-hot-toast";
 import { configureKeyBindings, setInitialConfiguration } from "./utils";
 
@@ -414,10 +414,65 @@ export default function App(props) {
         };
 
         const handleAccept = () => {
-            console.log(`${side1} se relaciona con ${side2}`);
-            // TODO: Implementar funcionalidad
-            // - Crear edges (visual)
-            // - Reflejar relación creada en `diagram`
+            // TODO: Si la relación ya está configurada deben borrarse los edge anteriores
+            // antes de crear los nuevos
+            const source = selected;
+            const target1 = side1.cell;
+            const target2 = side2.cell;
+
+            // TODO: Añadir
+            const edge1 = graph.insertEdge(
+                selected,
+                null,
+                null,
+                source,
+                target1,
+            );
+            const edge2 = graph.insertEdge(
+                selected,
+                null,
+                null,
+                source,
+                target2,
+            );
+            const cardinality1 = graph.insertVertex(
+                edge1,
+                null,
+                "X:X",
+                0.5,
+                0,
+                1,
+                1,
+                "fontSize=16;fontColor=#000000;fillColor=#ffffff;strokeColor=none;rounded=1;arcSize=25;strokeWidth=3;",
+                true,
+            );
+            const cardinality2 = graph.insertVertex(
+                edge2,
+                null,
+                "X:X",
+                0.5,
+                0,
+                1,
+                1,
+                "fontSize=16;fontColor=#000000;fillColor=#ffffff;strokeColor=none;rounded=1;arcSize=25;strokeWidth=3;",
+                true,
+            );
+            graph.updateCellSize(cardinality1);
+            if (target1 === target2) {
+                console.log(target1);
+                const x1 = target1.geometry.x + target1.geometry.width / 2;
+                const x2 = source.geometry.x + source.geometry.width / 2;
+                const y1 = target1.geometry.y + target1.geometry.height / 2;
+                const y2 = source.geometry.y + source.geometry.height / 2;
+                console.log(x1, y2);
+                console.log(x2, y1);
+                // TODO: Las relaciones reflexivas se solapan y no se ven
+                edge1.geometry.points = [new mxPoint(x2, y1)];
+                edge2.geometry.points = [new mxPoint(x1, y2)];
+            }
+            graph.orderCells(true, [edge1, edge2]); // Move the new edges to the back
+            // TODO: Reflejar relación creada en `diagram`
+            setOpen(false);
         };
 
         const [side1, setSide1] = React.useState("");
@@ -477,7 +532,7 @@ export default function App(props) {
                                                 return (
                                                     <MenuItem
                                                         key={entity.idMx}
-                                                        value={entity.name}
+                                                        value={entity}
                                                     >
                                                         {entity.name}
                                                     </MenuItem>
@@ -503,7 +558,7 @@ export default function App(props) {
                                                 return (
                                                     <MenuItem
                                                         key={entity.idMx}
-                                                        value={entity.name}
+                                                        value={entity}
                                                     >
                                                         {entity.name}
                                                     </MenuItem>
