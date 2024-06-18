@@ -118,6 +118,7 @@ export default function App(props) {
     React.useEffect(() => {
         if (graph) {
             console.log("Graph", diagramRef.current);
+            console.log("Cells", graph.model.cells);
             diagramRef.current.entities.forEach((entity) => {
                 // Check if the current entity's idMx exists in graph.model.cells
                 if (graph.model.cells.hasOwnProperty(entity.idMx)) {
@@ -441,25 +442,39 @@ export default function App(props) {
                 edge1,
                 null,
                 "X:X",
-                0.5,
+                0,
                 0,
                 1,
                 1,
-                "fontSize=16;fontColor=#000000;fillColor=#ffffff;strokeColor=none;rounded=1;arcSize=25;strokeWidth=3;",
+                "fontSize=12;fontColor=#000000;fillColor=#ffffff;strokeColor=none;rounded=1;arcSize=25;strokeWidth=3;",
                 true,
             );
             const cardinality2 = graph.insertVertex(
                 edge2,
                 null,
                 "X:X",
-                0.5,
+                0,
                 0,
                 1,
                 1,
-                "fontSize=16;fontColor=#000000;fillColor=#ffffff;strokeColor=none;rounded=1;arcSize=25;strokeWidth=3;",
+                "fontSize=12;fontColor=#000000;fillColor=#ffffff;strokeColor=none;rounded=1;arcSize=25;strokeWidth=3;",
                 true,
             );
             graph.updateCellSize(cardinality1);
+            graph.updateCellSize(cardinality2);
+
+            const selectedDiag = diagramRef.current.relations.find(
+                (entity) => entity.idMx === selected?.id,
+            );
+            selectedDiag.side1.idMx = cardinality1.id;
+            selectedDiag.side2.idMx = cardinality2.id;
+            selectedDiag.side1.cell = cardinality1;
+            selectedDiag.side2.cell = cardinality2;
+            selectedDiag.side1.entity.idMx = side1.idMx;
+            selectedDiag.side1.entity.name = side1.name;
+            selectedDiag.side2.entity.idMx = side2.idMx;
+            selectedDiag.side2.entity.name = side2.name;
+
             if (target1 === target2) {
                 console.log(target1);
                 const x1 = target1.geometry.x + target1.geometry.width / 2;
