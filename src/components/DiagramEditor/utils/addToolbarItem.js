@@ -36,8 +36,18 @@ export default function addToolbarItem(
                 idMx: vertex.id,
                 name: vertex.value,
                 position: { x: vertex.geometry.x, y: vertex.geometry.y },
-                side1: { idMx: "", cardinality: "" },
-                side2: { idMx: "", cardinality: "" },
+                side1: {
+                    idMx: "",
+                    cardinality: "",
+                    cell: "",
+                    entity: { name: "", idMx: "" },
+                },
+                side2: {
+                    idMx: "",
+                    cardinality: "",
+                    cell: "",
+                    entity: { cell: "", idMx: "" },
+                },
             });
         }
     };

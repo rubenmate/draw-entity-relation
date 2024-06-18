@@ -201,6 +201,20 @@ export default function App(props) {
                     addPrimaryAttrRef.current ? "keyAttrStyle" : ""
                 }`,
             );
+
+            // TODO: Protect attributes edges to be reassigned
+            // graph.addListener(mxEvent.CONNECT, function (sender, evt) {
+            //     var connection = evt.getProperty("connection");
+            //     var source = connection.getSource();
+            //     var target = connection.getTarget();
+            //
+            //     // Check if the source and target are the ones you want to lock
+            //     if (source === lockedSource || target === lockedTarget) {
+            //         // Prevent the connection
+            //         evt.consume();
+            //     }
+            // });
+
             graph.insertEdge(selected, null, null, source, target);
             graph.orderCells(false); // Move front the selected entity so the new vertex aren't on top
 
@@ -417,13 +431,13 @@ export default function App(props) {
         };
 
         const handleAccept = () => {
-            // TODO: Si la relación ya está configurada deben borrarse los edge anteriores
-            // antes de crear los nuevos
+            // TODO: Si la relación ya está configurada debe mostrarse un toast de error indicando
+            // que ya existe una relación entre estas dos entidades
             const source = selected;
             const target1 = side1.cell;
             const target2 = side2.cell;
 
-            // TODO: Añadir
+            // TODO: Proteger estos edges contra escritura de labels y borrado
             const edge1 = graph.insertEdge(
                 selected,
                 null,
@@ -471,24 +485,21 @@ export default function App(props) {
             selectedDiag.side1.cell = cardinality1;
             selectedDiag.side2.cell = cardinality2;
             selectedDiag.side1.entity.idMx = side1.idMx;
-            selectedDiag.side1.entity.name = side1.name;
+            selectedDiag.side1.entity.cell = side1.cell;
             selectedDiag.side2.entity.idMx = side2.idMx;
-            selectedDiag.side2.entity.name = side2.name;
+            selectedDiag.side2.entity.cell = side2.cell;
 
             if (target1 === target2) {
-                console.log(target1);
                 const x1 = target1.geometry.x + target1.geometry.width / 2;
                 const x2 = source.geometry.x + source.geometry.width / 2;
                 const y1 = target1.geometry.y + target1.geometry.height / 2;
                 const y2 = source.geometry.y + source.geometry.height / 2;
-                console.log(x1, y2);
-                console.log(x2, y1);
-                // TODO: Las relaciones reflexivas se solapan y no se ven
+
                 edge1.geometry.points = [new mxPoint(x2, y1)];
                 edge2.geometry.points = [new mxPoint(x1, y2)];
             }
             graph.orderCells(true, [edge1, edge2]); // Move the new edges to the back
-            // TODO: Reflejar relación creada en `diagram`
+
             setOpen(false);
         };
 
@@ -534,12 +545,11 @@ export default function App(props) {
                             <Box sx={{ minHeight: 10 }} />
                             <Box sx={{ minWidth: 120 }}>
                                 <FormControl fullWidth>
-                                    <InputLabel id="demo-simple-select-label">
+                                    <InputLabel id="side1-label">
                                         Lado 1
                                     </InputLabel>
                                     <Select
-                                        labelId="demo-simple-select-label"
-                                        id="demo-simple-select"
+                                        id="side1"
                                         value={side1}
                                         label="Age"
                                         onChange={handleChangeSide1}
@@ -560,12 +570,11 @@ export default function App(props) {
                                 </FormControl>
                                 <Box sx={{ minHeight: 10 }} />
                                 <FormControl fullWidth>
-                                    <InputLabel id="demo-simple-select-label">
+                                    <InputLabel id="side2-label">
                                         Lado 2
                                     </InputLabel>
                                     <Select
-                                        labelId="demo-simple-select-label"
-                                        id="demo-simple-select"
+                                        id="side2"
                                         value={side2}
                                         label="Lado 2"
                                         onChange={handleChangeSide2}
@@ -604,30 +613,154 @@ export default function App(props) {
 
     const renderRelationCardinalities = () => {
         const isRelation = selected?.style?.includes("shape=rhombus");
+        const selectedDiag = diagramRef.current.relations.find(
+            (entity) => entity.idMx === selected?.id,
+        );
+        const [open, setOpen] = React.useState(false);
+        const [acceptDisabled, setAcceptDisabled] = React.useState(true);
+
+        const handleClickOpen = () => {
+            setOpen(true);
+        };
+
+        const handleClose = () => {
+            setOpen(false);
+        };
+
+        const handleAccept = () => {
+            selectedDiag.side1.cardinality = side1;
+            selectedDiag.side2.cardinality = side2;
+
+            const label1 = selectedDiag.side1.cell;
+            const label2 = selectedDiag.side2.cell;
+
+            graph.model.setValue(label1, side1);
+            graph.model.setValue(label2, side2);
+            // NOTE: Refresh the graph to visually update the cell values
+            const graphView = graph.getDefaultParent();
+            const view = graph.getView(graphView);
+            view.refresh();
+
+            setOpen(false);
+        };
+
+        const [side1, setSide1] = React.useState("");
+        const [side2, setSide2] = React.useState("");
+
+        const handleChangeSide1 = (event) => {
+            setSide1(event.target.value);
+        };
+        const handleChangeSide2 = (event) => {
+            setSide2(event.target.value);
+        };
+
+        React.useEffect(() => {
+            if (side1 !== "" && side2 !== "") {
+                setAcceptDisabled(false);
+            }
+        }, [side1, side2]);
+
+        const POSSIBLE_CARDINALITIES = ["0:1", "0:N", "1:1", "1:N"];
 
         if (isRelation) {
+            const isConfigured =
+                selectedDiag?.side1.idMx !== "" &&
+                selectedDiag?.side2.idMx !== "";
             return (
                 <>
                     <button
                         type="button"
                         className="button-toolbar-action"
-                        onClick={() =>
-                            console.log("TODO: Configurar cardinalidad derecha")
-                        }
+                        onClick={handleClickOpen}
                     >
-                        Cardinalidad derecha
+                        Configurar cardinalidades
                     </button>
-                    <button
-                        type="button"
-                        className="button-toolbar-action"
-                        onClick={() =>
-                            console.log(
-                                "TODO: Configurar cardinalidad izquierda",
-                            )
-                        }
+                    <Dialog
+                        open={open}
+                        onClose={handleClose}
+                        aria-labelledby="alert-dialog-title"
+                        aria-describedby="alert-dialog-description"
                     >
-                        Cardinalidad izquierda
-                    </button>
+                        <DialogTitle id="alert-dialog-title">
+                            {"Configurar cardinalidades"}
+                        </DialogTitle>
+                        {!isConfigured && (
+                            <DialogContent>
+                                <DialogContentText id="alert-dialog-description">
+                                    Esta relación todavía no está configurada
+                                </DialogContentText>
+                            </DialogContent>
+                        )}
+                        {isConfigured && (
+                            <DialogContent>
+                                <DialogContentText id="alert-dialog-description">
+                                    Escoger los lados de esta relación
+                                </DialogContentText>
+                                <Box sx={{ minHeight: 10 }} />
+                                <Box sx={{ minWidth: 120 }}>
+                                    <FormControl fullWidth>
+                                        <InputLabel id="side1-to-side2-label">
+                                            {`${selectedDiag?.side1?.entity?.cell?.value} - ${selectedDiag?.side2?.entity?.cell?.value}`}
+                                        </InputLabel>
+                                        <Select
+                                            id="side1-to-side2"
+                                            value={side1}
+                                            label="Cardinalidad 1"
+                                            onChange={handleChangeSide1}
+                                        >
+                                            {POSSIBLE_CARDINALITIES.map(
+                                                (cardinality) => {
+                                                    return (
+                                                        <MenuItem
+                                                            key={cardinality}
+                                                            value={cardinality}
+                                                        >
+                                                            {cardinality}
+                                                        </MenuItem>
+                                                    );
+                                                },
+                                            )}
+                                        </Select>
+                                    </FormControl>
+                                    <Box sx={{ minHeight: 10 }} />
+                                    <FormControl fullWidth>
+                                        <InputLabel id="side2-to-side1-label">
+                                            {`${selectedDiag?.side2?.entity?.cell?.value} - ${selectedDiag?.side1?.entity?.cell?.value}`}
+                                        </InputLabel>
+                                        <Select
+                                            id="side2-to-side1"
+                                            value={side2}
+                                            label="Cardinalidad 2"
+                                            onChange={handleChangeSide2}
+                                        >
+                                            {POSSIBLE_CARDINALITIES.map(
+                                                (cardinality) => {
+                                                    return (
+                                                        <MenuItem
+                                                            key={cardinality}
+                                                            value={cardinality}
+                                                        >
+                                                            {cardinality}
+                                                        </MenuItem>
+                                                    );
+                                                },
+                                            )}
+                                        </Select>
+                                    </FormControl>
+                                </Box>
+                            </DialogContent>
+                        )}
+                        <DialogActions>
+                            <Button onClick={handleClose}>Cancelar</Button>
+                            <Button
+                                onClick={handleAccept}
+                                autoFocus
+                                disabled={acceptDisabled}
+                            >
+                                Aceptar
+                            </Button>
+                        </DialogActions>
+                    </Dialog>
                 </>
             );
         }

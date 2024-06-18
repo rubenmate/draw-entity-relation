@@ -23,7 +23,11 @@ export default function configureKeyBindings(graph) {
     keyHandler.bindKey(46, (evt) => {
         if (graph.isEnabled()) {
             const currentNode = graph.getSelectionCell();
-            graph.removeCells([currentNode]);
+            // TODO: Tratar el borrado de los diferentes tipos de elementos
+            if (currentNode.edge) {
+            } else {
+                graph.removeCells([currentNode]);
+            }
         }
     });
 }
