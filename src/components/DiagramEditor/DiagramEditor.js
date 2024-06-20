@@ -115,6 +115,7 @@ export default function App(props) {
         }
     }, [graph, onSelected, onElementAdd, onDragEnd]);
 
+    // TODO: Update the attributes that are present in a N:M relation
     React.useEffect(() => {
         if (graph) {
             console.log("Graph", diagramRef.current);
@@ -442,7 +443,6 @@ export default function App(props) {
             }
         }
 
-        // TODO: Check if the attribute is from an entity, the only case where this menu should appear
         for (const relation of diagramRef.current.relations) {
             for (const attribute of relation.attributes) {
                 if (attribute.idMx === selected?.id) {
