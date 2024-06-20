@@ -18,6 +18,49 @@ export default function addToolbarItem(
         graph.stopEditing(false);
 
         const vertex = graph.getModel().cloneCell(prototype);
+
+        // Function to generate a unique name
+        const generateUniqueName = (baseName, existingItems) => {
+            let counter = 0;
+            let uniqueName = baseName;
+
+            const nameExists = (name) => {
+                return existingItems.some((item) => item.name === name);
+            };
+
+            while (nameExists(uniqueName)) {
+                counter++;
+                uniqueName = `${baseName} ${counter}`;
+            }
+
+            return uniqueName;
+        };
+
+        // Retrieve existing entities and relations
+        const existingEntities = diagramRef.current.entities || [];
+        const existingRelations = diagramRef.current.relations || [];
+
+        // Determine the base name and existing items array based on the flags
+        let baseName;
+        let existingItems;
+
+        if (addEntityToDiagram) {
+            baseName = "Entidad";
+            existingItems = existingEntities;
+        } else if (addRelationToDiagram) {
+            baseName = "Relación";
+            existingItems = existingRelations;
+        } else {
+            baseName = "Test";
+            existingItems = [];
+        }
+
+        // Generate a unique name
+        const uniqueName = generateUniqueName(baseName, existingItems);
+
+        // Set the vertex value to the unique name
+        vertex.value = uniqueName;
+
         vertex.geometry.x = x;
         vertex.geometry.y = y;
 
