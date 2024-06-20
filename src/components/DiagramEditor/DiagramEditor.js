@@ -220,12 +220,34 @@ export default function App(props) {
         const newX = selected.geometry.x + 120;
         const newY = selected.geometry.y;
 
-        // Apply the style to the vertex
+        // Function to generate a unique attribute name
+        const generateUniqueAttributeName = (baseName, existingAttributes) => {
+            let counter = 0;
+            let uniqueName = baseName;
+
+            const nameExists = (name) => {
+                return existingAttributes.some((attr) => attr.name === name);
+            };
+
+            while (nameExists(uniqueName)) {
+                counter++;
+                uniqueName = `${baseName} ${counter}`;
+            }
+
+            return uniqueName;
+        };
+
+        const baseAttributeName = "Atributo";
+        const existingAttributes = selectedDiag.attributes || [];
+        const uniqueAttributeName = generateUniqueAttributeName(
+            baseAttributeName,
+            existingAttributes,
+        );
 
         const target = graph.insertVertex(
             null,
             null,
-            "Atributo", // Placeholder attribute
+            uniqueAttributeName, // Unique attribute name as placeholder
             newX,
             newY,
             10,
