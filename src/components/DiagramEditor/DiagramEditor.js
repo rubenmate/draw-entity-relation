@@ -427,6 +427,7 @@ export default function App(props) {
     const renderToggleAttrKey = () => {
         const isAttribute = selected?.style?.includes("shape=ellipse");
         let isKey;
+        let isFromRelation = false;
 
         for (const entity of diagramRef.current.entities) {
             for (const attribute of entity.attributes) {
@@ -441,7 +442,17 @@ export default function App(props) {
             }
         }
 
-        if (isAttribute && !isKey) {
+        // TODO: Check if the attribute is from an entity, the only case where this menu should appear
+        for (const relation of diagramRef.current.relations) {
+            for (const attribute of relation.attributes) {
+                if (attribute.idMx === selected?.id) {
+                    isFromRelation = true;
+                    break;
+                }
+            }
+        }
+
+        if (isAttribute && !isKey && !isFromRelation) {
             return (
                 <button
                     type="button"
