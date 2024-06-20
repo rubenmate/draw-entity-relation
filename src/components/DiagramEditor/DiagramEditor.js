@@ -281,11 +281,14 @@ export default function App(props) {
         // TODO: Increment the offset so that new attributes are not added on top of others
     };
 
-    // TODO: Update this to work with N:M relations
-    const hideAttributes = () => {
-        const selectedEntity = diagramRef.current.entities.find(
-            ({ idMx }) => idMx === selected.id,
-        );
+    const hideAttributes = (isRelationNM) => {
+        const selectedEntity = !isRelationNM
+            ? diagramRef.current.entities.find(
+                  ({ idMx }) => idMx === selected.id,
+              )
+            : diagramRef.current.relations.find(
+                  ({ idMx }) => idMx === selected.id,
+              );
         const mxAttributesToRemove = [];
         selectedEntity.attributes.forEach(({ idMx }) => {
             mxAttributesToRemove.push(graph.model.cells[idMx]);
@@ -297,11 +300,14 @@ export default function App(props) {
         setEntityWithAttributesHidden(updatedAttributesHidden);
     };
 
-    // TODO: Update this to work with N:M relations
-    const showAttributes = () => {
-        const selectedEntity = diagramRef.current.entities.find(
-            ({ idMx }) => idMx === selected.id,
-        );
+    const showAttributes = (isRelationNM) => {
+        const selectedEntity = !isRelationNM
+            ? diagramRef.current.entities.find(
+                  ({ idMx }) => idMx === selected.id,
+              )
+            : diagramRef.current.relations.find(
+                  ({ idMx }) => idMx === selected.id,
+              );
         const mxAttributesToAdd = [];
         selectedEntity.attributes.forEach(({ cell }) => {
             mxAttributesToAdd.push(cell.at(0));
@@ -425,7 +431,6 @@ export default function App(props) {
 
         if (isEntity || isRelationNM) {
             if (
-                isEntity &&
                 entityWithAttributesHidden &&
                 !entityWithAttributesHidden.hasOwnProperty(selected.id)
             ) {
@@ -434,27 +439,15 @@ export default function App(props) {
                 };
                 updatedAttributesHidden[selected.id] = false;
                 setEntityWithAttributesHidden(updatedAttributesHidden);
-            } else if (
-                isRelationNM &&
-                relationWithAttributesHidden &&
-                !relationWithAttributesHidden.hasOwnProperty(selected.id)
-            ) {
-                const updatedAttributesHidden = {
-                    ...relationWithAttributesHidden,
-                };
-                updatedAttributesHidden[selected.id] = false;
-                setRelationWithAttributesHidden(updatedAttributesHidden);
             }
-            const attributesHidden = isRelationNM
-                ? entityWithAttributesHidden?.[selected.id]
-                : relationWithAttributesHidden?.[selected.id];
+            const attributesHidden = entityWithAttributesHidden?.[selected.id];
 
             if (attributesHidden !== true) {
                 return (
                     <button
                         type="button"
                         className="button-toolbar-action"
-                        onClick={hideAttributes}
+                        onClick={() => hideAttributes(isRelationNM)}
                     >
                         Ocultar atributos
                     </button>
@@ -464,7 +457,7 @@ export default function App(props) {
                 <button
                     type="button"
                     className="button-toolbar-action"
-                    onClick={showAttributes}
+                    onClick={() => showAttributes(isRelationNM)}
                 >
                     Mostrar atributos
                 </button>
