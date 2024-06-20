@@ -259,6 +259,7 @@ export default function App(props) {
         // TODO: Increment the offset so that new attributes are not added on top of others
     };
 
+    // TODO: Update this to work with N:M relations
     const hideAttributes = () => {
         const selectedEntity = diagramRef.current.entities.find(
             ({ idMx }) => idMx === selected.id,
@@ -274,6 +275,7 @@ export default function App(props) {
         setEntityWithAttributesHidden(updatedAttributesHidden);
     };
 
+    // TODO: Update this to work with N:M relations
     const showAttributes = () => {
         const selectedEntity = diagramRef.current.entities.find(
             ({ idMx }) => idMx === selected.id,
