@@ -176,48 +176,57 @@ export default function App(props) {
     };
 
     const addAttribute = () => {
+        let selectedDiag;
+        let isRelation = false;
         if (selected?.style?.includes("shape=rectangle")) {
-            const selectedDiag = diagramRef.current.entities.find(
+            selectedDiag = diagramRef.current.entities.find(
                 (entity) => entity.idMx === selected.id,
             );
-            const addKey = selectedDiag?.attributes?.length === 0;
-            addPrimaryAttrRef.current = addKey;
-            const source = selected;
-
-            const newX = selected.geometry.x + 120;
-            const newY = selected.geometry.y;
-
-            // Apply the style to the vertex
-
-            const target = graph.insertVertex(
-                null,
-                null,
-                "Atributo", // Placeholder attribute
-                newX,
-                newY,
-                10,
-                10,
-                `shape=ellipse;rightLabelStyle;notResizeableStyle;transparentColor;${
-                    addPrimaryAttrRef.current ? "keyAttrStyle" : ""
-                }`,
+        } else if (selected?.style?.includes("shape=rhombus")) {
+            selectedDiag = diagramRef.current.relations.find(
+                (relation) => relation.idMx === selected.id,
             );
+            isRelation = true;
+        }
+        const addKey = selectedDiag?.attributes?.length === 0;
+        addPrimaryAttrRef.current = addKey;
+        const source = selected;
 
-            // TODO: Protect attributes edges to be reassigned
-            // graph.addListener(mxEvent.CONNECT, function (sender, evt) {
-            //     var connection = evt.getProperty("connection");
-            //     var source = connection.getSource();
-            //     var target = connection.getTarget();
-            //
-            //     // Check if the source and target are the ones you want to lock
-            //     if (source === lockedSource || target === lockedTarget) {
-            //         // Prevent the connection
-            //         evt.consume();
-            //     }
-            // });
+        const newX = selected.geometry.x + 120;
+        const newY = selected.geometry.y;
 
-            graph.insertEdge(selected, null, null, source, target);
-            graph.orderCells(false); // Move front the selected entity so the new vertex aren't on top
+        // Apply the style to the vertex
 
+        const target = graph.insertVertex(
+            null,
+            null,
+            "Atributo", // Placeholder attribute
+            newX,
+            newY,
+            10,
+            10,
+            `shape=ellipse;rightLabelStyle;notResizeableStyle;transparentColor;${
+                addPrimaryAttrRef.current && !isRelation ? "keyAttrStyle" : ""
+            }`,
+        );
+
+        // TODO: Protect attributes edges to be reassigned
+        // graph.addListener(mxEvent.CONNECT, function (sender, evt) {
+        //     var connection = evt.getProperty("connection");
+        //     var source = connection.getSource();
+        //     var target = connection.getTarget();
+        //
+        //     // Check if the source and target are the ones you want to lock
+        //     if (source === lockedSource || target === lockedTarget) {
+        //         // Prevent the connection
+        //         evt.consume();
+        //     }
+        // });
+
+        graph.insertEdge(selected, null, null, source, target);
+        graph.orderCells(false); // Move front the selected entity so the new vertex aren't on top
+
+        if (!isRelation) {
             // Update diagram state
             diagramRef.current.entities
                 .find((entity) => entity.idMx === selected.id)
@@ -230,11 +239,21 @@ export default function App(props) {
                     },
                     key: addPrimaryAttrRef.current,
                 });
-
-            // TODO: Instead of toasting here set a listener that toast every time a cell is added
-            toast.success("Atributo insertado");
-            // TODO: Increment the offset so that new attributes are not added on top of others
+        } else if (isRelation) {
+            // Update diagram state
+            diagramRef.current.relations
+                .find((relation) => relation.idMx === selected.id)
+                .attributes.push({
+                    idMx: target.id,
+                    name: target.value,
+                    position: {
+                        x: target.geometry.x,
+                        y: target.geometry.y,
+                    },
+                });
         }
+        toast.success("Atributo insertado");
+        // TODO: Increment the offset so that new attributes are not added on top of others
     };
 
     const hideAttributes = () => {
