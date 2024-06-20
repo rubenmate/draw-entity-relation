@@ -48,6 +48,8 @@ export default function addToolbarItem(
                     cell: "",
                     entity: { cell: "", idMx: "" },
                 },
+                canHoldAttributes: false,
+                attributes: [],
             });
         }
     };

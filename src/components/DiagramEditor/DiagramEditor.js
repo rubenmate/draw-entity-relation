@@ -350,6 +350,25 @@ export default function App(props) {
         }
     };
 
+    const renderRelationAddAttribute = () => {
+        if (
+            selected?.style?.includes("shape=rhombus") &&
+            diagramRef.current.relations.find(
+                (entity) => entity.idMx === selected?.id,
+            )?.canHoldAttributes
+        ) {
+            return (
+                <button
+                    type="button"
+                    className="button-toolbar-action"
+                    onClick={addAttribute}
+                >
+                    Añadir atributo
+                </button>
+            );
+        }
+    };
+
     const renderToggleAttributes = () => {
         if (selected?.style?.includes("shape=rectangle")) {
             if (
@@ -631,6 +650,10 @@ export default function App(props) {
             selectedDiag.side1.cardinality = side1;
             selectedDiag.side2.cardinality = side2;
 
+            if (side1 === "1:N" && side2 === "1:N") {
+                selectedDiag.canHoldAttributes = true;
+            }
+
             const label1 = selectedDiag.side1.cell;
             const label2 = selectedDiag.side2.cell;
 
@@ -771,6 +794,7 @@ export default function App(props) {
             <div className="mxgraph-toolbar-container">
                 <div className="mxgraph-toolbar-container" ref={toolbarRef} />
                 <div>{renderAddAttribute()}</div>
+                <div>{renderRelationAddAttribute()}</div>
                 <div>{renderToggleAttributes()}</div>
                 <div>{renderToggleAttrKey()}</div>
                 <div>{renderRelationConfiguration()}</div>
