@@ -48,6 +48,8 @@ export default function App(props) {
     const [selected, setSelected] = React.useState(null);
     const [entityWithAttributesHidden, setEntityWithAttributesHidden] =
         React.useState(null);
+    const [relationWithAttributesHidden, setRelationWithAttributesHidden] =
+        React.useState(null);
 
     const [refreshDiagram, setRefreshDiagram] = React.useState(false);
     const addPrimaryAttrRef = React.useRef(null);
@@ -390,8 +392,16 @@ export default function App(props) {
     };
 
     const renderToggleAttributes = () => {
-        if (selected?.style?.includes("shape=rectangle")) {
+        const isEntity = selected?.style?.includes("shape=rectangle");
+        const isRelationNM =
+            selected?.style?.includes("shape=rhombus") &&
+            diagramRef.current.relations.find(
+                (entity) => entity.idMx === selected?.id,
+            )?.canHoldAttributes;
+
+        if (isEntity || isRelationNM) {
             if (
+                isEntity &&
                 entityWithAttributesHidden &&
                 !entityWithAttributesHidden.hasOwnProperty(selected.id)
             ) {
@@ -400,8 +410,21 @@ export default function App(props) {
                 };
                 updatedAttributesHidden[selected.id] = false;
                 setEntityWithAttributesHidden(updatedAttributesHidden);
+            } else if (
+                isRelationNM &&
+                relationWithAttributesHidden &&
+                !relationWithAttributesHidden.hasOwnProperty(selected.id)
+            ) {
+                const updatedAttributesHidden = {
+                    ...relationWithAttributesHidden,
+                };
+                updatedAttributesHidden[selected.id] = false;
+                setRelationWithAttributesHidden(updatedAttributesHidden);
             }
-            const attributesHidden = entityWithAttributesHidden?.[selected.id];
+            const attributesHidden = isRelationNM
+                ? entityWithAttributesHidden?.[selected.id]
+                : relationWithAttributesHidden?.[selected.id];
+
             if (attributesHidden !== true) {
                 return (
                     <button
