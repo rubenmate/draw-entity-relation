@@ -117,7 +117,6 @@ export default function App(props) {
         }
     }, [graph, onSelected, onElementAdd, onDragEnd]);
 
-    // TODO: Update the attributes that are present in a N:M relation
     React.useEffect(() => {
         if (graph) {
             console.log("Graph", diagramRef.current);
@@ -169,6 +168,29 @@ export default function App(props) {
                     relation.position.x = cellData.geometry.x; // Assuming 'geometry.x' is the new x position
                     relation.position.y = cellData.geometry.y; // Assuming 'geometry.y' is the new y position
                     relation.cell = cellData;
+
+                    // Check if the entity has attributes
+                    if (relation.attributes) {
+                        // Iterate over each attribute
+                        relation.attributes.forEach((attr) => {
+                            // Check if the attribute's idMx exists in graph.model.cells
+                            if (graph.model.cells.hasOwnProperty(attr.idMx)) {
+                                // Access the values from graph.model.cells using the attribute's idMx
+                                const cellDataAttr =
+                                    graph.model.cells[attr.idMx];
+
+                                const numEdgeIdMx = +attr.idMx + 1;
+                                const cellEdgeAttr =
+                                    graph.model.cells[numEdgeIdMx];
+
+                                // Update the attribute's name and position
+                                attr.name = cellDataAttr.value; // Assuming 'value' is the new name
+                                attr.position.x = cellDataAttr.geometry.x; // Assuming 'geometry.x' is the new x position
+                                attr.position.y = cellDataAttr.geometry.y; // Assuming 'geometry.y' is the new y position
+                                attr.cell = [cellDataAttr, cellEdgeAttr];
+                            }
+                        });
+                    }
                 }
             });
         }
