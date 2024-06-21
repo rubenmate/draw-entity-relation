@@ -16,6 +16,7 @@ import {
 import { default as MxGraph } from "mxgraph";
 import { mxConstants, mxPoint } from "mxgraph-js";
 import toast, { Toaster } from "react-hot-toast";
+import { validateGraph } from "../../utils/validation";
 import { configureKeyBindings, setInitialConfiguration } from "./utils";
 
 const { mxGraph, mxEvent } = MxGraph();
@@ -166,6 +167,8 @@ export default function App(props) {
         if (graph) {
             console.log("Graph", diagramRef.current);
             console.log("Cells", graph.model.cells);
+            // FIX: The validation happens on the next render
+            console.log("Validation result", validateGraph(diagramRef.current));
 
             updateDiagramData();
         }

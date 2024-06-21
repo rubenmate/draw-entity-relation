@@ -1,6 +1,6 @@
 export function validateGraph(graph) {
     // TODO: Check:
-    // - Non repeated entity name
+    // - [x] Non repeated entity name
     // - Non repeated attributes in the same entity
     // - Every entity should have at least one attribute
     // - Every relation connects two entities or with itself
@@ -30,10 +30,16 @@ export function validateGraph(graph) {
     // - There can't be any interrelations connected directly, or a
     //   interrelation connected with itself
     // - A reflexive relation can't be strong <---> weak
+    // Perform all checks
+    const noRepeatedNames = !repeatedEntities(graph);
+
+    return noRepeatedNames;
 }
 
 // This function check for repeated entity name, relations N:M are also
 // treated as entities
+// Returns true if there are repeated entity names
+// false if there are not repeated entity names
 export function repeatedEntities(graph) {
     const entityNames = new Set();
 
