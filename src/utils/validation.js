@@ -32,3 +32,7 @@ export function validateGraph(graph) {
     // - A reflexive relation can't be strong <---> weak
     console.log(graph);
 }
+
+// This function check for repeated entity name, relations N:M are also
+// treated as entities
+export function repeatedEntities(graph) {}
