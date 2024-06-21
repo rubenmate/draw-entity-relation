@@ -48,8 +48,6 @@ export default function App(props) {
     const [selected, setSelected] = React.useState(null);
     const [entityWithAttributesHidden, setEntityWithAttributesHidden] =
         React.useState(null);
-    const [relationWithAttributesHidden, setRelationWithAttributesHidden] =
-        React.useState(null);
 
     const [refreshDiagram, setRefreshDiagram] = React.useState(false);
     const addPrimaryAttrRef = React.useRef(null);
@@ -81,6 +79,10 @@ export default function App(props) {
         },
         [props],
     );
+
+    function accessCell(idMx) {
+        return graph.model.cells[idMx];
+    }
 
     React.useEffect(() => {
         if (!graph) {
@@ -117,84 +119,57 @@ export default function App(props) {
         }
     }, [graph, onSelected, onElementAdd, onDragEnd]);
 
+    const updateEntityAttributes = (entity) => {
+        if (entity.attributes) {
+            entity.attributes.forEach((attr) => {
+                if (graph.model.cells.hasOwnProperty(attr.idMx)) {
+                    const cellDataAttr = accessCell(attr.idMx);
+                    const numEdgeIdMx = +attr.idMx + 1;
+                    const cellEdgeAttr = accessCell(numEdgeIdMx);
+
+                    attr.name = cellDataAttr.value;
+                    attr.position.x = cellDataAttr.geometry.x;
+                    attr.position.y = cellDataAttr.geometry.y;
+                    attr.cell = [cellDataAttr.id, cellEdgeAttr.id];
+                }
+            });
+        }
+    };
+
+    const updateDiagramData = () => {
+        diagramRef.current.entities.forEach((entity) => {
+            if (graph.model.cells.hasOwnProperty(entity.idMx)) {
+                const cellData = accessCell(entity.idMx);
+
+                entity.name = cellData.value;
+                entity.position.x = cellData.geometry.x;
+                entity.position.y = cellData.geometry.y;
+
+                updateEntityAttributes(entity);
+            }
+        });
+
+        diagramRef.current.relations.forEach((relation) => {
+            if (graph.model.cells.hasOwnProperty(relation.idMx)) {
+                const cellData = accessCell(relation.idMx);
+
+                relation.name = cellData.value;
+                relation.position.x = cellData.geometry.x;
+                relation.position.y = cellData.geometry.y;
+
+                updateEntityAttributes(relation);
+            }
+        });
+    };
+
     React.useEffect(() => {
         if (graph) {
             console.log("Graph", diagramRef.current);
             console.log("Cells", graph.model.cells);
-            diagramRef.current.entities.forEach((entity) => {
-                // Check if the current entity's idMx exists in graph.model.cells
-                if (graph.model.cells.hasOwnProperty(entity.idMx)) {
-                    // Access the values from graph.model.cells using the entity's idMx
-                    const cellData = graph.model.cells[entity.idMx];
 
-                    // Update the entity's name and position
-                    entity.name = cellData.value; // Assuming 'value' is the new name
-                    entity.position.x = cellData.geometry.x; // Assuming 'geometry.x' is the new x position
-                    entity.position.y = cellData.geometry.y; // Assuming 'geometry.y' is the new y position
-                    entity.cell = cellData;
-
-                    // Check if the entity has attributes
-                    if (entity.attributes) {
-                        // Iterate over each attribute
-                        entity.attributes.forEach((attr) => {
-                            // Check if the attribute's idMx exists in graph.model.cells
-                            if (graph.model.cells.hasOwnProperty(attr.idMx)) {
-                                // Access the values from graph.model.cells using the attribute's idMx
-                                const cellDataAttr =
-                                    graph.model.cells[attr.idMx];
-
-                                const numEdgeIdMx = +attr.idMx + 1;
-                                const cellEdgeAttr =
-                                    graph.model.cells[numEdgeIdMx];
-
-                                // Update the attribute's name and position
-                                attr.name = cellDataAttr.value; // Assuming 'value' is the new name
-                                attr.position.x = cellDataAttr.geometry.x; // Assuming 'geometry.x' is the new x position
-                                attr.position.y = cellDataAttr.geometry.y; // Assuming 'geometry.y' is the new y position
-                                attr.cell = [cellDataAttr, cellEdgeAttr];
-                            }
-                        });
-                    }
-                }
-            });
-            diagramRef.current.relations.forEach((relation) => {
-                // Check if the current entity's idMx exists in graph.model.cells
-                if (graph.model.cells.hasOwnProperty(relation.idMx)) {
-                    // Access the values from graph.model.cells using the entity's idMx
-                    const cellData = graph.model.cells[relation.idMx];
-
-                    // Update the entity's name and position
-                    relation.name = cellData.value; // Assuming 'value' is the new name
-                    relation.position.x = cellData.geometry.x; // Assuming 'geometry.x' is the new x position
-                    relation.position.y = cellData.geometry.y; // Assuming 'geometry.y' is the new y position
-                    relation.cell = cellData;
-
-                    // Check if the entity has attributes
-                    if (relation.attributes) {
-                        // Iterate over each attribute
-                        relation.attributes.forEach((attr) => {
-                            // Check if the attribute's idMx exists in graph.model.cells
-                            if (graph.model.cells.hasOwnProperty(attr.idMx)) {
-                                // Access the values from graph.model.cells using the attribute's idMx
-                                const cellDataAttr =
-                                    graph.model.cells[attr.idMx];
-
-                                const numEdgeIdMx = +attr.idMx + 1;
-                                const cellEdgeAttr =
-                                    graph.model.cells[numEdgeIdMx];
-
-                                // Update the attribute's name and position
-                                attr.name = cellDataAttr.value; // Assuming 'value' is the new name
-                                attr.position.x = cellDataAttr.geometry.x; // Assuming 'geometry.x' is the new x position
-                                attr.position.y = cellDataAttr.geometry.y; // Assuming 'geometry.y' is the new y position
-                                attr.cell = [cellDataAttr, cellEdgeAttr];
-                            }
-                        });
-                    }
-                }
-            });
+            updateDiagramData();
         }
-    }, [selected, refreshDiagram]);
+    }, [graph, selected, refreshDiagram, diagramRef]);
 
     const pushCellsBack = (moveBack) => () => {
         graph.orderCells(moveBack);
@@ -285,6 +260,7 @@ export default function App(props) {
                         y: target.geometry.y,
                     },
                     key: addPrimaryAttrRef.current,
+                    cell: [target.id, String(+target.id + 1)],
                 });
         } else if (isRelation) {
             // Update diagram state
@@ -297,6 +273,7 @@ export default function App(props) {
                         x: target.geometry.x,
                         y: target.geometry.y,
                     },
+                    cell: [target.id, String(+target.id + 1)],
                 });
         }
         toast.success("Atributo insertado");
@@ -311,11 +288,15 @@ export default function App(props) {
             : diagramRef.current.relations.find(
                   ({ idMx }) => idMx === selected.id,
               );
-        const mxAttributesToRemove = [];
-        selectedEntity.attributes.forEach(({ idMx }) => {
-            mxAttributesToRemove.push(graph.model.cells[idMx]);
+        selectedEntity.attributes.forEach(({ cell }) => {
+            accessCell(cell.at(0)).setVisible(false);
+            accessCell(cell.at(1)).setVisible(false);
         });
-        graph.removeCells(mxAttributesToRemove);
+        // graph.removeCells(mxAttributesToRemove);
+        // NOTE: Refresh the graph to visually update the cell values
+        const graphView = graph.getDefaultParent();
+        const view = graph.getView(graphView);
+        view.refresh();
 
         const updatedAttributesHidden = { ...entityWithAttributesHidden };
         updatedAttributesHidden[selected.id] = true;
@@ -330,13 +311,14 @@ export default function App(props) {
             : diagramRef.current.relations.find(
                   ({ idMx }) => idMx === selected.id,
               );
-        const mxAttributesToAdd = [];
         selectedEntity.attributes.forEach(({ cell }) => {
-            mxAttributesToAdd.push(cell.at(0));
-            mxAttributesToAdd.push(cell.at(1));
+            accessCell(cell.at(0)).setVisible(true);
+            accessCell(cell.at(1)).setVisible(true);
         });
-        graph.addCells(mxAttributesToAdd);
-        graph.orderCells(true, mxAttributesToAdd); // back = true
+        // NOTE: Refresh the graph to visually update the cell values
+        const graphView = graph.getDefaultParent();
+        const view = graph.getView(graphView);
+        view.refresh();
 
         const updatedAttributesHidden = { ...entityWithAttributesHidden };
         updatedAttributesHidden[selected.id] = false;
@@ -360,26 +342,30 @@ export default function App(props) {
         diagramRef.current.entities
             .at(entityIndexToUpdate)
             .attributes.forEach((attribute) => {
-                cellsToDelete.push(attribute.cell.at(0));
-                cellsToDelete.push(attribute.cell.at(1));
-                const originalString = attribute.cell.at(0).style;
+                // TODO: Instead of deleting and adding the cells update
+                // it to use the Refresh canvas (there is a note in this file)
+                cellsToDelete.push(accessCell(attribute.cell.at(0)));
+                cellsToDelete.push(accessCell(attribute.cell.at(1)));
+                const originalString = accessCell(attribute.cell.at(0)).style;
                 if (attribute.idMx === selected.id) {
                     attribute.key = true;
                     attribute.value = "Clave";
                     const modifiedString = `${originalString}keyAttrStyle`;
-                    attribute.cell.at(0).style = modifiedString;
+                    accessCell(attribute.cell.at(0)).style = modifiedString;
                 } else {
                     attribute.key = false;
                     const stringWithoutKeyAttrStyle = originalString.replace(
                         /keyAttrStyle(;|$)/,
                         "",
                     );
-                    attribute.cell.at(0).style = stringWithoutKeyAttrStyle;
+                    accessCell(attribute.cell.at(0)).style =
+                        stringWithoutKeyAttrStyle;
                 }
-                cellsToRecreate.push(attribute.cell.at(0));
-                cellsToRecreate.push(attribute.cell.at(1));
+                cellsToRecreate.push(accessCell(attribute.cell.at(0)));
+                cellsToRecreate.push(accessCell(attribute.cell.at(1)));
             });
 
+        // FIX: Removing the cells and then adding may not work
         // The easiest way to change the style it's to modify it and then
         // remove the old cells and create the modified ones
         graph.removeCells(cellsToDelete);
@@ -545,8 +531,9 @@ export default function App(props) {
             // TODO: Si la relación ya está configurada debe mostrarse un toast de error indicando
             // que ya existe una relación entre estas dos entidades
             const source = selected;
-            const target1 = side1.cell;
-            const target2 = side2.cell;
+
+            const target1 = accessCell(side1.idMx);
+            const target2 = accessCell(side2.idMx);
 
             // TODO: Proteger estos edges contra escritura de labels y borrado
             const edge1 = graph.insertEdge(
@@ -593,8 +580,9 @@ export default function App(props) {
             );
             selectedDiag.side1.idMx = cardinality1.id;
             selectedDiag.side2.idMx = cardinality2.id;
-            selectedDiag.side1.cell = cardinality1;
-            selectedDiag.side2.cell = cardinality2;
+
+            selectedDiag.side1.cell = cardinality1.id;
+            selectedDiag.side2.cell = cardinality2.id;
             selectedDiag.side1.entity.idMx = side1.idMx;
             selectedDiag.side1.entity.cell = side1.cell;
             selectedDiag.side2.entity.idMx = side2.idMx;
@@ -746,8 +734,8 @@ export default function App(props) {
                 selectedDiag.canHoldAttributes = true;
             }
 
-            const label1 = selectedDiag.side1.cell;
-            const label2 = selectedDiag.side2.cell;
+            const label1 = accessCell(selectedDiag.side1.cell);
+            const label2 = accessCell(selectedDiag.side2.cell);
 
             graph.model.setValue(label1, side1);
             graph.model.setValue(label2, side2);
@@ -815,7 +803,17 @@ export default function App(props) {
                                 <Box sx={{ minWidth: 120 }}>
                                     <FormControl fullWidth>
                                         <InputLabel id="side1-to-side2-label">
-                                            {`${selectedDiag?.side1?.entity?.cell?.value} - ${selectedDiag?.side2?.entity?.cell?.value}`}
+                                            {`${
+                                                accessCell(
+                                                    selectedDiag?.side1?.entity
+                                                        ?.idMx,
+                                                )?.value
+                                            } - ${
+                                                accessCell(
+                                                    selectedDiag?.side2?.entity
+                                                        ?.idMx,
+                                                )?.value
+                                            }`}
                                         </InputLabel>
                                         <Select
                                             id="side1-to-side2"
@@ -840,7 +838,17 @@ export default function App(props) {
                                     <Box sx={{ minHeight: 10 }} />
                                     <FormControl fullWidth>
                                         <InputLabel id="side2-to-side1-label">
-                                            {`${selectedDiag?.side2?.entity?.cell?.value} - ${selectedDiag?.side1?.entity?.cell?.value}`}
+                                            {`${
+                                                accessCell(
+                                                    selectedDiag?.side2?.entity
+                                                        ?.idMx,
+                                                )?.value
+                                            } - ${
+                                                accessCell(
+                                                    selectedDiag?.side1?.entity
+                                                        ?.idMx,
+                                                )?.value
+                                            }`}
                                         </InputLabel>
                                         <Select
                                             id="side2-to-side1"
