@@ -15,6 +15,6 @@ test("entities can't have repeated names", () => {
 
 test("N:M relations and entities can't have repeated names", () => {
     // Access the N:M relation and set its name to an already existing entity name
-    // TODO: 
+    graph.relations.at(0).name = "Entidad"
     expect(repeatedEntities(graph)).toBe(true);
 });

@@ -30,9 +30,27 @@ export function validateGraph(graph) {
     // - There can't be any interrelations connected directly, or a
     //   interrelation connected with itself
     // - A reflexive relation can't be strong <---> weak
-    console.log(graph);
 }
 
 // This function check for repeated entity name, relations N:M are also
 // treated as entities
-export function repeatedEntities(graph) {}
+export function repeatedEntities(graph) {
+    const entityNames = new Set();
+
+    for (const entity of graph.entities) {
+        if (entityNames.has(entity.name)) {
+            return true; // Found a duplicate name
+        }
+        entityNames.add(entity.name);
+    }
+
+    // Check for N:M relations as well
+    for (const relation of graph.relations) {
+        if (relation.canHoldAttributes && entityNames.has(relation.name)) {
+            return true; // Found a duplicate name
+        }
+        entityNames.add(relation.name);
+    }
+
+    return false; // No duplicates found
+}
