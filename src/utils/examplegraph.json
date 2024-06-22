@@ -67,7 +67,18 @@
             "y":290
          },
          "attributes":[
-            
+            {
+               "idMx":"15",
+               "name":"Atributo",
+               "position":{
+                  "x":560,
+                  "y":130
+               },
+               "cell":[
+                  "15",
+                  "16"
+               ]
+            }
          ]
       }
    ],
@@ -150,7 +161,6 @@
          },
          "canHoldAttributes":false,
          "attributes":[
-            
          ]
       }
    ]
