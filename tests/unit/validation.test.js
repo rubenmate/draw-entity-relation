@@ -6,7 +6,8 @@ import {
     repeatedEntities, 
     entitiesWithoutAttributes,
     relationsUnconnected,
-    validateGraph 
+    validateGraph, 
+    cardinalitiesNotValid
 } from "../../src/utils/validation"
 
 let graph;
@@ -84,7 +85,6 @@ describe("Relation connections", () => {
             cell: "",
             entity: {
                 idMx: "",
-                name: "",
             },
             idMx: "",
         }
@@ -92,5 +92,31 @@ describe("Relation connections", () => {
         graph.relations.at(1).side1 = initializedSide;
         graph.relations.at(1).side2 = initializedSide;
         expect(relationsUnconnected(graph)).toBe(true);
+    });
+
+    test("Every relation should have valid cardinalities", () => {
+        // Ensure the graph is valid initially
+        expect(cardinalitiesNotValid(graph)).toBe(false);
+
+        const initializedSide1 = { 
+            cardinality: "",
+            cell: "20",
+            entity: {
+                idMx: "",
+            },
+            idMx: "",
+        }
+        const initializedSide2 = { 
+            cardinality: "",
+            cell: "24",
+            entity: {
+                idMx: "",
+            },
+            idMx: "",
+        }
+        // Remove attributes from an entity
+        graph.relations.at(1).side1 = initializedSide1;
+        graph.relations.at(1).side2 = initializedSide2;
+        expect(cardinalitiesNotValid(graph)).toBe(true);
     });
 });

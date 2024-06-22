@@ -4,7 +4,7 @@ export function validateGraph(graph) {
     // - [x] Non repeated attributes in the same entity
     // - [x] Every entity should have at least one attribute
     // - [x] Every relation connects two entities or with itself
-    // - [ ] Every relation has two cardinalities, the possible
+    // - [x] Every relation has two cardinalities, the possible
     //  cardinalities are:
     //      - 0:1-0:1
     //      - 0:1-1:1
@@ -35,12 +35,14 @@ export function validateGraph(graph) {
     const noRepeatedAttrNames = !repeatedAttributesInEntity(graph);
     const noEntitiesWithoutAttributes = !entitiesWithoutAttributes(graph);
     const noUnconnectedRelations = !relationsUnconnected(graph);
+    const noNotValidCardinalities = !cardinalitiesNotValid(graph);
 
     return (
         noRepeatedNames &&
         noRepeatedAttrNames &&
         noEntitiesWithoutAttributes &&
-        noUnconnectedRelations
+        noUnconnectedRelations &&
+        noNotValidCardinalities
     );
 }
 
@@ -144,3 +146,18 @@ export function relationsUnconnected(graph) {
 }
 
 export const POSSIBLE_CARDINALITIES = ["0:1", "0:N", "1:1", "1:N"];
+
+export function cardinalitiesNotValid(graph) {
+    for (const relation of graph.relations) {
+        const side1Cardinality = relation.side1.cardinality;
+        const side2Cardinality = relation.side2.cardinality;
+
+        if (
+            !POSSIBLE_CARDINALITIES.includes(side1Cardinality) ||
+            !POSSIBLE_CARDINALITIES.includes(side2Cardinality)
+        ) {
+            return true; // Found an invalid cardinality
+        }
+    }
+    return false; // All cardinalities are valid
+}
