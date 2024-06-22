@@ -1,10 +1,10 @@
 export function validateGraph(graph) {
     // TODO: Check:
     // - [x] Non repeated entity name
-    // - Non repeated attributes in the same entity
-    // - Every entity should have at least one attribute
-    // - Every relation connects two entities or with itself
-    // - Every relation has two cardinalities, the possible
+    // - [x] Non repeated attributes in the same entity
+    // - [ ] Every entity should have at least one attribute
+    // - [ ] Every relation connects two entities or with itself
+    // - [ ] Every relation has two cardinalities, the possible
     //  cardinalities are:
     //      - 0:1-0:1
     //      - 0:1-1:1
@@ -21,19 +21,20 @@ export function validateGraph(graph) {
     //      - 1:N-1:1
     //      - 1:N-0:N
     //      - 1:N-1:N
-    // - Interrelations weak are always 1:1 (strong) - 0:N (weak)
-    // - A weak entity can only have dependence relations for id
+    // - [ ] Interrelations weak are always 1:1 (strong) - 0:N (weak)
+    // - [ ] A weak entity can only have dependence relations for id
     //   with a strong entity
-    // - Every strong entity has an only primary key
-    // - Every weak entity has an only discriminant
-    // - Only the N:M relations can hold attributes and can't be keys
-    // - There can't be any interrelations connected directly, or a
+    // - [ ] Every strong entity has an only primary key
+    // - [ ] Every weak entity has an only discriminant
+    // - [ ] Only the N:M relations can hold attributes and can't be keys
+    // - [ ] There can't be any interrelations connected directly, or a
     //   interrelation connected with itself
-    // - A reflexive relation can't be strong <---> weak
+    // - [ ] A reflexive relation can't be strong <---> weak
     // Perform all checks
     const noRepeatedNames = !repeatedEntities(graph);
+    const noRepeatedAttrNames = !repeatedAttributesInEntity(graph);
 
-    return noRepeatedNames;
+    return noRepeatedNames && noRepeatedAttrNames;
 }
 
 // This function check for repeated entity name, relations N:M are also
@@ -59,4 +60,43 @@ export function repeatedEntities(graph) {
     }
 
     return false; // No duplicates found
+}
+
+// This function checks for repeated attributes in an entity,
+// relations N:M (these are the ones that have a key `canHoldAttributes`
+// set to true) are also treated as entities.
+// Returns true if there are repeated attribute names in any entity
+// false if there are no repetitions.
+// NOTE: Every entity should be treated differently; there can be repeated
+// attributes in different entities.
+export function repeatedAttributesInEntity(graph) {
+    const hasRepeatedAttributes = (attributes) => {
+        const attributeNames = new Set();
+        for (const attribute of attributes) {
+            if (attributeNames.has(attribute.name)) {
+                return true;
+            }
+            attributeNames.add(attribute.name);
+        }
+        return false;
+    };
+
+    // Check entities for repeated attributes
+    for (const entity of graph.entities) {
+        if (hasRepeatedAttributes(entity.attributes)) {
+            return true;
+        }
+    }
+
+    // Check N:M relations for repeated attributes
+    for (const relation of graph.relations) {
+        if (
+            relation.canHoldAttributes &&
+            hasRepeatedAttributes(relation.attributes)
+        ) {
+            return true;
+        }
+    }
+
+    return false; // No repeated attributes found in any entity or N:M relation
 }
