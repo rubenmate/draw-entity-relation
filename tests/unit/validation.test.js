@@ -1,7 +1,12 @@
 import { beforeEach, describe, expect, test } from 'vitest'
 import { readFileSync } from 'fs'
 import { resolve } from 'path'
-import { repeatedAttributesInEntity, repeatedEntities, validateGraph } from "../../src/utils/validation"
+import { 
+    repeatedAttributesInEntity, 
+    repeatedEntities, 
+    entitiesWithoutAttributes,
+    validateGraph 
+} from "../../src/utils/validation"
 
 let graph;
 
@@ -10,6 +15,12 @@ beforeEach(() => {
   const data = readFileSync(resolve(__dirname, '../../src/utils/examplegraph.json'), 'utf-8');
   graph = JSON.parse(data);
 });
+
+describe("General validation function", () => {
+    test("correct graph return true", () => {
+        expect(validateGraph(graph)).toBe(true)
+    })
+})
 
 describe('Non repeated entity or n:m relation name', ()=> {
     test("entities can't have repeated names", () => {
@@ -44,8 +55,20 @@ describe("Non repeated attributes in entities or n:m relations", ()=> {
     })
 })
 
-describe("General validation function", () => {
-    test("correct graph return true", () => {
-        expect(validateGraph(graph)).toBe(true)
-    })
-})
+describe("Every entity should have at least one attribute", () => {
+    test("entities must have at least one attribute", () => {
+        // Ensure the graph is valid initially
+        expect(entitiesWithoutAttributes(graph)).toBe(false);
+        // Remove attributes from an entity
+        graph.entities.at(0).attributes = [];
+        expect(entitiesWithoutAttributes(graph)).toBe(true);
+    });
+
+    test("N:M relations must have at least one attribute", () => {
+        // Ensure the graph is valid initially
+        expect(entitiesWithoutAttributes(graph)).toBe(false);
+        // Remove attributes from an N:M relation
+        graph.relations.at(0).attributes = [];
+        expect(entitiesWithoutAttributes(graph)).toBe(true);
+    });
+});

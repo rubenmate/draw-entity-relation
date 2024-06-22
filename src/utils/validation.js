@@ -33,8 +33,11 @@ export function validateGraph(graph) {
     // Perform all checks
     const noRepeatedNames = !repeatedEntities(graph);
     const noRepeatedAttrNames = !repeatedAttributesInEntity(graph);
+    const noEntitiesWithoutAttributes = !entitiesWithoutAttributes(graph);
 
-    return noRepeatedNames && noRepeatedAttrNames;
+    return (
+        noRepeatedNames && noRepeatedAttrNames && noEntitiesWithoutAttributes
+    );
 }
 
 // This function check for repeated entity name, relations N:M are also
@@ -99,4 +102,27 @@ export function repeatedAttributesInEntity(graph) {
     }
 
     return false; // No repeated attributes found in any entity or N:M relation
+}
+
+export function entitiesWithoutAttributes(graph) {
+    // Check entities
+    for (const entity of graph.entities) {
+        if (!entity.attributes || entity.attributes.length === 0) {
+            console.log(entity);
+            return true; // Found an entity without attributes
+        }
+    }
+
+    // Check N:M relations (relations that can hold attributes)
+    for (const relation of graph.relations) {
+        if (
+            relation.canHoldAttributes &&
+            (!relation.attributes || relation.attributes.length === 0)
+        ) {
+            console.log(relation);
+            return true; // Found an N:M relation without attributes
+        }
+    }
+
+    return false; // No entities or N:M relations without attributes found
 }
