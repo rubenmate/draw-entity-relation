@@ -587,9 +587,7 @@ export default function App(props) {
             selectedDiag.side1.cell = cardinality1.id;
             selectedDiag.side2.cell = cardinality2.id;
             selectedDiag.side1.entity.idMx = side1.idMx;
-            selectedDiag.side1.entity.cell = side1.cell;
             selectedDiag.side2.entity.idMx = side2.idMx;
-            selectedDiag.side2.entity.cell = side2.cell;
 
             if (target1 === target2) {
                 const x1 = target1.geometry.x + target1.geometry.width / 2;

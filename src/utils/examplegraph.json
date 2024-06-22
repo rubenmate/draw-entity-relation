@@ -95,7 +95,6 @@
             "cardinality":"1:N",
             "cell":"7",
             "entity":{
-               "name":"",
                "idMx":"2"
             }
          },
@@ -147,7 +146,6 @@
             "cardinality":"0:1",
             "cell":"23",
             "entity":{
-               "name":"",
                "idMx":"19"
             }
          },
