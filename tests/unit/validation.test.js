@@ -7,7 +7,8 @@ import {
     entitiesWithoutAttributes,
     relationsUnconnected,
     validateGraph, 
-    cardinalitiesNotValid
+    cardinalitiesNotValid,
+    notNMRelationsWithAttributes
 } from "../../src/utils/validation"
 
 let graph;
@@ -75,7 +76,7 @@ describe("Every entity should have at least one attribute", () => {
     });
 });
 
-describe("Relation connections", () => {
+describe("Relations", () => {
     test("Every relation should connect two entities (can be the same at both sides)", () => {
         // Ensure the graph is valid initially
         expect(relationsUnconnected(graph)).toBe(false);
@@ -92,6 +93,29 @@ describe("Relation connections", () => {
         graph.relations.at(1).side1 = initializedSide;
         graph.relations.at(1).side2 = initializedSide;
         expect(relationsUnconnected(graph)).toBe(true);
+    });
+
+    test("Cant be relations with attributes if they are not N:M", () => {
+        // Ensure the graph is valid initially
+        expect(relationsUnconnected(graph)).toBe(false);
+
+        const attributes = [
+            {
+                "idMx":"9",
+                "name":"Atributo",
+                "position":{
+                    "x":560,
+                    "y":130
+                },
+                "cell":[
+                    "9",
+                    "10"
+                ]
+            },
+        ]
+        // Remove attributes from an entity
+        graph.relations.at(1).attributes = attributes
+        expect(notNMRelationsWithAttributes(graph)).toBe(true);
     });
 
     test("Every relation should have valid cardinalities", () => {

@@ -4,6 +4,7 @@ export function validateGraph(graph) {
     // - [x] Non repeated attributes in the same entity
     // - [x] Every entity should have at least one attribute
     // - [x] Every relation connects two entities or with itself
+    // - [x] Only the N:M relations can hold attributes and can't be keys
     // - [x] Every relation has two cardinalities, the possible
     //  cardinalities are:
     //      - 0:1-0:1
@@ -26,7 +27,6 @@ export function validateGraph(graph) {
     //   with a strong entity
     // - [ ] Every strong entity has an only primary key
     // - [ ] Every weak entity has an only discriminant
-    // - [ ] Only the N:M relations can hold attributes and can't be keys
     // - [ ] There can't be any interrelations connected directly, or a
     //   interrelation connected with itself
     // - [ ] A reflexive relation can't be strong <---> weak
@@ -36,6 +36,7 @@ export function validateGraph(graph) {
     const noEntitiesWithoutAttributes = !entitiesWithoutAttributes(graph);
     const noUnconnectedRelations = !relationsUnconnected(graph);
     const noNotValidCardinalities = !cardinalitiesNotValid(graph);
+    const noNotNMRelationsWithAttributes = notNMRelationsWithAttributes(graph);
 
     return (
         noRepeatedNames &&
@@ -145,8 +146,18 @@ export function relationsUnconnected(graph) {
     return false; // All relations are connected
 }
 
+export function notNMRelationsWithAttributes(graph) {
+    for (const relation of graph.relations) {
+        if (!relation.canHoldAttributes && relation.attributes !== []) {
+            return true; // Found an relation that cant hold attributes that holds them
+        }
+    }
+    return false;
+}
+
 export const POSSIBLE_CARDINALITIES = ["0:1", "0:N", "1:1", "1:N"];
 
+// TODO: Return some diagnostics
 export function cardinalitiesNotValid(graph) {
     for (const relation of graph.relations) {
         const side1Cardinality = relation.side1.cardinality;
