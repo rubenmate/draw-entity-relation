@@ -2,8 +2,8 @@ export function validateGraph(graph) {
     // TODO: Check:
     // - [x] Non repeated entity name
     // - [x] Non repeated attributes in the same entity
-    // - [ ] Every entity should have at least one attribute
-    // - [ ] Every relation connects two entities or with itself
+    // - [x] Every entity should have at least one attribute
+    // - [x] Every relation connects two entities or with itself
     // - [ ] Every relation has two cardinalities, the possible
     //  cardinalities are:
     //      - 0:1-0:1
@@ -34,9 +34,13 @@ export function validateGraph(graph) {
     const noRepeatedNames = !repeatedEntities(graph);
     const noRepeatedAttrNames = !repeatedAttributesInEntity(graph);
     const noEntitiesWithoutAttributes = !entitiesWithoutAttributes(graph);
+    const noUnconnectedRelations = !relationsUnconnected(graph);
 
     return (
-        noRepeatedNames && noRepeatedAttrNames && noEntitiesWithoutAttributes
+        noRepeatedNames &&
+        noRepeatedAttrNames &&
+        noEntitiesWithoutAttributes &&
+        noUnconnectedRelations
     );
 }
 
@@ -108,7 +112,6 @@ export function entitiesWithoutAttributes(graph) {
     // Check entities
     for (const entity of graph.entities) {
         if (!entity.attributes || entity.attributes.length === 0) {
-            console.log(entity);
             return true; // Found an entity without attributes
         }
     }
@@ -119,10 +122,23 @@ export function entitiesWithoutAttributes(graph) {
             relation.canHoldAttributes &&
             (!relation.attributes || relation.attributes.length === 0)
         ) {
-            console.log(relation);
             return true; // Found an N:M relation without attributes
         }
     }
 
     return false; // No entities or N:M relations without attributes found
+}
+
+export function relationsUnconnected(graph) {
+    for (const relation of graph.relations) {
+        if (
+            !relation.side1.idMx ||
+            !relation.side2.idMx ||
+            relation.side1.idMx === "" ||
+            relation.side2.idMx === ""
+        ) {
+            return true; // Found an unconnected relation
+        }
+    }
+    return false; // All relations are connected
 }

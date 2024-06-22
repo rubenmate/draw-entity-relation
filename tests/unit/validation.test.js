@@ -5,6 +5,7 @@ import {
     repeatedAttributesInEntity, 
     repeatedEntities, 
     entitiesWithoutAttributes,
+    relationsUnconnected,
     validateGraph 
 } from "../../src/utils/validation"
 
@@ -70,5 +71,26 @@ describe("Every entity should have at least one attribute", () => {
         // Remove attributes from an N:M relation
         graph.relations.at(0).attributes = [];
         expect(entitiesWithoutAttributes(graph)).toBe(true);
+    });
+});
+
+describe("Relation connections", () => {
+    test("Every relation should connect two entities (can be the same at both sides)", () => {
+        // Ensure the graph is valid initially
+        expect(relationsUnconnected(graph)).toBe(false);
+
+        const initializedSide = { 
+            cardinality: "",
+            cell: "",
+            entity: {
+                idMx: "",
+                name: "",
+            },
+            idMx: "",
+        }
+        // Remove attributes from an entity
+        graph.relations.at(1).side1 = initializedSide;
+        graph.relations.at(1).side2 = initializedSide;
+        expect(relationsUnconnected(graph)).toBe(true);
     });
 });
