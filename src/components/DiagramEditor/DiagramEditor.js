@@ -16,7 +16,7 @@ import {
 import { default as MxGraph } from "mxgraph";
 import { mxConstants, mxPoint } from "mxgraph-js";
 import toast, { Toaster } from "react-hot-toast";
-import { validateGraph } from "../../utils/validation";
+import { POSSIBLE_CARDINALITIES, validateGraph } from "../../utils/validation";
 import { configureKeyBindings, setInitialConfiguration } from "./utils";
 
 const { mxGraph, mxEvent } = MxGraph();
@@ -763,8 +763,6 @@ export default function App(props) {
                 setAcceptDisabled(false);
             }
         }, [side1, side2]);
-
-        const POSSIBLE_CARDINALITIES = ["0:1", "0:N", "1:1", "1:N"];
 
         if (isRelation) {
             const isConfigured =
