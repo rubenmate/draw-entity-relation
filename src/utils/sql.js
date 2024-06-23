@@ -73,3 +73,53 @@ export function filterTables(graph) {
 
     return tables;
 }
+
+export function process1NRelation(relation) {
+    const { side1, side2 } = relation;
+    const side1Entity = side1.entity;
+    const side2Entity = side2.entity;
+
+    let oneSide;
+    let manySide;
+
+    // Determine which side is 1 and which is N
+    if (side1.cardinality.maximum === "1") {
+        oneSide = side1;
+        manySide = side2;
+    } else {
+        oneSide = side2;
+        manySide = side1;
+    }
+
+    // Determine the notnull property
+    const notnull = oneSide.cardinality.minimum === "1";
+
+    // Table for the entity with maximum 1
+    const oneSideTable = {
+        name: oneSide.entity.name,
+        attributes: oneSide.entity.attributes.map((attr) => ({
+            name: attr.name,
+            key: attr.key,
+            notnull: notnull,
+        })),
+    };
+
+    // Table for the entity with maximum N
+    const manySideTable = {
+        name: manySide.entity.name,
+        attributes: [
+            ...manySide.entity.attributes.map((attr) => ({
+                name: attr.name,
+                key: attr.key,
+                notnull: false, // Assuming the original notnull property for attributes
+            })),
+            ...oneSide.entity.attributes.map((attr) => ({
+                name: `${attr.name}_${oneSide.entity.name}_FK`,
+                key: false,
+                notnull: notnull,
+            })),
+        ],
+    };
+
+    return [oneSideTable, manySideTable];
+}

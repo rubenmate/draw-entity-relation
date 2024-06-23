@@ -3,6 +3,7 @@ import { readFileSync } from 'fs'
 import { resolve } from 'path'
 import { 
     filterTables,
+    process1NRelation
 } from "../../src/utils/sql"
 
 let oneNGraph;
@@ -51,5 +52,28 @@ describe("Filter graph tables", () => {
         expect(tables.at(0).type).toBe("1:N")
         expect(tables.at(0).name).toBe("Relación")
         expect(tables.at(1).name).toBe("Entidad")
+    })
+})
+describe("Extract table 1:N relation", () => {
+    test("1:N relation", () => {
+        const filteredTables = filterTables(oneNGraph)
+        const tables = process1NRelation(filteredTables.at(0))
+        expect(tables.length).toBe(2)
+        expect(tables.at(0).attributes.length).toBe(1)
+        expect(tables.at(1).attributes.length).toBe(2)
+        expect(tables.at(1).attributes.at(0).name).toBe("Atributo")
+        expect(tables.at(1).attributes.at(1).name).toBe("Atributo_Entidad_FK")
+        expect(tables.at(1).attributes.at(1).notnull).toBe(false)
+    })
+    test("1:N relation with 1 side and min cardinality of 1", () => {
+        oneNGraph.relations.at(0).side1.cardinality = "1:1"
+        const filteredTables = filterTables(oneNGraph)
+        const tables = process1NRelation(filteredTables.at(0))
+        expect(tables.length).toBe(2)
+        expect(tables.at(0).attributes.length).toBe(1)
+        expect(tables.at(1).attributes.length).toBe(2)
+        expect(tables.at(1).attributes.at(0).name).toBe("Atributo")
+        expect(tables.at(1).attributes.at(1).name).toBe("Atributo_Entidad_FK")
+        expect(tables.at(1).attributes.at(1).notnull).toBe(true)
     })
 })
