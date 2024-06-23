@@ -15,7 +15,7 @@ let graph;
 
 beforeEach(() => {
   // Load fresh data before each test
-  const data = readFileSync(resolve(__dirname, '../../src/utils/examplegraph.json'), 'utf-8');
+  const data = readFileSync(resolve(__dirname, './graphs/example.json'), 'utf-8');
   graph = JSON.parse(data);
 });
 

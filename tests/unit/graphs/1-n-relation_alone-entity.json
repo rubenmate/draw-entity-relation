@@ -1,0 +1,101 @@
+{
+  "entities": [
+    {
+      "idMx": "2",
+      "name": "Entidad",
+      "position": {
+        "x": 24,
+        "y": 61
+      },
+      "attributes": [
+        {
+          "idMx": "3",
+          "name": "Atributo",
+          "position": {
+            "x": 144,
+            "y": 61
+          },
+          "key": true,
+          "cell": [
+            "3",
+            "4"
+          ]
+        }
+      ]
+    },
+    {
+      "idMx": "5",
+      "name": "Entidad 1",
+      "position": {
+        "x": 59,
+        "y": 189
+      },
+      "attributes": [
+        {
+          "idMx": "6",
+          "name": "Atributo",
+          "position": {
+            "x": 179,
+            "y": 189
+          },
+          "key": true,
+          "cell": [
+            "6",
+            "7"
+          ]
+        }
+      ]
+    },
+    {
+      "idMx": "8",
+      "name": "Entidad 2",
+      "position": {
+        "x": 290,
+        "y": 190
+      },
+      "attributes": [
+        {
+          "idMx": "9",
+          "name": "Atributo",
+          "position": {
+            "x": 410,
+            "y": 190
+          },
+          "key": true,
+          "cell": [
+            "9",
+            "10"
+          ]
+        }
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "idMx": "11",
+      "name": "Relación",
+      "position": {
+        "x": 199,
+        "y": 276
+      },
+      "side1": {
+        "idMx": "14",
+        "cardinality": "1:1",
+        "cell": "14",
+        "entity": {
+          "idMx": "5"
+        }
+      },
+      "side2": {
+        "idMx": "15",
+        "cardinality": "1:N",
+        "cell": "15",
+        "entity": {
+          "idMx": "8"
+        }
+      },
+      "canHoldAttributes": false,
+      "attributes": []
+    }
+  ]
+}
