@@ -57,7 +57,7 @@
       },
       "side1": {
         "idMx": "11",
-        "cardinality": "0:1",
+        "cardinality": "1:1",
         "cell": "11",
         "entity": {
           "idMx": "2"

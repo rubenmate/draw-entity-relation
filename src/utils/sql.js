@@ -123,3 +123,102 @@ export function process1NRelation(relation) {
 
     return [oneSideTable, manySideTable];
 }
+
+export function process11Relation(relation) {
+    const { side1, side2 } = relation;
+    if (
+        side1.cardinality.minimum === "1" &&
+        side2.cardinality.minimum === "1" &&
+        side1.cardinality.maximum === "1" &&
+        side2.cardinality.maximum === "1"
+    ) {
+        // Extract attributes from both sides
+        const side1Attributes = side1.entity.attributes.map((attr) => ({
+            name: `${attr.name}_${side1.entity.name}`,
+            key: attr.key,
+            notnull: false,
+            unique: false,
+        }));
+
+        const side2Attributes = side2.entity.attributes.map((attr) => ({
+            name: `${attr.name}_${side2.entity.name}`,
+            key: false,
+            notnull: attr.key,
+            unique: attr.key,
+        }));
+
+        // Merge attributes, ensuring PKs are correctly set
+        const mergedAttributes = [...side1Attributes, ...side2Attributes];
+
+        // Create the resulting table
+        const resultTable = {
+            name: `${relation.name}`,
+            attributes: mergedAttributes,
+        };
+
+        return [resultTable];
+    } // Case where one side has (0,1) cardinality or both sides have equal minimum cardinality
+    let tableWithForeignKey;
+    let tableWithoutForeignKey;
+    let foreignKeySide;
+    let primaryKeySide;
+    let notnull = false;
+
+    if (
+        side1.cardinality.minimum === "0" &&
+        side2.cardinality.minimum === "0"
+    ) {
+        // Both sides have the same minimum cardinality
+        foreignKeySide = side1;
+        primaryKeySide = side2;
+    } else {
+        notnull = true;
+        // Use ternary operators to determine foreignKeySide and primaryKeySide
+        foreignKeySide = side1.cardinality.minimum === "0" ? side1 : side2;
+        primaryKeySide = side1.cardinality.minimum === "0" ? side2 : side1;
+    }
+
+    const primaryKeyAttributes = primaryKeySide.entity.attributes.map(
+        (attr) => ({
+            name: attr.name,
+            key: attr.key,
+            notnull: false,
+            unique: false,
+        }),
+    );
+
+    const foreignKeyAttributes = foreignKeySide.entity.attributes.map(
+        (attr) => ({
+            name: attr.name,
+            key: attr.key,
+            notnull: false,
+            unique: false,
+        }),
+    );
+
+    // Add foreign key attribute to the foreign key side
+    const foreignKeyAttribute = primaryKeySide.entity.attributes.find(
+        (attr) => attr.key,
+    );
+    if (foreignKeyAttribute) {
+        foreignKeyAttributes.push({
+            name: `${foreignKeyAttribute.name}_${primaryKeySide.entity.name}_FK`,
+            key: false,
+            notnull: notnull,
+            unique: true,
+            foreign_key: true,
+        });
+    }
+
+    tableWithForeignKey = {
+        name: `${foreignKeySide.entity.name}`,
+        attributes: foreignKeyAttributes,
+    };
+
+    tableWithoutForeignKey = {
+        name: `${primaryKeySide.entity.name}`,
+        attributes: primaryKeyAttributes,
+    };
+
+    return [tableWithoutForeignKey, tableWithForeignKey];
+}

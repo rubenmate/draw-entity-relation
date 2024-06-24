@@ -3,7 +3,8 @@ import { readFileSync } from 'fs'
 import { resolve } from 'path'
 import { 
     filterTables,
-    process1NRelation
+    process1NRelation,
+    process11Relation
 } from "../../src/utils/sql"
 
 let oneNGraph;
@@ -75,5 +76,43 @@ describe("Extract table 1:N relation", () => {
         expect(tables.at(1).attributes.at(0).name).toBe("Atributo")
         expect(tables.at(1).attributes.at(1).name).toBe("Atributo_Entidad_FK")
         expect(tables.at(1).attributes.at(1).notnull).toBe(true)
+    })
+})
+describe("Extract table 1:1 relation", () => {
+    test("1:1 relation, 1:1-1:1", () => {
+        const filteredTables = filterTables(oneOneGraph)
+        const tables = process11Relation(filteredTables.at(0))
+        expect(tables.length).toBe(1)
+        expect(tables.at(0).attributes.length).toBe(2)
+        expect(tables.at(0).attributes.at(0).name).toBe("Atributo_Entidad")
+        expect(tables.at(0).attributes.at(0).key).toBe(true)
+        expect(tables.at(0).attributes.at(1).name).toBe("Atributo_Entidad 1")
+        expect(tables.at(0).attributes.at(1).notnull).toBe(true)
+        expect(tables.at(0).attributes.at(1).unique).toBe(true)
+    })
+    test("1:1 relation, 0:1-1:1", () => {
+        oneOneGraph.relations.at(0).side1.cardinality = "0:1"
+        const filteredTables = filterTables(oneOneGraph)
+        const tables = process11Relation(filteredTables.at(0))
+        expect(tables.length).toBe(2)
+        expect(tables.at(0).attributes.length).toBe(1)
+        expect(tables.at(1).attributes.length).toBe(2)
+        expect(tables.at(0).attributes.at(0).name).toBe("Atributo")
+        expect(tables.at(1).attributes.at(1).name).toBe("Atributo_Entidad 1_FK")
+        expect(tables.at(1).attributes.at(1).notnull).toBe(true)
+        expect(tables.at(1).attributes.at(1).unique).toBe(true)
+    })
+    test("1:1 relation, 0:1-0:1", () => {
+        oneOneGraph.relations.at(0).side1.cardinality = "0:1"
+        oneOneGraph.relations.at(0).side2.cardinality = "0:1"
+        const filteredTables = filterTables(oneOneGraph)
+        const tables = process11Relation(filteredTables.at(0))
+        expect(tables.length).toBe(2)
+        expect(tables.at(0).attributes.length).toBe(1)
+        expect(tables.at(1).attributes.length).toBe(2)
+        expect(tables.at(0).attributes.at(0).name).toBe("Atributo")
+        expect(tables.at(1).attributes.at(1).name).toBe("Atributo_Entidad 1_FK")
+        expect(tables.at(1).attributes.at(1).notnull).toBe(false)
+        expect(tables.at(1).attributes.at(1).unique).toBe(true)
     })
 })
