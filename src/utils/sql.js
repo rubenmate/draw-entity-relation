@@ -221,3 +221,69 @@ export function process11Relation(relation) {
 
     return [tableWithoutForeignKey, tableWithForeignKey];
 }
+
+export function processNMRelation(relation) {
+    const { side1, side2, attributes } = relation;
+
+    // Extract attributes from both sides
+    const side1Entity = side1.entity;
+    const side2Entity = side2.entity;
+
+    const side1Attributes = side1Entity.attributes.map((attr) => ({
+        name: attr.name,
+        key: attr.key,
+        notnull: false,
+        unique: false,
+    }));
+
+    const side2Attributes = side2Entity.attributes.map((attr) => ({
+        name: attr.name,
+        key: attr.key,
+        notnull: false,
+        unique: false,
+    }));
+
+    // First table for side1 entity
+    const firstTable = {
+        name: side1Entity.name,
+        attributes: side1Attributes,
+    };
+
+    // Second table for side2 entity
+    const secondTable = {
+        name: side2Entity.name,
+        attributes: side2Attributes,
+    };
+
+    // Third table for the relation
+    const primaryKeyAttributeSide1 = side1Entity.attributes.find(
+        (attr) => attr.key,
+    );
+    const primaryKeyAttributeSide2 = side2Entity.attributes.find(
+        (attr) => attr.key,
+    );
+
+    const thirdTableAttributes = [
+        {
+            name: `${primaryKeyAttributeSide1.name}_${side1Entity.name}`,
+            key: true,
+            foreign_key: side1Entity.name,
+        },
+        {
+            name: `${primaryKeyAttributeSide2.name}_${side2Entity.name}`,
+            key: true,
+            foreign_key: side2Entity.name,
+        },
+        ...attributes.map((attr) => ({
+            name: attr.name,
+            key: false,
+        })),
+    ];
+
+    const thirdTable = {
+        name: relation.name,
+        attributes: thirdTableAttributes,
+    };
+
+    return [firstTable, secondTable, thirdTable];
+}

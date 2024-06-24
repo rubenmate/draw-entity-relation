@@ -72,7 +72,20 @@
         }
       },
       "canHoldAttributes": true,
-      "attributes": []
-    }
-  ]
+            "attributes": [
+                {
+                    "idMx": "13",
+                    "name": "Atributo",
+                    "position": {
+                        "x": 330,
+                        "y": 129
+                    },
+                    "cell": [
+                        "13",
+                        "14"
+                    ]
+                }
+            ]
+        }
+    ]
 }

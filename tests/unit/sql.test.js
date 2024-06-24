@@ -4,7 +4,8 @@ import { resolve } from 'path'
 import { 
     filterTables,
     process1NRelation,
-    process11Relation
+    process11Relation,
+    processNMRelation,
 } from "../../src/utils/sql"
 
 let oneNGraph;
@@ -116,3 +117,23 @@ describe("Extract table 1:1 relation", () => {
         expect(tables.at(1).attributes.at(1).unique).toBe(true)
     })
 })
+describe("Extract table N:M relation", () => {
+    test("N:M relation", () => {
+        const filteredTables = filterTables(nMGraph)
+        const tables = processNMRelation(filteredTables.at(0))
+        expect(tables.length).toBe(3)
+        expect(tables.at(0).attributes.length).toBe(1)
+        expect(tables.at(1).attributes.length).toBe(1)
+        expect(tables.at(2).attributes.length).toBe(3)
+
+        expect(tables.at(2).attributes.at(0).name).toBe("Atributo_Entidad")
+        expect(tables.at(2).attributes.at(0).key).toBe(true)
+        expect(tables.at(2).attributes.at(0).foreign_key).toBe("Entidad")
+        expect(tables.at(2).attributes.at(1).name).toBe("Atributo_Entidad 1")
+        expect(tables.at(2).attributes.at(1).key).toBe(true)
+        expect(tables.at(2).attributes.at(1).foreign_key).toBe("Entidad 1")
+    })
+    test.skip("N:M reflexive relation", () => {
+    })
+})
+
