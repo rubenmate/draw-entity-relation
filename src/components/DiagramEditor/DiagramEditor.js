@@ -16,6 +16,7 @@ import {
 import { default as MxGraph } from "mxgraph";
 import { mxConstants, mxPoint } from "mxgraph-js";
 import toast, { Toaster } from "react-hot-toast";
+import { generateSQL } from "../../utils/sql";
 import { POSSIBLE_CARDINALITIES, validateGraph } from "../../utils/validation";
 import { configureKeyBindings, setInitialConfiguration } from "./utils";
 
@@ -888,6 +889,93 @@ export default function App(props) {
         }
     };
 
+    const renderGenerateSQLButton = () => {
+        const [open, setOpen] = React.useState(false);
+        const [acceptDisabled, setAcceptDisabled] = React.useState(true);
+        const [validationMessage, setValidationMessage] = React.useState("");
+
+        const handleClickOpen = () => {
+            // Validate the graph when opening the dialog
+            if (validateGraph(diagramRef.current)) {
+                setAcceptDisabled(false);
+                setValidationMessage("Generar script SQL");
+            } else {
+                setAcceptDisabled(true);
+                setValidationMessage(
+                    "Este diagrama no es válido para poder generar un script SQL.",
+                );
+            }
+            setOpen(true);
+        };
+
+        const handleClose = () => {
+            setOpen(false);
+        };
+
+        const handleAccept = () => {
+            setOpen(false);
+            const sqlScript = generateSQL(diagramRef.current);
+
+            // Create a blob with the SQL script
+            const blob = new Blob([sqlScript], { type: "text/plain" });
+
+            // Create a link element
+            const link = document.createElement("a");
+
+            // Set the download attribute with a filename
+            link.download = "tables.sql";
+
+            // Create a URL for the blob and set it as the href attribute
+            link.href = window.URL.createObjectURL(blob);
+
+            // Append the link to the body
+            document.body.appendChild(link);
+
+            // Programmatically click the link to trigger the download
+            link.click();
+
+            // Remove the link from the document
+            document.body.removeChild(link);
+        };
+
+        return (
+            <>
+                <button
+                    type="button"
+                    className="button-toolbar-action"
+                    onClick={handleClickOpen}
+                >
+                    Generar SQL
+                </button>
+                <Dialog
+                    open={open}
+                    onClose={handleClose}
+                    aria-labelledby="alert-dialog-title"
+                    aria-describedby="alert-dialog-description"
+                >
+                    <DialogTitle id="alert-dialog-title">
+                        {"Configurar cardinalidades"}
+                    </DialogTitle>
+                    <DialogContent>
+                        <DialogContentText id="alert-dialog-description">
+                            {validationMessage}
+                        </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={handleClose}>Cancelar</Button>
+                        <Button
+                            onClick={handleAccept}
+                            autoFocus
+                            disabled={acceptDisabled}
+                        >
+                            Aceptar
+                        </Button>
+                    </DialogActions>
+                </Dialog>
+            </>
+        );
+    };
+
     return (
         <div className="mxgraph-container">
             <div className="mxgraph-toolbar-container">
@@ -899,6 +987,7 @@ export default function App(props) {
                 <div>{renderRelationConfiguration()}</div>
                 <div>{renderRelationCardinalities()}</div>
                 <div>{renderMoveBackAndFrontButtons()}</div>
+                <div>{renderGenerateSQLButton()}</div>
             </div>
             <div ref={containerRef} className="mxgraph-drawing-container" />
             <Toaster position="bottom-left" />
