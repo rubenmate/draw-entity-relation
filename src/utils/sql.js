@@ -76,8 +76,6 @@ export function filterTables(graph) {
 
 export function process1NRelation(relation) {
     const { side1, side2 } = relation;
-    const side1Entity = side1.entity;
-    const side2Entity = side2.entity;
 
     let oneSide;
     let manySide;
@@ -117,6 +115,7 @@ export function process1NRelation(relation) {
                 name: `${attr.name}_${oneSide.entity.name}_FK`,
                 key: false,
                 notnull: notnull,
+                foreign_key: notnull,
             })),
         ],
     };
