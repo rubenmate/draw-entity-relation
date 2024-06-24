@@ -51,6 +51,7 @@ export function filterTables(graph) {
                     maximum: side2.cardinality.split(":")[1],
                 },
             },
+            attributes: [...relation.attributes],
         };
 
         // Remove processed entities from the entities array
@@ -98,7 +99,7 @@ export function process1NRelation(relation) {
         attributes: oneSide.entity.attributes.map((attr) => ({
             name: attr.name,
             key: attr.key,
-            notnull: notnull,
+            // notnull: notnull,
         })),
     };
 
@@ -111,12 +112,16 @@ export function process1NRelation(relation) {
                 key: attr.key,
                 notnull: false, // Assuming the original notnull property for attributes
             })),
-            ...oneSide.entity.attributes.map((attr) => ({
-                name: `${attr.name}_${oneSide.entity.name}_FK`,
-                key: false,
-                notnull: notnull,
-                foreign_key: notnull,
-            })),
+            ...oneSide.entity.attributes.map((attr) => {
+                if (attr.key) {
+                    return {
+                        name: `${attr.name}_${oneSide.entity.name}`,
+                        key: false,
+                        notnull: notnull,
+                        foreign_key: oneSide.entity.name,
+                    };
+                }
+            }),
         ],
     };
 
@@ -201,11 +206,11 @@ export function process11Relation(relation) {
     );
     if (foreignKeyAttribute) {
         foreignKeyAttributes.push({
-            name: `${foreignKeyAttribute.name}_${primaryKeySide.entity.name}_FK`,
+            name: `${foreignKeyAttribute.name}_${primaryKeySide.entity.name}`,
             key: false,
             notnull: notnull,
             unique: true,
-            foreign_key: true,
+            foreign_key: primaryKeySide.entity.name,
         });
     }
 
