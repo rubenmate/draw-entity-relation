@@ -292,3 +292,84 @@ export function processNMRelation(relation) {
 
     return [firstTable, secondTable, thirdTable];
 }
+
+const getSQLType = (attribute) => {
+    // Assuming all attributes are of type VARCHAR for simplicity
+    return "VARCHAR(40)";
+};
+
+const sanitizeName = (name) => {
+    return name.replace(/\s+/g, "_");
+};
+
+const createTableSQL = (table) => {
+    const columns = table.attributes
+        .map((attr) => {
+            let columnDef = `${sanitizeName(attr.name)} ${getSQLType(attr)}`;
+            if (attr.key && !attr.foreign_key) columnDef += " PRIMARY KEY";
+            if (attr.unique) columnDef += " UNIQUE";
+            if (attr.notnull) columnDef += " NOT NULL";
+            if (attr.foreign_key)
+                columnDef += ` REFERENCES ${sanitizeName(attr.foreign_key)}`;
+            return columnDef;
+        })
+        .join(",\n  ");
+
+    // Check for composite primary key
+    const compositePrimaryKey = table.attributes
+        .filter((attr) => attr.key && attr.foreign_key)
+        .map((attr) => sanitizeName(attr.name))
+        .join(", ");
+
+    const primaryKeyClause = compositePrimaryKey
+        ? `, \n  PRIMARY KEY (${compositePrimaryKey})`
+        : "";
+
+    return `CREATE TABLE ${sanitizeName(
+        table.name,
+    )} (\n  ${columns}${primaryKeyClause}\n);`;
+};
+
+export function generate1NSQL(tables) {
+    const sql = tables.map(createTableSQL).join("\n\n");
+    return sql;
+}
+
+export function generate11SQL(tables) {
+    const sql = tables.map(createTableSQL).join("\n\n");
+    return sql;
+}
+
+export function generateNMSQL(tables) {
+    const sql = tables.map(createTableSQL).join("\n\n");
+    return sql;
+}
+
+// Generate SQL
+export function generateSQL(graph) {
+    const tables = filterTables(graph);
+    let sqlScript = "";
+
+    for (const table of tables) {
+        let processedTables;
+        switch (table.type) {
+            case "1:1":
+                processedTables = process11Relation(table);
+                sqlScript += generate11SQL(processedTables) + "\n\n";
+                break;
+            case "1:N":
+                processedTables = process1NRelation(table);
+                sqlScript += generate1NSQL(processedTables) + "\n\n";
+                break;
+            case "N:M":
+                processedTables = processNMRelation(table);
+                sqlScript += generateNMSQL(processedTables) + "\n\n";
+                break;
+            default:
+                sqlScript += createTableSQL(table) + "\n\n";
+                break;
+        }
+    }
+
+    return sqlScript.trim();
+}

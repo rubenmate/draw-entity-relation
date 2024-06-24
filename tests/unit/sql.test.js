@@ -6,6 +6,10 @@ import {
     process1NRelation,
     process11Relation,
     processNMRelation,
+    generateNMSQL,
+    generate1NSQL,
+    generate11SQL,
+    generateSQL
 } from "../../src/utils/sql"
 
 let oneNGraph;
@@ -137,3 +141,103 @@ describe("Extract table N:M relation", () => {
     })
 })
 
+describe("Generate SQL", () => {
+    test("1:N relation", () => {
+        const filteredTables = filterTables(oneNGraph)
+        const tables = process1NRelation(filteredTables.at(0))
+        const sql = generate1NSQL(tables);
+        const expectedSQL = 
+`CREATE TABLE Entidad (
+  Atributo VARCHAR(40) PRIMARY KEY
+);
+
+CREATE TABLE Entidad_1 (
+  Atributo VARCHAR(40) PRIMARY KEY,
+  Atributo_Entidad VARCHAR(40) REFERENCES Entidad
+);
+`;
+        // Custom matcher to ignore whitespace differences
+        expect(sql.replace(/\s+/g, '')).toBe(expectedSQL.replace(/\s+/g, ''));
+    });
+
+    test("1:1 relation, 1:1-1:1", () => {
+        const filteredTables = filterTables(oneOneGraph)
+        const tables = process11Relation(filteredTables.at(0))
+        const sql = generate11SQL(tables);
+        const expectedSQL = 
+`CREATE TABLE Relación (
+  Atributo_Entidad VARCHAR(40) PRIMARY KEY,
+  Atributo_Entidad_1 VARCHAR(40) UNIQUE NOT NULL
+);
+`;
+        // Custom matcher to ignore whitespace differences
+        expect(sql.replace(/\s+/g, '')).toBe(expectedSQL.replace(/\s+/g, ''));
+    });
+
+    test("1:1 relation, 0:1-1:1", () => {
+        oneOneGraph.relations.at(0).side1.cardinality = "0:1"
+        const filteredTables = filterTables(oneOneGraph)
+        const tables = process11Relation(filteredTables.at(0))
+        const sql = generate11SQL(tables);
+        const expectedSQL = 
+`CREATE TABLE Entidad_1 (
+  Atributo VARCHAR(40) PRIMARY KEY
+);
+
+CREATE TABLE Entidad (
+  Atributo VARCHAR(40) PRIMARY KEY,
+  Atributo_Entidad_1 VARCHAR(40) UNIQUE NOT NULL REFERENCES Entidad_1
+);
+`;
+        // Custom matcher to ignore whitespace differences
+        expect(sql.replace(/\s+/g, '')).toBe(expectedSQL.replace(/\s+/g, ''));
+    });
+
+    test("1:M relation", () => {
+        const filteredTables = filterTables(nMGraph);
+        const tables = processNMRelation(filteredTables.at(0));
+        const sql = generateNMSQL(tables);
+        const expectedSQL = 
+`CREATE TABLE Entidad (
+  Atributo VARCHAR(40) PRIMARY KEY
+);
+
+CREATE TABLE Entidad_1 (
+  Atributo VARCHAR(40) PRIMARY KEY
+);
+
+CREATE TABLE Relación (
+  Atributo_Entidad VARCHAR(40) REFERENCES Entidad,
+  Atributo_Entidad_1 VARCHAR(40) REFERENCES Entidad_1,
+  Atributo VARCHAR(40),
+  PRIMARY KEY (Atributo_Entidad, Atributo_Entidad_1)
+);`;
+
+        // Custom matcher to ignore whitespace differences
+        expect(sql.replace(/\s+/g, '')).toBe(expectedSQL.replace(/\s+/g, ''));
+    });
+
+
+    test("Complete Graph", () => {
+        const sql = generateSQL(oneNGraphAndEntity)
+
+        const expectedSQL = 
+`
+CREATE TABLE Entidad_1 (
+  Atributo VARCHAR(40) PRIMARY KEY
+);
+
+CREATE TABLE Entidad_2(
+  Atributo VARCHAR(40) PRIMARY KEY,
+  Atributo_Entidad_1 VARCHAR(40) NOT NULL REFERENCES Entidad_1
+);
+
+CREATE TABLE Entidad (
+  Atributo VARCHAR(40) PRIMARY KEY
+);
+`;
+
+        // Custom matcher to ignore whitespace differences
+        expect(sql.replace(/\s+/g, '')).toBe(expectedSQL.replace(/\s+/g, ''));
+    });
+});
