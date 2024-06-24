@@ -1,10 +1,13 @@
 export function validateGraph(graph) {
+    if (graph.entities.length === 0 && graph.relations.length === 0) {
+        return false; // Graph is empty and therefore not valid
+    }
+
     const noRepeatedNames = !repeatedEntities(graph);
     const noRepeatedAttrNames = !repeatedAttributesInEntity(graph);
     const noEntitiesWithoutAttributes = !entitiesWithoutAttributes(graph);
     const noUnconnectedRelations = !relationsUnconnected(graph);
     const noNotValidCardinalities = !cardinalitiesNotValid(graph);
-    const noNotNMRelationsWithAttributes = notNMRelationsWithAttributes(graph);
 
     return (
         noRepeatedNames &&
