@@ -59,6 +59,8 @@ describe("Filter graph tables", () => {
         expect(tables.at(0).name).toBe("Relación")
         expect(tables.at(1).name).toBe("Entidad")
     })
+    test.skip("1:N reflexive relation", () => {
+    })
 })
 describe("Extract table 1:N relation", () => {
     test("1:N relation", () => {
@@ -119,6 +121,8 @@ describe("Extract table 1:1 relation", () => {
         expect(tables.at(1).attributes.at(1).name).toBe("Atributo_Entidad 1")
         expect(tables.at(1).attributes.at(1).notnull).toBe(false)
         expect(tables.at(1).attributes.at(1).unique).toBe(true)
+    })
+    test.skip("1:1 reflexive relation", () => {
     })
 })
 describe("Extract table N:M relation", () => {
