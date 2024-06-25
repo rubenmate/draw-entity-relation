@@ -925,6 +925,54 @@ export default function App(props) {
             );
         }
     };
+
+    const renderDeleteAttribute = () => {
+        const isAttribute = selected?.style?.includes("shape=ellipse");
+
+        function deleteAttribute() {
+            // Find the entity that contains the attribute
+            const entity = diagramRef.current.entities.find((entity) =>
+                entity.attributes.some((attr) => attr.idMx === selected.id),
+            );
+
+            if (entity) {
+                // Find the attribute index
+                const attrIndex = entity.attributes.findIndex(
+                    (attr) => attr.idMx === selected.id,
+                );
+
+                if (attrIndex !== -1) {
+                    const attribute = entity.attributes[attrIndex];
+
+                    // Remove the attribute from the entity
+                    entity.attributes.splice(attrIndex, 1);
+
+                    // Find the corresponding cells in graph.model.cells
+                    const cells = attribute.cell.map(
+                        (cellId) => graph.model.cells[cellId],
+                    );
+
+                    if (cells.length) {
+                        // Remove the cells from the graph
+                        graph.removeCells(cells);
+                    }
+                }
+            }
+        }
+
+        if (isAttribute) {
+            return (
+                <button
+                    type="button"
+                    className="button-toolbar-action"
+                    onClick={deleteAttribute}
+                >
+                    Borrar
+                </button>
+            );
+        }
+    };
+
     const renderGenerateSQLButton = () => {
         const [open, setOpen] = React.useState(false);
         const [acceptDisabled, setAcceptDisabled] = React.useState(true);
@@ -1086,6 +1134,7 @@ export default function App(props) {
                 <div>{renderRelationConfiguration()}</div>
                 <div>{renderRelationCardinalities()}</div>
                 <div>{renderDeleteEntity()}</div>
+                <div>{renderDeleteRelation()}</div>
                 <div>{renderMoveBackAndFrontButtons()}</div>
                 <div>{renderGenerateSQLButton()}</div>
                 <div>{renderResetCanvasButton()}</div>
