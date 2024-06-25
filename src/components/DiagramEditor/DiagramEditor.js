@@ -898,7 +898,7 @@ export default function App(props) {
             // Validate the graph when opening the dialog
             if (validateGraph(diagramRef.current)) {
                 setAcceptDisabled(false);
-                setValidationMessage("Generar script SQL");
+                setValidationMessage("¿Deseas pasar a tablas el diagrama E-R?");
             } else {
                 setAcceptDisabled(true);
                 setValidationMessage(
@@ -954,7 +954,7 @@ export default function App(props) {
                     aria-describedby="alert-dialog-description"
                 >
                     <DialogTitle id="alert-dialog-title">
-                        {"Configurar cardinalidades"}
+                        {"Generación script SQL"}
                     </DialogTitle>
                     <DialogContent>
                         <DialogContentText id="alert-dialog-description">
