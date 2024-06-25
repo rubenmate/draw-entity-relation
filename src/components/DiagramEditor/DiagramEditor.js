@@ -167,8 +167,6 @@ export default function App(props) {
         if (graph) {
             console.log("Graph", diagramRef.current);
             console.log("Cells", graph.model.cells);
-            // FIX: The validation happens on the next render
-            console.log("Validation result", validateGraph(diagramRef.current));
 
             updateDiagramData();
         }
@@ -894,6 +892,7 @@ export default function App(props) {
         const [validationMessage, setValidationMessage] = React.useState("");
 
         const handleClickOpen = () => {
+            setRefreshDiagram((prevState) => !prevState);
             // Validate the graph when opening the dialog
             if (validateGraph(diagramRef.current)) {
                 setAcceptDisabled(false);
@@ -975,6 +974,68 @@ export default function App(props) {
         );
     };
 
+    const renderResetCanvasButton = () => {
+        const [open, setOpen] = React.useState(false);
+
+        const handleClickOpen = () => {
+            setOpen(true);
+        };
+
+        const handleClose = () => {
+            setOpen(false);
+        };
+
+        const handleAccept = () => {
+            console.log("Reinicio diagrama");
+            diagramRef.current.entities = [];
+            diagramRef.current.relations = [];
+
+            // Filter out cells that aren't key 0 or 1
+            const cellsToRemove = Object.keys(graph.model.cells)
+                .filter((key) => key !== "0" && key !== "1")
+                .map((key) => graph.model.cells[key]);
+
+            // Remove the filtered cells
+            graph.removeCells(cellsToRemove);
+
+            setRefreshDiagram((prevState) => !prevState);
+            setOpen(false);
+        };
+
+        return (
+            <>
+                <button
+                    type="button"
+                    className="button-toolbar-action"
+                    onClick={handleClickOpen}
+                >
+                    Reiniciar
+                </button>
+                <Dialog
+                    open={open}
+                    onClose={handleClose}
+                    aria-labelledby="alert-dialog-title"
+                    aria-describedby="alert-dialog-description"
+                >
+                    <DialogTitle id="alert-dialog-title">
+                        {"Reiniciar diagrama"}
+                    </DialogTitle>
+                    <DialogContent>
+                        <DialogContentText id="alert-dialog-description">
+                            ¿Estás seguro de que deseas reiniciar el diagrama?
+                        </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={handleClose}>Cancelar</Button>
+                        <Button onClick={handleAccept} autoFocus>
+                            Aceptar
+                        </Button>
+                    </DialogActions>
+                </Dialog>
+            </>
+        );
+    };
+
     return (
         <div className="mxgraph-container">
             <div className="mxgraph-toolbar-container">
@@ -987,6 +1048,7 @@ export default function App(props) {
                 <div>{renderRelationCardinalities()}</div>
                 <div>{renderMoveBackAndFrontButtons()}</div>
                 <div>{renderGenerateSQLButton()}</div>
+                <div>{renderResetCanvasButton()}</div>
             </div>
             <div ref={containerRef} className="mxgraph-drawing-container" />
             <Toaster position="bottom-left" />
