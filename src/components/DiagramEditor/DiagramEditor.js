@@ -18,7 +18,7 @@ import { mxConstants, mxPoint } from "mxgraph-js";
 import toast, { Toaster } from "react-hot-toast";
 import { generateSQL } from "../../utils/sql";
 import { POSSIBLE_CARDINALITIES, validateGraph } from "../../utils/validation";
-import { configureKeyBindings, setInitialConfiguration } from "./utils";
+import { setInitialConfiguration } from "./utils";
 
 const { mxGraph, mxEvent } = MxGraph();
 
@@ -93,7 +93,6 @@ export default function App(props) {
         }
         if (graph) {
             setInitialConfiguration(graph, diagramRef, toolbarRef);
-            configureKeyBindings(graph);
 
             graph.getModel().endUpdate();
             graph.getSelectionModel().addListener(mxEvent.CHANGE, onSelected);
