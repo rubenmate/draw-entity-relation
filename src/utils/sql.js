@@ -126,7 +126,7 @@ export function process1NRelation(relation) {
     };
 
     // Relación reflexiva, se crea solo una tabla
-    if (side1.name === side2.name) {
+    if (side1.entity.name === side2.entity.name) {
         return [manySideTable];
     }
 
@@ -230,7 +230,7 @@ export function process11Relation(relation) {
     };
 
     // Si la relación es reflexiva solo se devuelve esta tabla
-    if (side1.name === side2.name) {
+    if (side1.entity.name === side2.entity.name) {
         return [tableWithForeignKey];
     }
 
@@ -302,7 +302,7 @@ export function processNMRelation(relation) {
 
     // La relación es reflexiva y por tanto first y second table
     // son iguales y solo necesitamos una de las dos
-    if (side1.name === side2.name) {
+    if (side1.entity.name === side2.entity.name) {
         return [firstTable, thirdTable];
     }
 
