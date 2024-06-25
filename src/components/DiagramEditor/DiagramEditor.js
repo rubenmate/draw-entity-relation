@@ -14,7 +14,7 @@ import {
     Select,
 } from "@mui/material";
 import { default as MxGraph } from "mxgraph";
-import { mxConstants, mxPoint } from "mxgraph-js";
+import { mxCodec, mxConstants, mxPoint, mxUtils } from "mxgraph-js";
 import toast, { Toaster } from "react-hot-toast";
 import { generateSQL } from "../../utils/sql";
 import { POSSIBLE_CARDINALITIES, validateGraph } from "../../utils/validation";
@@ -67,6 +67,17 @@ export default function App(props) {
         return graph.model.cells[idMx];
     }
 
+    const saveToLocalStorage = () => {
+        const diagramData = JSON.stringify(diagramRef.current);
+        localStorage.setItem("diagramData", diagramData);
+
+        const encoder = new mxCodec();
+        const node = encoder.encode(graph.getModel());
+        const xmlString = mxUtils.getXml(node); // fetch XML (string or document/node)
+        localStorage.setItem("graphData", xmlString);
+
+        console.log(xmlString);
+    };
     React.useEffect(() => {
         if (!graph) {
             mxEvent.disableContextMenu(containerRef.current);
@@ -135,6 +146,7 @@ export default function App(props) {
                 entity.position.y = cellData.geometry.y;
 
                 updateEntityAttributes(entity);
+                saveToLocalStorage();
             }
         });
 
