@@ -112,18 +112,23 @@ export function process1NRelation(relation) {
                 key: attr.key,
                 notnull: false, // Assuming the original notnull property for attributes
             })),
-            ...oneSide.entity.attributes.map((attr) => {
-                if (attr.key) {
+            ...oneSide.entity.attributes
+                .filter((attr) => attr.key) // Only include key attributes
+                .map((attr) => {
                     return {
                         name: `${attr.name}_${oneSide.entity.name}`,
                         key: false,
                         notnull: notnull,
                         foreign_key: oneSide.entity.name,
                     };
-                }
-            }),
+                }),
         ],
     };
+
+    // Relación reflexiva, se crea solo una tabla
+    if (side1.name === side2.name) {
+        return [manySideTable];
+    }
 
     return [oneSideTable, manySideTable];
 }
@@ -224,6 +229,11 @@ export function process11Relation(relation) {
         attributes: primaryKeyAttributes,
     };
 
+    // Si la relación es reflexiva solo se devuelve esta tabla
+    if (side1.name === side2.name) {
+        return [tableWithForeignKey];
+    }
+
     return [tableWithoutForeignKey, tableWithForeignKey];
 }
 
@@ -289,6 +299,12 @@ export function processNMRelation(relation) {
         name: relation.name,
         attributes: thirdTableAttributes,
     };
+
+    // La relación es reflexiva y por tanto first y second table
+    // son iguales y solo necesitamos una de las dos
+    if (side1.name === side2.name) {
+        return [firstTable, thirdTable];
+    }
 
     return [firstTable, secondTable, thirdTable];
 }
