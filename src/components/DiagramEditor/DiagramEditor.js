@@ -886,6 +886,45 @@ export default function App(props) {
         }
     };
 
+    const renderDeleteEntity = () => {
+        const isEntity = selected?.style?.includes("shape=rectangle");
+        function deleteEntity() {
+            // Find the entity in diagramRef.current.entities
+            const entityIndex = diagramRef.current.entities.findIndex(
+                (entity) => entity.idMx === selected.id,
+            );
+
+            if (entityIndex !== -1) {
+                const entity = diagramRef.current.entities[entityIndex];
+
+                // Remove the entity from diagramRef.current.entities
+                diagramRef.current.entities.splice(entityIndex, 1);
+
+                // Find the corresponding cell in graph.model.cells
+                const cell = accessCell(entity.idMx);
+
+                if (cell) {
+                    // Remove the cell from the graph
+                    graph.removeCells([cell]);
+                }
+
+                console.log("Entity and corresponding cell removed:", entity);
+            } else {
+                console.log("Entity not found:", selected.id);
+            }
+        }
+        if (isEntity) {
+            return (
+                <button
+                    type="button"
+                    className="button-toolbar-action"
+                    onClick={deleteEntity}
+                >
+                    Borrar
+                </button>
+            );
+        }
+    };
     const renderGenerateSQLButton = () => {
         const [open, setOpen] = React.useState(false);
         const [acceptDisabled, setAcceptDisabled] = React.useState(true);
@@ -1046,6 +1085,7 @@ export default function App(props) {
                 <div>{renderToggleAttrKey()}</div>
                 <div>{renderRelationConfiguration()}</div>
                 <div>{renderRelationCardinalities()}</div>
+                <div>{renderDeleteEntity()}</div>
                 <div>{renderMoveBackAndFrontButtons()}</div>
                 <div>{renderGenerateSQLButton()}</div>
                 <div>{renderResetCanvasButton()}</div>
