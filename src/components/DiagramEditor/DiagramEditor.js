@@ -907,10 +907,6 @@ export default function App(props) {
                     // Remove the cell from the graph
                     graph.removeCells([cell]);
                 }
-
-                console.log("Entity and corresponding cell removed:", entity);
-            } else {
-                console.log("Entity not found:", selected.id);
             }
         }
         if (isEntity) {
@@ -966,6 +962,51 @@ export default function App(props) {
                     type="button"
                     className="button-toolbar-action"
                     onClick={deleteAttribute}
+                >
+                    Borrar
+                </button>
+            );
+        }
+    };
+
+    const renderDeleteRelation = () => {
+        const isRelation = selected?.style?.includes("shape=rhombus");
+
+        function deleteRelation() {
+            // Find the relation in diagramRef.current.relations
+            const relationIndex = diagramRef.current.relations.findIndex(
+                (relation) => relation.idMx === selected.id,
+            );
+
+            if (relationIndex !== -1) {
+                const relation = diagramRef.current.relations[relationIndex];
+
+                // Remove the relation from diagramRef.current.relations
+                diagramRef.current.relations.splice(relationIndex, 1);
+
+                // Find the corresponding cells in graph.model.cells
+                const cellIds = [
+                    relation.idMx,
+                    relation.side1.idMx,
+                    relation.side2.idMx,
+                ];
+                const cells = cellIds.map(
+                    (cellId) => graph.model.cells[cellId],
+                );
+
+                if (cells.length) {
+                    // Remove the cells from the graph
+                    graph.removeCells(cells);
+                }
+            }
+        }
+
+        if (isRelation) {
+            return (
+                <button
+                    type="button"
+                    className="button-toolbar-action"
+                    onClick={deleteRelation}
                 >
                     Borrar
                 </button>
@@ -1133,8 +1174,11 @@ export default function App(props) {
                 <div>{renderToggleAttrKey()}</div>
                 <div>{renderRelationConfiguration()}</div>
                 <div>{renderRelationCardinalities()}</div>
+
                 <div>{renderDeleteEntity()}</div>
                 <div>{renderDeleteRelation()}</div>
+                <div>{renderDeleteAttribute()}</div>
+
                 <div>{renderMoveBackAndFrontButtons()}</div>
                 <div>{renderGenerateSQLButton()}</div>
                 <div>{renderResetCanvasButton()}</div>
