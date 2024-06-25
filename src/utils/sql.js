@@ -1,7 +1,8 @@
 // This function takes the graph and prepares the relations
 // for the extractTables function
 export function filterTables(graph) {
-    let entities = [...graph.entities]; // Clone entities to avoid mutating the original graph
+    const entities = [...graph.entities]; // Clone entities to avoid mutating the original graph
+    const usedEntities = new Set(); // Track used entities
     const tables = [];
 
     function getCardinalityType(max1, max2) {
@@ -54,10 +55,9 @@ export function filterTables(graph) {
             attributes: [...relation.attributes],
         };
 
-        // Remove processed entities from the entities array
-        entities = entities.filter(
-            (e) => e.idMx !== side1.entity.idMx && e.idMx !== side2.entity.idMx,
-        );
+        // Mark entities as used
+        usedEntities.add(side1.entity.idMx);
+        usedEntities.add(side2.entity.idMx);
 
         return table;
     }
@@ -69,7 +69,9 @@ export function filterTables(graph) {
 
     // Add remaining entities as tables
     for (const entity of entities) {
-        tables.push(entity);
+        if (!usedEntities.has(entity.idMx)) {
+            tables.push(entity);
+        }
     }
 
     return tables;
@@ -364,27 +366,47 @@ export function generateNMSQL(tables) {
 // Generate SQL
 export function generateSQL(graph) {
     const tables = filterTables(graph);
-    let sqlScript = "";
+    const tableMap = new Map(); // Track processed tables and their attributes
 
     for (const table of tables) {
-        let processedTables;
+        let processedTablesArray;
         switch (table.type) {
             case "1:1":
-                processedTables = process11Relation(table);
-                sqlScript += generate11SQL(processedTables) + "\n\n";
+                processedTablesArray = process11Relation(table);
                 break;
             case "1:N":
-                processedTables = process1NRelation(table);
-                sqlScript += generate1NSQL(processedTables) + "\n\n";
+                processedTablesArray = process1NRelation(table);
                 break;
             case "N:M":
-                processedTables = processNMRelation(table);
-                sqlScript += generateNMSQL(processedTables) + "\n\n";
+                processedTablesArray = processNMRelation(table);
                 break;
             default:
-                sqlScript += createTableSQL(table) + "\n\n";
+                processedTablesArray = [table];
                 break;
         }
+
+        // Add the processed tables to the map, merging attributes if needed
+        for (const processedTable of processedTablesArray) {
+            if (tableMap.has(processedTable.name)) {
+                const existingTable = tableMap.get(processedTable.name);
+                const existingAttributes = new Set(
+                    existingTable.attributes.map((attr) => attr.name),
+                );
+                processedTable.attributes.forEach((attr) => {
+                    if (!existingAttributes.has(attr.name)) {
+                        existingTable.attributes.push(attr);
+                    }
+                });
+            } else {
+                tableMap.set(processedTable.name, processedTable);
+            }
+        }
+    }
+
+    // Generate SQL script from the table map
+    let sqlScript = "";
+    for (const table of tableMap.values()) {
+        sqlScript += createTableSQL(table) + "\n\n";
     }
 
     return sqlScript.trim();
