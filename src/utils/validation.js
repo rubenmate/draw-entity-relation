@@ -6,13 +6,14 @@ export function validateGraph(graph) {
         noEntitiesWithoutPK: true,
         noUnconnectedRelations: true,
         noNotValidCardinalities: true,
+        notEmpty: true,
         isValid: true,
     };
 
     // The graph is empty
     if (graph.entities.length === 0 && graph.relations.length === 0) {
+        diagnostics.notEmpty = false;
         diagnostics.isValid = false;
-        return diagnostics;
     }
 
     // Check for repeated entity names
