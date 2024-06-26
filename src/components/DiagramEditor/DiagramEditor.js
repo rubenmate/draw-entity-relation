@@ -1150,19 +1150,39 @@ export default function App(props) {
     const renderGenerateSQLButton = () => {
         const [open, setOpen] = React.useState(false);
         const [acceptDisabled, setAcceptDisabled] = React.useState(true);
-        const [validationMessage, setValidationMessage] = React.useState("");
+        const [validationMessages, setValidationMessages] = React.useState([]);
 
         const handleClickOpen = () => {
             setRefreshDiagram((prevState) => !prevState);
-            // Validate the graph when opening the dialog
-            if (validateGraph(diagramRef.current)) {
+            const diagnostics = validateGraph(diagramRef.current);
+
+            if (diagnostics.isValid) {
                 setAcceptDisabled(false);
-                setValidationMessage("¿Deseas pasar a tablas el diagrama E-R?");
+                setValidationMessages([
+                    "¿Deseas pasar a tablas el diagrama E-R?",
+                ]);
             } else {
                 setAcceptDisabled(true);
-                setValidationMessage(
-                    "Este diagrama no es válido para poder generar un script SQL.",
-                );
+                const messages = [
+                    "No se ha podido generar el script SQL por los siguientes errores:",
+                ];
+                if (!diagnostics.notEmpty)
+                    messages.push("El diagrama está vacío.");
+                if (!diagnostics.noRepeatedNames)
+                    messages.push("Hay entidades con nombres repetidos.");
+                if (!diagnostics.noRepeatedAttrNames)
+                    messages.push("Hay atributos repetidos en una entidad.");
+                if (!diagnostics.noEntitiesWithoutAttributes)
+                    messages.push("Hay entidades sin atributos.");
+                if (!diagnostics.noEntitiesWithoutPK)
+                    messages.push("Hay entidades sin clave primaria.");
+                if (!diagnostics.noUnconnectedRelations)
+                    messages.push("Hay relaciones desconectadas.");
+                if (!diagnostics.noNotValidCardinalities)
+                    messages.push(
+                        "Hay cardinalidades no válidas en las relaciones.",
+                    );
+                setValidationMessages(messages);
             }
             setOpen(true);
         };
@@ -1216,9 +1236,11 @@ export default function App(props) {
                         {"Generación script SQL"}
                     </DialogTitle>
                     <DialogContent>
-                        <DialogContentText id="alert-dialog-description">
-                            {validationMessage}
-                        </DialogContentText>
+                        {validationMessages.map((message) => (
+                            <DialogContentText key={message}>
+                                {message}
+                            </DialogContentText>
+                        ))}
                     </DialogContent>
                     <DialogActions>
                         <Button onClick={handleClose}>Cancelar</Button>
