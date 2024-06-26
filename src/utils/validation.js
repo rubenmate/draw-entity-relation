@@ -1,23 +1,57 @@
 export function validateGraph(graph) {
+    const diagnostics = {
+        noRepeatedNames: true,
+        noRepeatedAttrNames: true,
+        noEntitiesWithoutAttributes: true,
+        noEntitiesWithoutPK: true,
+        noUnconnectedRelations: true,
+        noNotValidCardinalities: true,
+        isValid: true,
+    };
+
+    // The graph is empty
     if (graph.entities.length === 0 && graph.relations.length === 0) {
-        return false; // Graph is empty and therefore not valid
+        diagnostics.isValid = false;
+        return diagnostics;
     }
 
-    const noRepeatedNames = !repeatedEntities(graph);
-    const noRepeatedAttrNames = !repeatedAttributesInEntity(graph);
-    const noEntitiesWithoutAttributes = !entitiesWithoutAttributes(graph);
-    const noEntitiesWithoutPK = !entitiesWithoutPK(graph);
-    const noUnconnectedRelations = !relationsUnconnected(graph);
-    const noNotValidCardinalities = !cardinalitiesNotValid(graph);
+    // Check for repeated entity names
+    if (repeatedEntities(graph)) {
+        diagnostics.noRepeatedNames = false;
+        diagnostics.isValid = false;
+    }
 
-    return (
-        noRepeatedNames &&
-        noRepeatedAttrNames &&
-        noEntitiesWithoutAttributes &&
-        noEntitiesWithoutPK &&
-        noUnconnectedRelations &&
-        noNotValidCardinalities
-    );
+    // Check for repeated attribute names in the same entity
+    if (repeatedAttributesInEntity(graph)) {
+        diagnostics.noRepeatedAttrNames = false;
+        diagnostics.isValid = false;
+    }
+
+    // Check for entities without attributes
+    if (entitiesWithoutAttributes(graph)) {
+        diagnostics.noEntitiesWithoutAttributes = false;
+        diagnostics.isValid = false;
+    }
+
+    // Check for entities without a primary key attribute
+    if (entitiesWithoutPK(graph)) {
+        diagnostics.noEntitiesWithoutPK = false;
+        diagnostics.isValid = false;
+    }
+
+    // Check for unconnected relations
+    if (relationsUnconnected(graph)) {
+        diagnostics.noUnconnectedRelations = false;
+        diagnostics.isValid = false;
+    }
+
+    // Check for relations with invalid cardinalities
+    if (cardinalitiesNotValid(graph)) {
+        diagnostics.noNotValidCardinalities = false;
+        diagnostics.isValid = false;
+    }
+
+    return diagnostics;
 }
 
 // This function check for repeated entity name, relations N:M are also

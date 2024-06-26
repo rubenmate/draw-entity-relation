@@ -21,7 +21,7 @@ beforeEach(() => {
 
 describe("General validation function", () => {
     test("correct graph return true", () => {
-        expect(validateGraph(graph)).toBe(true)
+        expect(validateGraph(graph).isValid).toBe(true)
     })
 })
 
@@ -31,6 +31,7 @@ describe('Non repeated entity or n:m relation name', ()=> {
         // Access an entity and set its name to an already existing entity name
         graph.entities.at(1).name = graph.entities.at(0).name
         expect(repeatedEntities(graph)).toBe(true);
+        expect(validateGraph(graph).noRepeatedNames).toBe(false)
     })
 
     test("N:M relations and entities can't have repeated names", () => {
@@ -38,6 +39,7 @@ describe('Non repeated entity or n:m relation name', ()=> {
         // Access the N:M relation and set its name to an already existing entity name
         graph.relations.at(0).name = graph.entities.at(0).name
         expect(repeatedEntities(graph)).toBe(true);
+        expect(validateGraph(graph).noRepeatedNames).toBe(false)
     })
 })
 
@@ -47,6 +49,7 @@ describe("Non repeated attributes in entities or n:m relations", ()=> {
         // Set an attribute in an entity to the same name of other
         graph.entities.at(0).attributes.at(1).name = graph.entities.at(0).attributes.at(0).name
         expect(repeatedAttributesInEntity(graph)).toBe(true);
+        expect(validateGraph(graph).noRepeatedAttrNames).toBe(false)
     })
 
     test("N:M relations can't have repeated attributes names", () => {
@@ -55,6 +58,7 @@ describe("Non repeated attributes in entities or n:m relations", ()=> {
         // Set an attribute in an N:M relation to the same name of other
         graph.relations.at(0).attributes.at(1).name = graph.relations.at(0).attributes.at(0).name
         expect(repeatedAttributesInEntity(graph)).toBe(true);
+        expect(validateGraph(graph).noRepeatedAttrNames).toBe(false)
     })
 })
 
@@ -65,6 +69,7 @@ describe("Every entity should have at least one attribute", () => {
         // Remove attributes from an entity
         graph.entities.at(0).attributes = [];
         expect(entitiesWithoutAttributes(graph)).toBe(true);
+        expect(validateGraph(graph).noEntitiesWithoutAttributes).toBe(false)
     });
 
     test("N:M relations must have at least one attribute", () => {
@@ -73,6 +78,7 @@ describe("Every entity should have at least one attribute", () => {
         // Remove attributes from an N:M relation
         graph.relations.at(0).attributes = [];
         expect(entitiesWithoutAttributes(graph)).toBe(true);
+        expect(validateGraph(graph).noEntitiesWithoutAttributes).toBe(false)
     });
 });
 
@@ -93,6 +99,7 @@ describe("Relations", () => {
         graph.relations.at(1).side1 = initializedSide;
         graph.relations.at(1).side2 = initializedSide;
         expect(relationsUnconnected(graph)).toBe(true);
+        expect(validateGraph(graph).noUnconnectedRelations).toBe(false)
     });
 
     test("Cant be relations with attributes if they are not N:M", () => {
@@ -142,5 +149,6 @@ describe("Relations", () => {
         graph.relations.at(1).side1 = initializedSide1;
         graph.relations.at(1).side2 = initializedSide2;
         expect(cardinalitiesNotValid(graph)).toBe(true);
+        expect(validateGraph(graph).noNotValidCardinalities).toBe(false)
     });
 });
