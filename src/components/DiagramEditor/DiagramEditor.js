@@ -517,25 +517,7 @@ export default function App(props) {
         const [open, setOpen] = React.useState(false);
         const [acceptDisabled, setAcceptDisabled] = React.useState(true);
 
-        const [validationMessage, setValidationMessage] = React.useState("");
-
         const handleClickOpen = () => {
-            const selectedDiag = diagramRef.current.relations.find(
-                (entity) => entity.idMx === selected?.id,
-            );
-
-            // Check if the relation already has sides configured
-            if (
-                selectedDiag.side1.entity.idMx &&
-                selectedDiag.side2.entity.idMx
-            ) {
-                setAcceptDisabled(true);
-                setValidationMessage("Esta relación ya está configurada.");
-            } else {
-                setAcceptDisabled(false);
-                setValidationMessage("Escoger los lados de esta relación");
-            }
-
             setOpen(true);
         };
 
@@ -545,6 +527,34 @@ export default function App(props) {
 
         const handleAccept = () => {
             const source = selected;
+            console.log(source.id);
+            const relation = diagramRef.current.relations.find(
+                (relation) => relation.idMx === source.id,
+            );
+            console.log(relation);
+
+            if (relation.side1.idMx !== "" && relation.side2.idMx !== "") {
+                // Find the previous edges
+                const cardinality1 = accessCell(relation.side1.idMx);
+                const cardinality2 = accessCell(relation.side2.idMx);
+                const edge1 = accessCell(relation.side1.edgeId);
+                const edge2 = accessCell(relation.side2.edgeId);
+
+                // Remove the previous edges from the graph
+                if (cardinality1) {
+                    graph.removeCells([cardinality1]);
+                }
+                if (cardinality2) {
+                    graph.removeCells([cardinality2]);
+                }
+                // Remove the previous edges from the graph
+                if (edge1) {
+                    graph.removeCells([edge1]);
+                }
+                if (edge2) {
+                    graph.removeCells([edge2]);
+                }
+            }
 
             const target1 = accessCell(side1.idMx);
             const target2 = accessCell(side2.idMx);
@@ -595,6 +605,9 @@ export default function App(props) {
             selectedDiag.side1.idMx = cardinality1.id;
             selectedDiag.side2.idMx = cardinality2.id;
 
+            selectedDiag.side1.edgeId = edge1.id;
+            selectedDiag.side2.edgeId = edge2.id;
+
             selectedDiag.side1.cell = cardinality1.id;
             selectedDiag.side2.cell = cardinality2.id;
             selectedDiag.side1.entity.idMx = side1.idMx;
@@ -611,8 +624,6 @@ export default function App(props) {
             }
             graph.orderCells(true, [edge1, edge2]); // Move the new edges to the back
 
-            setSide1("");
-            setSide2("");
             setOpen(false);
         };
 
@@ -653,68 +664,60 @@ export default function App(props) {
                         </DialogTitle>
                         <DialogContent>
                             <DialogContentText id="alert-dialog-description">
-                                {validationMessage}
+                                Escoger los lados de esta relación
                             </DialogContentText>
-                            {!acceptDisabled && (
-                                <>
-                                    <Box sx={{ minHeight: 10 }} />
-                                    <Box sx={{ minWidth: 120 }}>
-                                        <FormControl fullWidth>
-                                            <InputLabel id="side1-label">
-                                                Lado 1
-                                            </InputLabel>
-                                            <Select
-                                                id="side1"
-                                                value={side1}
-                                                label="Lado 1"
-                                                onChange={handleChangeSide1}
-                                            >
-                                                {diagramRef.current.entities.map(
-                                                    (entity) => {
-                                                        return (
-                                                            <MenuItem
-                                                                key={
-                                                                    entity.idMx
-                                                                }
-                                                                value={entity}
-                                                            >
-                                                                {entity.name}
-                                                            </MenuItem>
-                                                        );
-                                                    },
-                                                )}
-                                            </Select>
-                                        </FormControl>
-                                        <Box sx={{ minHeight: 10 }} />
-                                        <FormControl fullWidth>
-                                            <InputLabel id="side2-label">
-                                                Lado 2
-                                            </InputLabel>
-                                            <Select
-                                                id="side2"
-                                                value={side2}
-                                                label="Lado 2"
-                                                onChange={handleChangeSide2}
-                                            >
-                                                {diagramRef.current.entities.map(
-                                                    (entity) => {
-                                                        return (
-                                                            <MenuItem
-                                                                key={
-                                                                    entity.idMx
-                                                                }
-                                                                value={entity}
-                                                            >
-                                                                {entity.name}
-                                                            </MenuItem>
-                                                        );
-                                                    },
-                                                )}
-                                            </Select>
-                                        </FormControl>
-                                    </Box>
-                                </>
-                            )}
+                            <Box sx={{ minHeight: 10 }} />
+                            <Box sx={{ minWidth: 120 }}>
+                                <FormControl fullWidth>
+                                    <InputLabel id="side1-label">
+                                        Lado 1
+                                    </InputLabel>
+                                    <Select
+                                        id="side1"
+                                        value={side1}
+                                        label="Age"
+                                        onChange={handleChangeSide1}
+                                    >
+                                        {diagramRef.current.entities.map(
+                                            (entity) => {
+                                                return (
+                                                    <MenuItem
+                                                        key={entity.idMx}
+                                                        value={entity}
+                                                    >
+                                                        {entity.name}
+                                                    </MenuItem>
+                                                );
+                                            },
+                                        )}
+                                    </Select>
+                                </FormControl>
+                                <Box sx={{ minHeight: 10 }} />
+                                <FormControl fullWidth>
+                                    <InputLabel id="side2-label">
+                                        Lado 2
+                                    </InputLabel>
+                                    <Select
+                                        id="side2"
+                                        value={side2}
+                                        label="Lado 2"
+                                        onChange={handleChangeSide2}
+                                    >
+                                        {diagramRef.current.entities.map(
+                                            (entity) => {
+                                                return (
+                                                    <MenuItem
+                                                        key={entity.idMx}
+                                                        value={entity}
+                                                    >
+                                                        {entity.name}
+                                                    </MenuItem>
+                                                );
+                                            },
+                                        )}
+                                    </Select>
+                                </FormControl>
+                            </Box>
                         </DialogContent>
                         <DialogActions>
                             <Button onClick={handleClose}>Cancelar</Button>
