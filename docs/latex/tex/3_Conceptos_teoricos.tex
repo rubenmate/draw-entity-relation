@@ -1,83 +1,55 @@
 \capitulo{3}{Conceptos teóricos}
+A continuación se detallan algunos de los conceptos más relevantes para la correcta comprensión de este proyecto.
 
-En aquellos proyectos que necesiten para su comprensión y desarrollo de unos conceptos teóricos de una determinada materia o de un determinado dominio de conocimiento, debe existir un apartado que sintetice dichos conceptos.
+\section{Aplicación web}
+Una aplicación web es un programa software que se ejecuta en un servidor web y es accesible a través de un navegador mediante Internet. A diferencia de una página web tradicional, que generalmente se compone de documentos estáticos y contenido multimedia, una aplicación web ofrece interactividad avanzada y para ello requiere el uso combinado de HTML y Javascript.
 
-Algunos conceptos teóricos de \LaTeX{} \footnote{Créditos a los proyectos de Álvaro López Cantero: Configurador de Presupuestos y Roberto Izquierdo Amo: PLQuiz}.
+Las aplicaciones web modernas suelen estar compuestas por una interfaz de usuario (frontend) desarrollada con tecnologías como HTML, CSS y JavaScript. En concreto se suelen usar frameworks como React, Vue o Svelte entre otros, siendo React el más popular de todos ellos.
 
-\section{Secciones}
-
-Las secciones se incluyen con el comando section.
-
-\subsection{Subsecciones}
-
-Además de secciones tenemos subsecciones.
-
-\subsubsection{Subsubsecciones}
-
-Y subsecciones. 
+\subsection{Single Page Application (SPA)}
+Una Single Page Application (SPA) es un tipo de aplicación web que interactúa con el usuario dinámicamente y se carga en una sola página HTML. En lugar de cargar páginas enteras nuevas desde el servidor, una SPA carga inicialmente la estructura básica de la aplicación y luego actualiza dinámicamente el contenido de la página modificando el DOM o lo que es lo mismo la estructura del documento HTML.
 
 
-\section{Referencias}
+\section{Desarrollo web moderno}
+El desarrollo web moderno abarca la creación y mantenimiento de sitios y aplicaciones web. No se trata simplemente de elementos estáticos como HTML y CSS, sino que involucra el uso de JavaScript para agregar interactividad y dinamismo a las aplicaciones. JavaScript es el eje de todo y su mayor complicación es lo mucho que puede variar según el entorno de ejecución.
 
-Las referencias se incluyen en el texto usando cite~\cite{wiki:latex}. Para citar webs, artículos o libros~\cite{koza92}, si se desean citar más de uno en el mismo lugar~\cite{bortolot2005, koza92}.
+Para gestionar estas diferencias y facilitar el desarrollo, se utilizan herramientas que realizan la transpilación y el empaquetado del código.
+
+\subsection{Empaquetador}
+Un empaquetador es una herramienta que procesa y agrupa múltiples archivos de código fuente (JavaScript, CSS, imágenes, etc.) en un solo archivo o en unos pocos archivos optimizados para su posterior ejecución en el navegador.
+
+\subsection{Transpilador}
+Un transpilador convierte código escrito en un lenguaje de programación a otro. En el contexto del desarrollo web, un transpilador permite a los desarrolladores escribir código JavaScript con las características más recientes del lenguaje y transformarlo a una versión compatible con la mayoría de los navegadores web actuales. 
+La transpilación puede incluir la conversión de sintaxis moderna de JavaScript (ES6+), JSX (utilizado en React), y otras extensiones a JavaScript estándar que todos los navegadores pueden entender.
+
+\subsection{Frameworks Frontend}
+Los frameworks de frontend, como React, Vue y Angular, son esenciales en el desarrollo web moderno. Estos frameworks proporcionan estructuras y componentes reutilizables que facilitan la creación de interfaces de usuario dinámicas y complejas. Ayudan a gestionar el estado de la aplicación y la manipulación del DOM. Se basan en un lenguaje cuya base es Javascript pero que puede tener al mismo tiempo secciones con código Javascript, HTML y CSS.
+
+\section{UI y UX}
+UI (User Interface) y UX (User Experience) son dos conceptos claves en el desarrollo de aplicaciones web.
+
+\subsection{UI (User Interface)}
+La interfaz de usuario comprende tanto el diseño gráfico como los elementos interactivos que se utilizan para interactuar con una aplicación. Una buena UI debe ser intuitiva, atractiva y eficiente.
+
+\subsection{UX (User Experience)}
+La experiencia del usuario abarca todos los aspectos de la interacción del usuario con la aplicación. Un buen diseño de experiencia de usuario se enfoca en mejorar la eficiencia y la satisfacción del usuario al interactuar con la aplicación. La idea es que "de gusto" usar la aplicación.
 
 
-\section{Imágenes}
+\section{Linter}
+Un linter es una herramienta que analiza el código fuente para detectar errores de programación, fallos de estilo, y problemas potenciales. Utilizar un linter ayuda a mantener un código limpio, coherente y a revelar potenciales problemas que no se detectan como simples errores sintácticos. Por su naturaleza de extender al compilador tienen cierto componente de opinión y por tanto son configurables en su estilo.
 
-Se pueden incluir imágenes con los comandos standard de \LaTeX, pero esta plantilla dispone de comandos propios como por ejemplo el siguiente:
+\section{Integración continua}
+La integración continua es una práctica en desarrollo de software que consiste en realizar integraciones automáticas con una gran frecuencia para así poder detectar fallos. Este concepto de integración comprende la compilación (en este caso despliegue) y ejecución de las diferentes pruebas. Herramientas como GitHub Actions facilitan la implementación de CI al automatizar estas tareas.
 
-\imagen{escudoInfor}{Autómata para una expresión vacía}{.5}
+\section{Despliegue continuo}
+El despliegue continuo (CD) extiende la integración continua al proceso de despliegue, automatizando la entrega de cambios en el código a entornos de producción. Esto asegura que el software esté siempre en un estado desplegable y que las nuevas versiones se puedan lanzar rápidamente, mejorando la eficiencia y reduciendo el tiempo y esfuerzo de entrega.
 
 
+\section{Validación y pruebas}
+El proceso de validación y pruebas es fundamental en el desarrollo de software y garantiza que el producto funcione como se espera. Existen varios tipos de pruebas:
 
-\section{Listas de items}
+\subsection{Pruebas unitarias}
+Las pruebas unitarias verifican el funcionamiento de componentes individuales del código, de manera aislada e individual.
 
-Existen tres posibilidades:
-
-\begin{itemize}
-	\item primer item.
-	\item segundo item.
-\end{itemize}
-
-\begin{enumerate}
-	\item primer item.
-	\item segundo item.
-\end{enumerate}
-
-\begin{description}
-	\item[Primer item] más información sobre el primer item.
-	\item[Segundo item] más información sobre el segundo item.
-\end{description}
-	
-\begin{itemize}
-\item 
-\end{itemize}
-
-\section{Tablas}
-
-Igualmente se pueden usar los comandos específicos de \LaTeX o bien usar alguno de los comandos de la plantilla.
-
-\tablaSmall{Herramientas y tecnologías utilizadas en cada parte del proyecto}{l c c c c}{herramientasportipodeuso}
-{ \multicolumn{1}{l}{Herramientas} & App AngularJS & API REST & BD & Memoria \\}{ 
-HTML5 & X & & &\\
-CSS3 & X & & &\\
-BOOTSTRAP & X & & &\\
-JavaScript & X & & &\\
-AngularJS & X & & &\\
-Bower & X & & &\\
-PHP & & X & &\\
-Karma + Jasmine & X & & &\\
-Slim framework & & X & &\\
-Idiorm & & X & &\\
-Composer & & X & &\\
-JSON & X & X & &\\
-PhpStorm & X & X & &\\
-MySQL & & & X &\\
-PhpMyAdmin & & & X &\\
-Git + BitBucket & X & X & X & X\\
-Mik\TeX{} & & & & X\\
-\TeX{}Maker & & & & X\\
-Astah & & & & X\\
-Balsamiq Mockups & X & & &\\
-VersionOne & X & X & X & X\\
-} 
+\subsection{Pruebas end-to-end}
+Las pruebas end-to-end (E2E) simulan el comportamiento del usuario final y prueban la aplicación en su totalidad, desde el punto de vista del usuario final. Estas pruebas aseguran que todos los componentes del sistema funcionen juntos como se espera.
