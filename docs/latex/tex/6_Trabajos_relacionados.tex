@@ -1,3 +1,33 @@
 \capitulo{6}{Trabajos relacionados}
 
-Este apartado sería parecido a un estado del arte de una tesis o tesina. En un trabajo final grado no parece obligada su presencia, aunque se puede dejar a juicio del tutor el incluir un pequeño resumen comentado de los trabajos y proyectos ya realizados en el campo del proyecto en curso. 
+En este apartado vamos a ver varias herramientas que permiten modelar diagramas. Comentar previamente que no he encontrado ninguna enfocada puramente a generar diagramas entidad-relación.
+
+\section{Draw.io}
+Draw.io \cite{draw-io} es una aplicación web que permite modelar diagramas de todo tipo. Es una alternativa realmente potente que no se basa en único tipo de diagramas, pudiendo modelar diagramas de flujo, de secuencias, entre otras muchas opciones.
+Permite guardar los diagramas en diversos formatos o exportarlos como imágenes.
+\imagen{draw-io}{Aplicación web Draw.io}{1}
+\section{Excalidraw}
+Excalidraw \cite{excalidraw} es una aplicación web que permite modelar diagramas. En este caso su punto diferencial es su estética sketch. Pese a su apariencia es bastante potente y nos permite modelar muchos tipos de diagramas y gráficas.
+Una de sus característica más destacables es la de "Live Collaboration" en la que crea una sesión compartida donde podemos hacer un diseño colaborativo entre aquellas personas que se conecten a esta sesión.
+\imagen{excalidraw}{Aplicación Excalidraw}{1}
+
+\section{Comparativa frente a alternativas}
+Se va a hacer una comparativa frente a las alternativas, siempre teniendo en cuenta el caso y objetivos que nos ocupan -modelar un diagrama de entidad relación y generar desde él un script SQL-.
+La comparativa es evidentemente injusta con alternativas mucho más maduras y potentes para otros cometidos.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{l c c c}
+\hline
+\multicolumn{1}{l}{Aplicaciones} & \textbf{Draw-ER} & \textbf{Draw.io} & \textbf{Excalidraw} \\
+\hline
+Modelar diagramas E-R & X & X & X \\
+Validar diagramas E-R & X & - & - \\
+Generar SQL & X & - & - \\
+Exportar e importar & - & X & X \\
+\hline
+\end{tabular}
+\caption{Comparativa del proyecto frente a alternativas}
+\label{alternativas}
+\end{table}
+

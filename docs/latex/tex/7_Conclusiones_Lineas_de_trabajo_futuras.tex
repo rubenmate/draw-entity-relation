@@ -1,4 +1,30 @@
 \capitulo{7}{Conclusiones y Líneas de trabajo futuras}
 
-Todo proyecto debe incluir las conclusiones que se derivan de su desarrollo. Éstas pueden ser de diferente índole, dependiendo de la tipología del proyecto, pero normalmente van a estar presentes un conjunto de conclusiones relacionadas con los resultados del proyecto y un conjunto de conclusiones técnicas. 
-Además, resulta muy útil realizar un informe crítico indicando cómo se puede mejorar el proyecto, o cómo se puede continuar trabajando en la línea del proyecto realizado. 
+\section{Conclusiones}
+
+El resultado de la aplicación cumple con todos los objetivos marcados inicialmente. A lo largo del desarrollo, he aprendido técnicas útiles y novedosas para mí como son la división de tareas en sprints o el uso de herramientas de integración continua y de despliegue continuo.
+La metodología de división de tareas en sprints ha permitido dividir la evolución del desarrollo en tareas más pequeñas y manejables, lo cuál ha facilitado enormemente el desarrollo y su organización.
+El uso de herramientas de integración y despliegue continuo ha permitido desarrollar estas tareas siempre con la seguridad de mantener un estado de la aplicación correcto. A la vez que el despliegue se realizaba de manera automática, en concreto ha sido extremadamente útil contar con el despliegue preview para recibir feedback del tutor antes de integrar los cambios en la rama principal.
+
+Sin embargo, uno de los mayores desafíos ha sido trabajar con la librería mxGraph. Al tratarse de una biblioteca antigua con una API compleja y que además se encuentra en fin de desarrollo, su uso presentó no pocas dificultades. A destacar que la documentación y su API no es lo intuitiva que sería una librería actual. Los ejemplos que encontramos en internet no suelen ser recientes y eso en el entorno de desarrollo web que varía con carácter mensual es algo muy evidente y problemático.
+Su sucesora, maxGraph, no estaba lista para ser utilizada debido a que la documentación no estaba completamente migrada e integra varios cambios sobre la API de mxGraph.
+
+A pesar de que la interfaz de usuario cumple con su propósito, considero que es demasiado parca y carece de elementos que la hagan visualmente agradable. Existe un amplio margen de mejora en este aspecto, como por ejemplo el uso de usar Material UI en toda la aplicación y no solo en determinadas partes para establecer un sistema de diseño coherente y agradable.
+
+Otro aspecto a mejorar es la capacidad de exportar e importar diagramas. Esto proporcionaría una mayor flexibilidad a los usuarios, permitiendo trabajar con diagramas existentes entre diferentes entornos de trabajo.
+
+Además, la aplicación se beneficiaría enormemente de un sistema de usuarios integrado con un backend. Este cambio permitiría a los usuarios guardar sus diagramas en una base de datos (sin necesidad de exportar e importar) y continuar editándolos desde diferentes dispositivos. Objetivo que iría en línea con el marcado inicialmente de crear una aplicación de modelado E-R lo más accesible posible.
+
+Por último, la aplicación podría expandirse para soportar casos más complejos. Como son las relaciones ternarias, agregaciones e ISAs, ofreciendo una herramienta totalmente completa a la hora de modelar diagramas E-R.
+
+En resumen, el balance del proyecto ha sido muy positivo. A pesar de los desafíos técnicos y las áreas identificadas para mejoras, he logrado cumplir con los objetivos iniciales y adquirir habilidades valiosas que serán útiles en presentes y futuros proyectos profesionales.
+
+\section{Líneas de trabajo futuras}
+
+\begin{itemize}
+    \item Pulir determinados comportamientos de la librería: como que los atributos se coloquen unos encima de otros, al mover entidades deberían moverse los atributos en conjunto, cuando se mueven entidades reflexivas deberían calcularse los edges para mantener la estética, etc
+    \item Mejorar la interfaz de usuario para hacerla visualmente atractiva.
+    \item Implementar un sistema de exportación e importación de diagramas para facilitar el trabajo con diagramas existentes.
+    \item Integrar un sistema de usuarios y un backend que permita guardar diagramas en una base de datos, permitiendo a los usuarios continuar editándolos desde diferentes dispositivos.
+    \item Soportar el modelado de casos más complejos como relaciones ternarias, agregaciones e ISAs.
+\end{itemize}

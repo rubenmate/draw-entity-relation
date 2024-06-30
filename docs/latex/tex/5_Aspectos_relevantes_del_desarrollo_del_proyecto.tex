@@ -1,7 +1,225 @@
 \capitulo{5}{Aspectos relevantes del desarrollo del proyecto}
 
-Este apartado pretende recoger los aspectos más interesantes del desarrollo del proyecto, comentados por los autores del mismo.
-Debe incluir desde la exposición del ciclo de vida utilizado, hasta los detalles de mayor relevancia de las fases de análisis, diseño e implementación.
-Se busca que no sea una mera operación de copiar y pegar diagramas y extractos del código fuente, sino que realmente se justifiquen los caminos de solución que se han tomado, especialmente aquellos que no sean triviales.
-Puede ser el lugar más adecuado para documentar los aspectos más interesantes del diseño y de la implementación, con un mayor hincapié en aspectos tales como el tipo de arquitectura elegido, los índices de las tablas de la base de datos, normalización y desnormalización, distribución en ficheros3, reglas de negocio dentro de las bases de datos (EDVHV GH GDWRV DFWLYDV), aspectos de desarrollo relacionados con el WWW...
-Este apartado, debe convertirse en el resumen de la experiencia práctica del proyecto, y por sí mismo justifica que la memoria se convierta en un documento útil, fuente de referencia para los autores, los tutores y futuros alumnos.
+Este apartado pretende recoger los aspectos más interesantes del desarrollo del proyecto, comentados por los autores del mismo. Debe incluir desde la exposición del ciclo de vida utilizado, hasta los detalles de mayor relevancia de las fases de análisis, diseño e implementación.
+
+\subsection{Razonamiento tras la elección de este proyecto}
+Se escogió este proyecto debido a que profesionalmente trabajo muy orientado al desarrollo web, con lo que sería un buen proyecto que añadir a mi portafolio personal. Adicionalmente, siempre me han fascinado aplicaciones como draw.io así que la idea de crear algo similar resultó bastante interesante.
+En su momento durante la carrera me hubiera gustado contar con una herramienta similar a esta, capaz de generar scripts SQL a partir de un diagrama por lo que este proyecto tenía muchos ingredientes para considerar que podría ser mi trabajo de fin de grado.
+
+\section{Metodologías}
+\subsection{Desarrollo ágil}
+Para el desarrollo de este proyecto se ha usado la metodología de desarrollo ágil. No se ha aplicado estrictamente pero sí en bastante grado. Se ha realizado un desarrollo iterativo agrupando las tareas en sprints de aproximadamente 3-4 semanas cada uno de ellos.
+Con cada sprint se definían una serie de tareas cuyo fin era obtener un producto final que cumpliera los objetivos marcados inicialmente. Al realizarse este desarrollo incremental permitía centrarse en estas tareas individuales, organizándose de una mejor manera.
+Se ha combinado esta división en sprints con los issues de GitHub y los milestones para crear los sprints.
+
+\imagen{sprints}{Milestones en GitHub}{1}
+
+Cada issue se etiquetó con labels correspondientes a qué tipo de cambio representaba.
+
+\imagen{labels}{Labels en GitHub}{1}
+
+\begin{itemize}\tightlist
+    \item Bug: Issue que representa errores en la aplicación.
+    \item Documentation: Issue que representa cambios en la documentación de la aplicación.
+    \item Enhancement: Issue que representa una nueva característica a integrar en la aplicación.
+    \item Important: Label para asignar una categoría de importancia superior a un issue.
+    \item Research: Issue para investigar un determinado área o concepto.
+    \item Testing: Issue que introduce cambios en los tests de la aplicación.
+    \item Tooling: Issue que introduce cambios en determinadas herramientas de desarrollo de la aplicación, como el linter.
+\end{itemize}
+
+\subsection{Flujo git}
+El uso de git ha sido de una manera determinada, basada en Gitflow \cite{gitflow}. No se ha aplicado estrictamente en todos los cambios. Pero sí se ha hecho con las tareas definidas en cada sprint, sobre todo aquellas que integraban funcionalidades. Este enfoque, combinado con el despliegue continuo en Vercel, proporcionaba un despliegue "Preview" desde el que evaluar la calidad de estos cambios a integrar. No solo eso, también permitía compartir el enlace con el tutor y recibir su feedback de un despliegue real.
+
+\subsubsection{git worktrees}
+Git worktrees \cite{git-worktree} es una herramienta que nos proporciona git que es muy poderosa pero que curiosamente muy desconocida. Al utilizar worktrees, se puede cambiar de una rama a otra simplemente cambiando de directorio puesto que cada worktree representa una rama y es un directorio. No hay necesidad de hacer stash de cambios no comiteados. Esto ha permitido una transición fluida entre diferentes ramas de trabajo y ha facilitado la integración de correcciones en la rama principal (main).
+El uso de git worktrees junto con Gitflow ha ayudado enormemente a moverse entre ramas de funcionalidades, revisar código y asegurar de que los cambios que se introducían fueran correctos. Es una funcionalidad de git que muchos desarrolladores debieran conocer y probar.
+
+\subsection{Test driven development}
+El desarrollo guiado por pruebas (Test Driven Development, TDD) \cite{wiki:tdd} ha sido clave en la implementación de ciertas funcionalidades importantes de la aplicación, como son la validación de los diagramas entidad-relación y la generación de scripts SQL.
+Inicialmente se definían los requisitos de estas funciones, previo paso a su implementación. De esta manera en un primer momento ya se decidía que debía devolver la función desde unos inputs conocidos, lo cuál no ayudaba solo a asegurarse de que la función fuera correcta sino que facilitaba su implementación.
+\imagen{unit-tests}{Ejecución automática de tests unitarios}{1}
+
+\section{Desarrollo del proyecto}
+\subsection{Primeros pasos en el desarrollo del proyecto}
+Durante las primeras semanas de desarrollo se decidió qué tecnologías usar. Inicialmente existía la duda se si hacerlo con Vanilla Javascript o usar un framework frontend como React. Finalmente se optó por usar React debido a las facilidades que puede dar a la hora de crear una aplicación interactiva y con estado dinámico. También es clave en esta decisión comentar que personalmente es una tecnología que uso profesionalmente y que por tanto no iba a requerir formación más allá de la propia integración con mxGraph.
+En una primera fase, se intentó utilizar la librería maxGraph (sucesor de mxGraph) junto con TypeScript 
+\cite{typescript}, lo que nos habría permitido contar con la seguridad de un tipado estático. Sin embargo, hubo problemas que hicieron desestimar esta opción: maxGraph es una librería que surgió con la idea de continuar el desarrollo de mxGraph que se encuentra en su fin de vida, sin embargo se han hecho bastantes cambios en la API y la documentación no se ha completado. Esto implica que para encontrar las equivalencias de la API había que indagar constantemente en el código fuente en busca de las nuevas APIs.
+Finalmente se acabó migrando a un proyecto plantilla que integraba mxGraph con React. Esta plantilla proporcionaba una toolbar y permitía inicializarla con elementos que podían ser arrastrados y soltarlos al canvas donde se añadían visualmente. Este punto será la base desde la que partió el desarrollo.
+
+\imagen{first-stage-app-code-0}{Inicialización de mxGraph}{1}
+\imagen{first-stage-app-code-1}{HTML con el canvas y toolbar}{1}
+
+\subsection{Implementando las primeras funcionalidades}
+\subsubsection{Añadir entidades}
+Con esta base sobre la que trabajar se implementó la funcionalidad inicial para poder añadir entidades al canvas arrastrando desde la toolbar.
+A estas entidades se les puede cambiar el nombre haciendo doble click en ellas y en este punto y debido al comportamiento por defecto de la librería se pueden relacionar directamente entre sí. 
+Esto supone un problema que habrá que resolver posteriormente, en nuestro caso concreto queremos que las entidades se relacionen por medio de elementos Relación y no directamente.
+
+\imagen{first-stage-app}{Aplicación tras implementar la posibilidad de añadir entidades}{1}
+
+\subsubsection{Representación interna del diagrama E-R}
+Se comienza también a trabajar en la funcionalidad que nos permita pasar de las celdas con las que trabaja mxGraph, que representan los distintos elementos que se han creado en el canvas, a una representación interna más acorde a lo que es un diagrama entidad relación. Hay que conocer qué elemento es una entidad, cuáles son sus atributos, qué elementos está conectando una relación, etc
+Al estar trabajando con Javascript la preferencia es usar un objeto por su facilidad a ser convertido a JSON.
+
+\imagen{internal-diagram-er}{Primera versión de la representación interna del diagrama ER}{1}
+
+Aunque esta captura es de un punto más avanzado donde ya se pueden añadir atributos a las entidades sí representa la información que se quiere guardar en esta representación interna.
+\begin{itemize}\tightlist
+    \item idMx: Es el id que tiene este elemento en las celdas de la librería mxGraph.
+    \item name: Es el nombre que tiene esta entidad.
+    \item position: Coordenadas de esta entidad en el canvas.
+    \item attributes: Array de atributos, de cada uno de ellos se guardarán sus datos.
+\end{itemize}
+Este paso es realmente importante puesto que hay que establecer condiciones y límites que solo con mxGraph no podremos. Será clave en todo el desarrollo posterior, puesto que si un atributo es clave habrá que guardarlo como tal, si una relación es N:M podrá tener atributos, la validación del grafo tratará directamente con esta representación, etc.
+
+\subsubsection{Menús contextuales según el elemento seleccionado}
+Otra funcionalidad importante especialmente en el desarrollo de la interfaz de usuario es el de que la toolbar muestre diferentes botones según el elemento seleccionado.
+Con React se crea un estado que evalúa qué elemento está seleccionado en cada momento y cada botón que se crea en la toolbar comprueba el estilo del elemento seleccionado para saber si es una entidad o atributo y se muestra o no.
+
+\imagen{contextual-button}{Botón contextual para entidades}{1}
+
+\subsubsection{Añadiendo atributos a las entidades}
+La siguiente funcionalidad a implementar fue la de añadir atributos a las entidades, para ello hizo falta añadir un botón contextual al seleccionar una entidad y desde ahí en su versión inicial nos dejaba escoger entre si se quería añadir un atributo primario (clave) o uno normal.
+Esta funcionalidad fue relativamente problemática puesto que el atributo no consta solo de una elipse sino que tiene 3 partes diferenciadas que han de agruparse: el edge, la elipse y la label que contiene el nombre del atributo.
+Además la etiqueta ha de emplazarse a la derecha de la elipse y mantenerse en esa posición.
+
+\imagen{add-attributes}{Añadir atributos a una entidad}{1}
+
+\subsection{Creando un flujo de CI/CD}
+Con la aplicación en un estado temprano pero estable, no iba haber más cambios de librerías o frameworks, se decidió añadir un flujo completo de integración continua que garantizase la corrección del código (y un estilo común en caso de que en el futuro colaboren más desarrolladores) y su correcto funcionamiento.
+Se usaron algunas de las siguientes utilidades.
+\subsubsection{Biome y Lefthook}
+Se añadió Biome como formateador y como linter. Biome ejecuta dos funciones que tradicionalmente en el desarrollo web se encuentran desacopladas en diferentes herramientas. Funciona de tal modo que formatea el código de manera automática y comprueba posibles errores (que no tienen por qué ser sintácticos) resolviendo aquellos que puede de forma automática y notificando con una serie de diagnósticos aquellos que no.
+\imagen{biome}{Muestra de una ejecución de Biome con errores}{1}
+
+Se añadió también Leftook al proyecto. Se ejecuta de forma local como un hook pre-commit, esto quiere decir que cuando hacemos un commit Lefthook ejecuta una determinada acción con aquellos ficheros (o hunks) que hayamos añadido para hacer commit. En este caso ejecuta Biome sobre todos ellos.
+
+\imagen{lefthook}{Muestra de una comprobación previa a un commit con Lefthook}{1}
+
+\subsubsection{Testing}
+El siguiente paso para verificar la calidad y funcionamiento del código era añadir pruebas. Se añadieron dos herramientas aunque inicialmente tan solo se uso la segunda.
+
+\begin{itemize}\tightlist
+    \item Jest: Framework de testing para Javascript que ejecuta tests unitarios.
+    \item Playwright: Framework de testing que ejecuta tests end to end.
+\end{itemize}
+
+Los tests unitarios inicialmente no se implementaron puesto que la mayor parte de la funcionalidad era a nivel de interfaz. Se utilizarán posteriormente en el desarrollo de las funcionalidades de validación del diagrama y generación del script SQL.
+\imagen{unit-tests-1}{Ejecución de pruebas unitarias}{1}
+
+Los tests end to end se ejecutan con Playwright, y consisten en una serie de pruebas que se comportan como el usuario final. Van interactuando con la interfaz pulsando botones y esperando ciertos elementos.
+En esta figura posterior podemos ver la ejecución de uno de ellos desde su interfaz gráfica, se pueden ver las capturas que va haciendo el framework de tests de la ejecución segundo a segundo.
+\imagen{e2e-tests}{Ejecución de pruebas End to End}{1}
+
+\subsubsection{GitHub Actions}
+Ninguna de estas herramientas que hemos añadido tienen sentido si no nos acordamos de ejecutarlas. Para ello se ha decidido hacer uso de las GitHub Actions que las ejecutarán automáticamente al subir cambios a la rama principal o a aquellas ramas destinadas a integrarse con la rama principal.
+
+En este proyecto, se utilizan varias acciones:
+\begin{itemize}
+\tightlist
+    \item Biome: Verifica la calidad del código.
+    \item Tests: 
+    \begin{itemize}
+        \tightlist
+        \item Instala dependencias.
+        \item Instala navegadores de Playwright.
+        \item Ejecuta tests unitarios.
+        \item Ejecuta los tests end to end de Playwright con los diferentes navegadores.
+    \end{itemize}
+    \item Despliegue en Vercel
+\end{itemize}
+
+Inicialmente se había creado una action que instalaba las dependencias del proyecto y hacía la build pero al integrar Vercel se optó por eliminarla puesto que con Vercel ya se está haciendo la instalación y despliegue.
+
+\imagen{github-actions}{Ejecución de las diferentes GitHub Actions en nuestro proyecto}{1}
+
+
+\subsubsection{Gestionando atributos clave}
+Se cambió el modo de añadir atributos clave así como su estética. Los edges dejaron de ser dirigidos y en lugar de colorear la elipse de una forma determinada en su lugar se subraya aquel atributo que sea clave.
+\imagen{add-attributes-1}{Atributo clave subrayado con elipse no coloreada y lado no dirigido}{1}
+También se elimina la posibilidad de elegir añadir un atributo como clave, en su lugar el primer atributo que se añade a una entidad será clave y el resto no. Esto requiere un botón contextual en atributos no clave para poder convertirlos en clave eliminando esta propiedad de aquel que fuera clave hasta ese momento.
+\imagen{add-attributes-2}{Botón contextual para convertir un atributo que no es clave en clave}{1}
+
+\subsection{Implementando relaciones}
+Con las entidades y sus atributos ya implementados en la aplicación nos faltaba la parte de las relaciones. Es a su vez una de las que tiene mayor complejidad.
+
+\subsubsection{Configurando relaciones}
+Era necesario un modo de añadir relaciones. Se optó por añadir el elemento rombo representando una relación y mostrar botones contextuales con las siguientes acciones.
+\imagen{relations-0}{Botones contextuales al seleccionar una relación}{1}
+Al hacer click en configurar relación se nos muestra una interfaz con Material UI con dos selectores para escoger qué entidades va a vincular esta relación.
+\imagen{relations-1}{Interfaz de configuración de los lados de una relación}{.75}
+Tan solo falta el escoger las cardinalidades de la relación, se realizan en el siguiente menú contextual. Sigue la misma dinámica que la propia configuración de las relaciones.
+\imagen{relations-2}{Interfaz de configuración de las cardinalidades de los lados de una relación}{.75}
+\imagen{relations-app}{Relaciones en el canvas}{1}
+Todos estos cambios hemos de reflejarlos en nuestra estructura interna en memoria del diagrama donde ahora también estamos guardando las relaciones.
+\imagen{internal-diagram-er-1}{Diagrama interno guardando relaciones}{1}
+La información canHoldAttributes y el campo attributes de la relación tendrá relevancia en el siguiente apartado.
+\subsubsection{Relaciones N:M}
+Las relaciones que forman una relación varios a varios pueden contener atributos, algo que no estaba implementado. Para implementar esta función se realiza en el paso de configuración de la relación, cuando detectamos que es N:M establecemos en la propia relación una clave canHoldAttributes: true y guardamos los atributos como si de una entidad se tratase en un array.
+Se modifica la interfaz para que al seleccionar una relación N:M nos deje también añadir atributos (con la salvedad de que no puedan ser clave) y ocultarlos.
+\imagen{relations-3}{Interfaz contextual para una relación N:M}{1}
+
+\subsection{Validación del diagrama y generación SQL}
+En este punto la parte de modelado está prácticamente finalizada y nos falta tan solo el validar el diagrama y poder exportarlo a un script SQL.
+Como últimos retoques se implementa una prevención que comprueba si se está usando el placeholder "Relación", "Entidad" o "Atributo" con el que se insertan los elementos para añadir un número incremental al final y evitar que se repitan.
+También se cambia el framework de Jest a Vitest por problemas en la transpilación de los tests.
+\subsubsection{Validación del diagrama}
+Para esta función y la de generación del script SQL se hizo uso intensivo del TDD.
+Definimos grafos de ejemplo con y sin errores y desde ese punto se implementaron las diversas funciones que han de comprobar la validez del diagrama.
+Se están comprobando los siguientes criterios:
+\begin{itemize}
+\tightlist
+    \item Nombres de entidades repetidos (las relaciones N:M cuentan como entidad).
+    \item Nombres de atributos repetidos (en una misma entidad).
+    \item Entidades sin atributos.
+    \item Entidades sin clave primaria.
+    \item Relaciones sin conectar.
+    \item Relaciones sin lados con cardinalidades válidas.
+    \item El diagrama no puede estar vacío.
+\end{itemize}
+\imagen{validate-graph-0}{Función de validación del diagrama con diagnósticos}{.75}
+
+\subsubsection{Generación del script SQL}
+La generación del script SQL fue una de las partes más complicadas de implementar. Requiere un paso intermedio donde recorremos el diagrama y cogemos las relaciones y sus correspondientes entidades procesándolas.
+Si una entidad ya ha sido procesada como parte de una relación la quitamos de las entidades sueltas puesto que no queremos tablas repetidas.
+\imagen{sql-0}{Filtrado de tablas a la hora de generar el script SQL}{1}
+Procesamos las relaciones según su tipo.
+\imagen{sql-1}{Procesado de relaciones}{1}
+Con este array que contiene relaciones y entidades sueltas se llama a la función que genera las tablas finales haciendo merge en caso de que  este procesado genere tablas repetidas.
+El paso final es convertir este objeto interno en un string SQL.
+\imagen{sql-2}{Procesado de relaciones y tablas y generación del string SQL final}{.75}
+Para el desarrollo de esta función ha sido de vital importancia contar con tests que han permitido ir iterando y añadiendo funcionalidad asegurándose de que todo seguía funcionando correctamente.
+\subsection{Retoques finales}
+\subsubsection{Borrado de elementos}
+Hasta este punto existe un mapeo de teclado para borrar elementos con la tecla Suprimir, el problema es que la borra pero sin reflejar este borrado en nuestro diagrama interno en memoria. Lo cuál supone un problema.
+Para esta función nos aseguraremos de que al borrar una entidad no deje atributos, edges, labels o cualquier otro elemento descolgado sin un padre.
+\subsubsection{Reconfiguración de relaciones}
+Otro punto a implementar es el de poder reconfigurar los lados de una relación para poder reasignarla a otras entidades sin tener que borrarla y añadirla de nuevo.
+Requiere retocar la función ya implementada de configuración para eliminar posibles atributos que pudiera tener la relación, edges, cardinalidades ya establecidas o resetear la clave que permite a una relación tener atributos.
+
+\subsection{Resolución de problemas técnicos}
+A lo largo del proyecto, se enfrentaron varios desafíos técnicos.
+
+\subsubsection{Problemas con maxGraph}
+Como se ha comentado inicialmente se intentó usar maxGraph, que es una librería más moderna y con soporte para los tipos de TypeScript \cite{typescript} pero debido a las diferencias en su API y la falta de una documentación completa se tuvo que recurrir a mxGraph en su lugar.
+
+\subsubsection{Problemas con la versión de Node}
+La plantilla de mxGraph con React usada tenía una versión de Node antigua (v16.x.x) debido a alguna de sus dependencias. Esto chocaba con el despliegue continuo en Vercel que precisamente estaba descontinuando el soporte a esta versión en junio de este año.
+Fue necesario revisar las dependencias para poder usar una versión más nueva y estable de Node. Con este cambio también se creo el archivo .node-version que pueden usar algunos de los gestores de versiones de node más populares como fnm \cite{fnm}.
+
+\subsubsection{Problemas de transpilación con Jest}
+Cuando se intentó usar Jest \cite{jest} para la creación de tests unitarios en el desarrollo de las funcionalidades de validación del diagrama y generación del SQL se vió que causaba problemas al no poder usar la sintaxis de importación de módulos de Javascript.
+Al parecer estaba habiendo problemas internos con el transpilador y no era capaz de convertir estos archivos. No fue posible arreglarlo así que se optó por migrar a Vitest \cite{vitest}.
+La migración fue directa puesto que comparten API y no fue necesario hacer cambio alguno.
+
+\subsubsection{Problemas con mxGraph}
+Sin duda ha sido mxGraph la parte de la aplicación que más problemas ha dado. Esto es, evidentemente, normal. Se trata del núcleo de la aplicación y la parte con la que más se ha trabajado, es además una librería un tanto antigua lo que se refleja en su API y documentación.
+Algunos de los problemas concretos han sido:
+\begin{itemize}\tightlist
+    \item Los edges que conectan elementos son, por defecto, reasignables a otros elementos. Lo cuál causaba incoherencias en la aplicación.
+    \item Los edges son, por defecto, dirigidos. Tienen flechas al final.
+    \item Los nombres de los elementos como atributos forman un elemento individual que podía ser movido independientemente del elemento elipse.
+
+\end{itemize}
+Ha sido necesaria bastante investigación en la documentación de la API para saltarse estos comportamientos por defecto y poder adecuar el comportamiento a una aplicación para modelar diagramas entidad-relación.
