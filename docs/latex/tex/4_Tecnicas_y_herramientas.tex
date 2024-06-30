@@ -1,6 +1,59 @@
 \capitulo{4}{Técnicas y herramientas}
 
-Esta parte de la memoria tiene como objetivo presentar las técnicas metodológicas y las herramientas de desarrollo que se han utilizado para llevar a cabo el proyecto. Si se han estudiado diferentes alternativas de metodologías, herramientas, bibliotecas se puede hacer un resumen de los aspectos más destacados de cada alternativa, incluyendo comparativas entre las distintas opciones y una justificación de las elecciones realizadas. 
-No se pretende que este apartado se convierta en un capítulo de un libro dedicado a cada una de las alternativas, sino comentar los aspectos más destacados de cada opción, con un repaso somero a los fundamentos esenciales y referencias bibliográficas para que el lector pueda ampliar su conocimiento sobre el tema.
+\section{mxGraph}
+mxGraph \cite{mxgraph} es una librería JavaScript que permite la creación y manipulación de diagramas interactivos en el navegador y usa elementos vectoriales (SVG) y HTML para renderizar sus elementos. Se utiliza como base para crear aplicaciones que requieran la creación y edición de diagramas. mxGraph permite a los desarrolladores definir nodos, aristas y otros elementos gráficos, así como gestionar la disposición y estilo de estos elementos.
 
+\section{React}
+React \cite{react} es una biblioteca de JavaScript para construir aplicaciones web interactivas. Se basa en componentes reutilizables que gestionan su propio estado. React funciona modificando el HTML que carga el navegador utilizando un DOM virtual para minimizar las actualizaciones en el DOM real, mejorando así el rendimiento de las aplicaciones web.
 
+\section{Material UI}
+Material UI \cite{material-ui} es una biblioteca de componentes de interfaz de usuario para React, basada en el diseño de Material Design de Google.
+
+\section{Biome}
+Biome \cite{biome} es una herramienta que incorpora tanto formateo como linting para JavaScript. Ayuda a mantener un código limpio, coherente y libre de errores. En este proyecto, Biome se utiliza para asegurar la calidad del código antes de cada commit.
+
+\section{Validación y pruebas}
+
+\subsection{Pruebas unitarias}
+Inicialmente se utilizó Jest \cite{jest} para las pruebas unitarias, pero debido a problemas con la transpilación del código, se migró a Vitest \cite{vitest}. Vitest ofrece una API igual a Jest, con lo que la migración es directa.
+
+\subsection{Pruebas end-to-end}
+Para las pruebas funcionales, se utiliza Playwright \cite{playwright}, una herramienta moderna que permite simular las interacciones del usuario con la aplicación en varios navegadores. Playwright ejecuta la aplicación en un entorno real y prueba las funcionalidades desde la perspectiva del usuario final.
+
+\subsection{Test Driven Development (TDD)}
+El desarrollo guiado por pruebas de software, o TDD es una práctica de ingeniería de software que requiere el escribir las pruebas primero y refactorizar después. En primer lugar, se escribe una prueba y se comprueba que esta prueba falla. A continuación, se implementa el código que hace que la prueba pase satisfactoriamente y finalmente se refactoriza el código con la seguridad de que este cambio no afectará a la funcionalidad. Esta técnica nos permite pensar en inputs y outputs esperados ayudándonos a desarrollar la funcionalidad desde el test, así mismo nos permite asegurarnos que posteriores cambios no romperán la funcionalidad.
+
+\section{Integración continua}
+La integración continua es una práctica en desarrollo de software que consiste en realizar integraciones automáticas con una gran frecuencia para así poder detectar fallos. Este concepto de integración comprende la compilación (en este caso despliegue) y ejecución de las diferentes pruebas.
+
+\subsection{Local}
+Para la integración continua local, se utiliza Lefthook \cite{lefthook}, que es una herramienta de hooks que se ejecuta antes de cada commit. Lefthook ejecuta Biome para formatear el código y verificar su calidad en los archivos que están preparados para hacer commit.
+
+\subsection{GitHub Actions}
+GitHub Actions \cite{github-actions} es una parte de la plataforma GitHub que permite automatizar flujos de integración continua mediante su definición en archivos YAML. En este proyecto, se utilizan varias acciones:
+\begin{itemize}
+\tightlist
+    \item Biome: Verifica la calidad del código.
+    \item Tests: 
+    \begin{itemize}
+        \tightlist
+        \item Instala dependencias.
+        \item Instala navegadores de Playwright.
+        \item Ejecuta tests unitarios.
+        \item Ejecuta los tests end to end de Playwright con los diferentes navegadores.
+    \end{itemize}
+\end{itemize}
+
+\section{Despliegue continuo}
+El despliegue continuo se realiza mediante Vercel, que permite mantener versiones de producción y preview. Vercel facilita el despliegue continuo, asegurando que la aplicación esté siempre actualizada y lista para ser utilizada.
+Permite tener la rama principal constantemente desplegada e integrar los últimos cambios de manera automática, así como probar en un despliegue real los últimos cambios previos a su integración en la rama principal.
+
+\section{Git}
+Git \cite{git} es el sistema de control de versiones por excelencia en el desarrollo de software. Es fundamental para trabajar en pequeños y grandes proyectos, sobre todo en aquellos donde se requiera trabajar simultáneamente en equipo.
+\subsection{Git worktrees}
+Para este proyecto se ha hecho uso extensivo de los git worktrees \cite{git-worktree}, una característica un tanto desconocida de git que permite hacer un checkout de un determinado commit o rama y tratarlo como su propio directorio.
+Permite por tanto cambiar fácilmente entre ramas sin tener problemas con archivos no commiteados.
+
+\section{GitHub}
+GitHub es una plataforma online \cite{github} de desarrollo colaborativo que permite usarla como repositorio remoto en un repositorio git.
+No solo ofrece hosting sino que también nos proporciona diversas utilidades como gestión de issues, revisión de código, pull request y otras muchas opciones.
