@@ -63,24 +63,6 @@ export default function App(props) {
         [props],
     );
 
-    const onElementAdd = React.useCallback(
-        (evt) => {
-            if (props.onElementAdd) {
-                props.onElementAdd(evt);
-            }
-        },
-        [props],
-    );
-
-    const onDragEnd = React.useCallback(
-        (evt) => {
-            if (props.onDragEnd) {
-                props.onDragEnd(evt);
-            }
-        },
-        [props],
-    );
-
     function accessCell(idMx) {
         return graph.model.cells[idMx];
     }
@@ -106,8 +88,6 @@ export default function App(props) {
 
             graph.getModel().endUpdate();
             graph.getSelectionModel().addListener(mxEvent.CHANGE, onSelected);
-            graph.getModel().addListener(mxEvent.ADD, onElementAdd);
-            graph.getModel().addListener(mxEvent.MOVE_END, onDragEnd);
 
             graph.stylesheet.styles.defaultEdge.endArrow = ""; // NOTE: Edges are not directed
             graph
@@ -123,12 +103,10 @@ export default function App(props) {
                 .putCellStyle("transparentColor", transparentColor);
             // Cleanup function to remove the listener
             return () => {
-                graph.getModel().removeListener(mxEvent.ADD, onSelected);
-                graph.getModel().removeListener(mxEvent.MOVE_END, onElementAdd);
                 graph.getModel().removeListener(mxEvent.CHANGE, onSelected);
             };
         }
-    }, [graph, onSelected, onElementAdd, onDragEnd]);
+    }, [graph, onSelected]);
 
     const updateEntityAttributes = (entity) => {
         if (entity.attributes) {
@@ -173,9 +151,30 @@ export default function App(props) {
         });
     };
 
+    const onCellsMoved = (evt) => {
+        if (selected) {
+            console.log(selected);
+            // TODO: Detectar si se ha movido entidad o relación N:M, recalcular posición
+            // de sus atributos y pintarlos de nuevo
+        }
+    };
+
     React.useEffect(() => {
         if (graph) {
+            // Define the listener as a function to refer it for removal
+            const handleCellsMoved = (evt) => {
+                onCellsMoved(evt);
+            };
+
+            // Add the listener
+            graph.addListener(mxEvent.CELLS_MOVED, handleCellsMoved);
+
             updateDiagramData();
+
+            // Cleanup function to remove the listener
+            return () => {
+                graph.removeListener(handleCellsMoved, mxEvent.CELLS_MOVED);
+            };
         }
     }, [graph, selected, refreshDiagram, diagramRef]);
 
