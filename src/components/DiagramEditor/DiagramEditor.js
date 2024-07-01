@@ -156,12 +156,9 @@ export default function App(props) {
             // TODO: Detectar si se ha movido entidad o relación N:M, recalcular posición
             // de sus atributos y pintarlos de nuevo
             if (selected?.style?.includes("shape=rectangle")) {
-                console.log("Entidad");
                 const selectedEntityDiag = diagramRef.current.entities.find(
                     (entity) => entity.idMx === selected.id,
                 );
-                console.log(selected.geometry);
-                console.log(selectedEntityDiag.position);
 
                 selectedEntityDiag.attributes.forEach((attribute) => {
                     accessCell(attribute.cell.at(0)).geometry.x =
@@ -203,6 +200,7 @@ export default function App(props) {
             graph.addListener(mxEvent.CELLS_MOVED, handleCellsMoved);
 
             updateDiagramData();
+            console.log(diagramRef.current);
 
             // Cleanup function to remove the listener
             return () => {
