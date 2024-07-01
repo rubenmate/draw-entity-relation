@@ -185,12 +185,18 @@ export default function App(props) {
                     view.refresh();
                 }
             } else if (selected?.style?.includes("shape=ellipse")) {
-                const parentEntity = diagramRef.current.entities.find(
-                    (entity) =>
-                        entity.attributes.some(
-                            (attr) => attr.idMx === selected.id,
-                        ),
+                let parentEntity = diagramRef.current.entities.find((entity) =>
+                    entity.attributes.some((attr) => attr.idMx === selected.id),
                 );
+                // If no parent entity found, check if it's an N:M relation
+                if (!parentEntity) {
+                    parentEntity = diagramRef.current.relations.find(
+                        (relation) =>
+                            relation.attributes.some(
+                                (attr) => attr.idMx === selected.id,
+                            ),
+                    );
+                }
 
                 if (parentEntity) {
                     const attribute = parentEntity.attributes.find(
