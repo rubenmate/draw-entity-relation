@@ -178,7 +178,16 @@ export default function App(props) {
                     (relation) => relation.idMx === selected.id,
                 );
                 if (selectedRelationDiag.canHoldAttributes) {
-                    console.log("Relación N:M");
+                    selectedRelationDiag.attributes.forEach((attribute) => {
+                        accessCell(attribute.cell.at(0)).geometry.x =
+                            selected.geometry.x + attribute.offsetX;
+                        accessCell(attribute.cell.at(0)).geometry.y =
+                            selected.geometry.y + attribute.offsetY;
+                    });
+                    // NOTE: Refresh the graph to visually update the cell values
+                    const graphView = graph.getDefaultParent();
+                    const view = graph.getView(graphView);
+                    view.refresh();
                 }
             }
         }
