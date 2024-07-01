@@ -199,8 +199,20 @@ export default function App(props) {
         addPrimaryAttrRef.current = addKey;
         const source = selected;
 
-        const newX = selected.geometry.x + 120;
-        const newY = selected.geometry.y;
+        // Calculate offsets
+        let offsetX = 120;
+        let offsetY = -40;
+
+        if (selectedDiag?.attributes?.length) {
+            const lastAttribute =
+                selectedDiag.attributes[selectedDiag.attributes.length - 1];
+            const lastAttrCell = graph.getModel().getCell(lastAttribute.idMx);
+            offsetX = lastAttrCell.geometry.x - source.geometry.x; // Adjust spacing as needed
+            offsetY = lastAttrCell.geometry.y - source.geometry.y + 20; // Adjust spacing as needed
+        }
+
+        const newX = selected.geometry.x + offsetX;
+        const newY = selected.geometry.y + offsetY;
 
         // Function to generate a unique attribute name
         const generateUniqueAttributeName = (baseName, existingAttributes) => {
@@ -255,6 +267,8 @@ export default function App(props) {
                     },
                     key: addPrimaryAttrRef.current,
                     cell: [target.id, String(+target.id + 1)],
+                    offsetX: target.geometry.x - selected.geometry.x,
+                    offsetY: target.geometry.y - selected.geometry.y,
                 });
         } else if (isRelation) {
             // Update diagram state
@@ -268,10 +282,12 @@ export default function App(props) {
                         y: target.geometry.y,
                     },
                     cell: [target.id, String(+target.id + 1)],
+                    offsetX: target.geometry.x - selected.geometry.x,
+                    offsetY: target.geometry.y - selected.geometry.y,
                 });
         }
         toast.success("Atributo insertado");
-        // TODO: Increment the offset so that new attributes are not added on top of others
+        // TODO:  Increment the offset so that new attributes are not added on top of others
     };
 
     const hideAttributes = (isRelationNM) => {
