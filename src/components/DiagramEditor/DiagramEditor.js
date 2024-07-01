@@ -190,7 +190,6 @@ export default function App(props) {
             const handleCellsMoved = (evt) => {
                 onCellsMoved(evt);
             };
-
             // Add the listener
             graph.addListener(mxEvent.CELLS_MOVED, handleCellsMoved);
 
@@ -224,7 +223,7 @@ export default function App(props) {
         addPrimaryAttrRef.current = addKey;
         const source = selected;
 
-        // Calculate offsets
+        // Initial offset
         let offsetX = 120;
         let offsetY = -40;
 
@@ -232,8 +231,8 @@ export default function App(props) {
             const lastAttribute =
                 selectedDiag.attributes[selectedDiag.attributes.length - 1];
             const lastAttrCell = graph.getModel().getCell(lastAttribute.idMx);
-            offsetX = lastAttrCell.geometry.x - source.geometry.x; // Adjust spacing as needed
-            offsetY = lastAttrCell.geometry.y - source.geometry.y + 20; // Adjust spacing as needed
+            offsetX = lastAttrCell.geometry.x - source.geometry.x;
+            offsetY = lastAttrCell.geometry.y - source.geometry.y + 20;
         }
 
         const newX = selected.geometry.x + offsetX;
@@ -327,7 +326,6 @@ export default function App(props) {
             accessCell(cell.at(0)).setVisible(false);
             accessCell(cell.at(1)).setVisible(false);
         });
-        // graph.removeCells(mxAttributesToRemove);
         // NOTE: Refresh the graph to visually update the cell values
         const graphView = graph.getDefaultParent();
         const view = graph.getView(graphView);
