@@ -151,11 +151,36 @@ export default function App(props) {
         });
     };
 
-    const onCellsMoved = (evt) => {
+    const onCellsMoved = (_evt) => {
         if (selected) {
-            console.log(selected);
             // TODO: Detectar si se ha movido entidad o relación N:M, recalcular posición
             // de sus atributos y pintarlos de nuevo
+            if (selected?.style?.includes("shape=rectangle")) {
+                console.log("Entidad");
+                const selectedEntityDiag = diagramRef.current.entities.find(
+                    (entity) => entity.idMx === selected.id,
+                );
+                console.log(selected.geometry);
+                console.log(selectedEntityDiag.position);
+
+                selectedEntityDiag.attributes.forEach((attribute) => {
+                    accessCell(attribute.cell.at(0)).geometry.x =
+                        selected.geometry.x + attribute.offsetX;
+                    accessCell(attribute.cell.at(0)).geometry.y =
+                        selected.geometry.y + attribute.offsetY;
+                });
+                // NOTE: Refresh the graph to visually update the cell values
+                const graphView = graph.getDefaultParent();
+                const view = graph.getView(graphView);
+                view.refresh();
+            } else if (selected?.style?.includes("shape=rhombus")) {
+                const selectedRelationDiag = diagramRef.current.relations.find(
+                    (relation) => relation.idMx === selected.id,
+                );
+                if (selectedRelationDiag.canHoldAttributes) {
+                    console.log("Relación N:M");
+                }
+            }
         }
     };
 
