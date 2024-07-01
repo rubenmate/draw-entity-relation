@@ -184,6 +184,27 @@ export default function App(props) {
                     const view = graph.getView(graphView);
                     view.refresh();
                 }
+            } else if (selected?.style?.includes("shape=ellipse")) {
+                const parentEntity = diagramRef.current.entities.find(
+                    (entity) =>
+                        entity.attributes.some(
+                            (attr) => attr.idMx === selected.id,
+                        ),
+                );
+
+                if (parentEntity) {
+                    const attribute = parentEntity.attributes.find(
+                        (attr) => attr.idMx === selected.id,
+                    );
+
+                    if (attribute) {
+                        // Update offset
+                        attribute.offsetX =
+                            selected.geometry.x - parentEntity.position.x;
+                        attribute.offsetY =
+                            selected.geometry.y - parentEntity.position.y;
+                    }
+                }
             }
         }
     };
@@ -198,7 +219,6 @@ export default function App(props) {
             graph.addListener(mxEvent.CELLS_MOVED, handleCellsMoved);
 
             updateDiagramData();
-            console.log(diagramRef.current);
 
             // Cleanup function to remove the listener
             return () => {
