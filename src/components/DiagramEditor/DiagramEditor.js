@@ -153,8 +153,6 @@ export default function App(props) {
 
     const onCellsMoved = (_evt) => {
         if (selected) {
-            // TODO: Detectar si se ha movido entidad o relación N:M, recalcular posición
-            // de sus atributos y pintarlos de nuevo
             if (selected?.style?.includes("shape=rectangle")) {
                 const selectedEntityDiag = diagramRef.current.entities.find(
                     (entity) => entity.idMx === selected.id,
