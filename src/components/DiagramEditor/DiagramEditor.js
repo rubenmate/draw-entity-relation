@@ -223,7 +223,6 @@ export default function App(props) {
             };
             // Add the listener
             graph.addListener(mxEvent.CELLS_MOVED, handleCellsMoved);
-            console.log(diagramRef.current);
 
             updateDiagramData();
 
@@ -601,6 +600,7 @@ export default function App(props) {
                 const cardinality2 = accessCell(relation.side2.idMx);
                 const edge1 = accessCell(relation.side1.edgeId);
                 const edge2 = accessCell(relation.side2.edgeId);
+                let attributes = [];
 
                 // Remove the previous edges from the graph
                 if (cardinality1) {
@@ -616,6 +616,30 @@ export default function App(props) {
                 if (edge2) {
                     graph.removeCells([edge2]);
                 }
+                if (relation.canHoldAttributes) {
+                    relation.canHoldAttributes = false;
+                    relation.attributes = [];
+                    for (const attribute of relation.attributes) {
+                        attributes.push(accessCell(attribute.cell.at(0)));
+                        attributes.push(accessCell(attribute.cell.at(1)));
+                    }
+                    graph.removeCells(attributes);
+                }
+
+                relation.side1 = {
+                    cardinality: "X:X",
+                    cell: "",
+                    edgeId: "",
+                    entity: { idMx: "" },
+                    idMx: "",
+                };
+                relation.side2 = {
+                    cardinality: "X:X",
+                    cell: "",
+                    edgeId: "",
+                    entity: { idMx: "" },
+                    idMx: "",
+                };
             }
 
             const target1 = accessCell(side1.idMx);
