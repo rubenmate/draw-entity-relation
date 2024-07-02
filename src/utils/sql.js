@@ -118,7 +118,7 @@ export function process1NRelation(relation) {
                 .filter((attr) => attr.key) // Only include key attributes
                 .map((attr) => {
                     return {
-                        name: `${attr.name}_${oneSide.entity.name}`,
+                        name: `${attr.name}_${relation.name}`,
                         key: false,
                         notnull: notnull,
                         foreign_key: oneSide.entity.name,
@@ -145,14 +145,14 @@ export function process11Relation(relation) {
     ) {
         // Extract attributes from both sides
         const side1Attributes = side1.entity.attributes.map((attr) => ({
-            name: `${attr.name}_${side1.entity.name}`,
+            name: `${attr.name}_${relation.name}`,
             key: attr.key,
             notnull: false,
             unique: false,
         }));
 
         const side2Attributes = side2.entity.attributes.map((attr) => ({
-            name: `${attr.name}_${side2.entity.name}`,
+            name: `${attr.name}_${relation.name}`,
             key: false,
             notnull: attr.key,
             unique: attr.key,
@@ -213,7 +213,7 @@ export function process11Relation(relation) {
     );
     if (foreignKeyAttribute) {
         foreignKeyAttributes.push({
-            name: `${foreignKeyAttribute.name}_${primaryKeySide.entity.name}`,
+            name: `${foreignKeyAttribute.name}_${relation.name}`,
             key: false,
             notnull: notnull,
             unique: true,
@@ -280,14 +280,17 @@ export function processNMRelation(relation) {
         (attr) => attr.key,
     );
 
+    // FIX: When using the relation.name to compose the third table attributes
+    // name there will be repeated attributes name
+    // Hardcode a _1 and _2 at the end?
     const thirdTableAttributes = [
         {
-            name: `${primaryKeyAttributeSide1.name}_${side1Entity.name}`,
+            name: `${primaryKeyAttributeSide1.name}_${relation.name}`,
             key: true,
             foreign_key: side1Entity.name,
         },
         {
-            name: `${primaryKeyAttributeSide2.name}_${side2Entity.name}`,
+            name: `${primaryKeyAttributeSide2.name}_${relation.name}`,
             key: true,
             foreign_key: side2Entity.name,
         },
