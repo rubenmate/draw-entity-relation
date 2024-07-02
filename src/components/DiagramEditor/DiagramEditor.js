@@ -282,6 +282,9 @@ export default function App(props) {
                 }
             }
         }
+        // Ensure that the diagram is updated before
+        updateDiagramData();
+        saveToLocalStorage();
     };
 
     React.useEffect(() => {
@@ -1120,6 +1123,7 @@ export default function App(props) {
                     });
                 }
             }
+            saveToLocalStorage();
         }
         if (isEntity) {
             return (
@@ -1223,6 +1227,7 @@ export default function App(props) {
                     }
                 }
             }
+            saveToLocalStorage();
         }
 
         if (
@@ -1272,6 +1277,7 @@ export default function App(props) {
                     graph.removeCells([cell, ...attributeCells]);
                 }
             }
+            saveToLocalStorage();
         }
 
         if (isRelation) {
@@ -1411,6 +1417,7 @@ export default function App(props) {
         const handleAccept = () => {
             diagramRef.current.entities = [];
             diagramRef.current.relations = [];
+            localStorage.removeItem("diagramData");
 
             // Filter out cells that aren't key 0 or 1
             const cellsToRemove = Object.keys(graph.model.cells)
