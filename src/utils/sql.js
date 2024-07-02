@@ -315,62 +315,61 @@ const getSQLType = (attribute) => {
     // Assuming all attributes are of type VARCHAR for simplicity
     return "VARCHAR(40)";
 };
+const accentMap = {
+    á: "a",
+    é: "e",
+    í: "i",
+    ó: "o",
+    ú: "u",
+    Á: "A",
+    É: "E",
+    Í: "I",
+    Ó: "O",
+    Ú: "U",
+    ä: "a",
+    ë: "e",
+    ï: "i",
+    ö: "o",
+    ü: "u",
+    Ä: "A",
+    Ë: "E",
+    Ï: "I",
+    Ö: "O",
+    Ü: "U",
+    à: "a",
+    è: "e",
+    ì: "i",
+    ò: "o",
+    ù: "u",
+    À: "A",
+    È: "E",
+    Ì: "I",
+    Ò: "O",
+    Ù: "U",
+    â: "a",
+    ê: "e",
+    î: "i",
+    ô: "o",
+    û: "u",
+    Â: "A",
+    Ê: "E",
+    Î: "I",
+    Ô: "O",
+    Û: "U",
+    ã: "a",
+    õ: "o",
+    ñ: "n",
+    Ã: "A",
+    Õ: "O",
+    Ñ: "N",
+    å: "a",
+    Å: "A",
+    ç: "c",
+    Ç: "C",
+    // Add more mappings if needed
+};
 
 const sanitizeName = (name) => {
-    const accentMap = {
-        á: "a",
-        é: "e",
-        í: "i",
-        ó: "o",
-        ú: "u",
-        Á: "A",
-        É: "E",
-        Í: "I",
-        Ó: "O",
-        Ú: "U",
-        ä: "a",
-        ë: "e",
-        ï: "i",
-        ö: "o",
-        ü: "u",
-        Ä: "A",
-        Ë: "E",
-        Ï: "I",
-        Ö: "O",
-        Ü: "U",
-        à: "a",
-        è: "e",
-        ì: "i",
-        ò: "o",
-        ù: "u",
-        À: "A",
-        È: "E",
-        Ì: "I",
-        Ò: "O",
-        Ù: "U",
-        â: "a",
-        ê: "e",
-        î: "i",
-        ô: "o",
-        û: "u",
-        Â: "A",
-        Ê: "E",
-        Î: "I",
-        Ô: "O",
-        Û: "U",
-        ã: "a",
-        õ: "o",
-        ñ: "n",
-        Ã: "A",
-        Õ: "O",
-        Ñ: "N",
-        å: "a",
-        Å: "A",
-        ç: "c",
-        Ç: "C",
-        // Add more mappings if needed
-    };
-
     return name
         .split("")
         .map((char) => accentMap[char] || char)
@@ -437,6 +436,31 @@ export function generateNMSQL(tables) {
     return sql;
 }
 
+// Function to remove accents from names
+const removeAccents = (str) => {
+    return str
+        .split("")
+        .map((char) => accentMap[char] || char)
+        .join("");
+};
+
+// Function to ensure unique attribute names within a processed table
+const ensureUniqueAttributeNamesWithinTable = (attributes) => {
+    const uniqueNames = new Set();
+    attributes.forEach((attr) => {
+        let baseName = removeAccents(attr.name);
+        let uniqueName = baseName;
+        let counter = 1;
+        while (uniqueNames.has(uniqueName)) {
+            uniqueName = `${baseName}_${counter}`;
+            counter++;
+        }
+        attr.name = uniqueName;
+        uniqueNames.add(uniqueName);
+    });
+    return attributes;
+};
+
 // Generate SQL
 export function generateSQL(graph) {
     const tables = filterTables(graph);
@@ -459,16 +483,39 @@ export function generateSQL(graph) {
                 break;
         }
 
+        // Ensure unique attribute names within each processed table
+        processedTablesArray.forEach((processedTable) => {
+            processedTable.attributes = ensureUniqueAttributeNamesWithinTable(
+                processedTable.attributes,
+            );
+        });
+
         // Add the processed tables to the map, merging attributes if needed
         for (const processedTable of processedTablesArray) {
             if (tableMap.has(processedTable.name)) {
                 const existingTable = tableMap.get(processedTable.name);
                 const existingAttributes = new Set(
-                    existingTable.attributes.map((attr) => attr.name),
+                    existingTable.attributes.map((attr) =>
+                        removeAccents(attr.name),
+                    ),
                 );
                 processedTable.attributes.forEach((attr) => {
-                    if (!existingAttributes.has(attr.name)) {
+                    let baseName = removeAccents(attr.name);
+                    if (!existingAttributes.has(baseName)) {
+                        attr.name = baseName;
                         existingTable.attributes.push(attr);
+                        existingAttributes.add(baseName);
+                    } else {
+                        // Handle duplicate attribute names
+                        let newName = baseName;
+                        let counter = 1;
+                        while (existingAttributes.has(newName)) {
+                            newName = `${baseName}_${counter}`;
+                            counter++;
+                        }
+                        attr.name = newName;
+                        existingTable.attributes.push(attr);
+                        existingAttributes.add(newName);
                     }
                 });
             } else {
