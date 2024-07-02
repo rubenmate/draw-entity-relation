@@ -223,6 +223,7 @@ export default function App(props) {
             };
             // Add the listener
             graph.addListener(mxEvent.CELLS_MOVED, handleCellsMoved);
+            console.log(diagramRef.current);
 
             updateDiagramData();
 
@@ -1240,7 +1241,9 @@ export default function App(props) {
                 if (!diagnostics.notEmpty)
                     messages.push("El diagrama está vacío.");
                 if (!diagnostics.noRepeatedNames)
-                    messages.push("Hay entidades con nombres repetidos.");
+                    messages.push(
+                        "Hay entidades o relaciones con nombres repetidos.",
+                    );
                 if (!diagnostics.noRepeatedAttrNames)
                     messages.push("Hay atributos repetidos en una entidad.");
                 if (!diagnostics.noEntitiesWithoutAttributes)

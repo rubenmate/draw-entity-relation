@@ -55,8 +55,8 @@ export function validateGraph(graph) {
     return diagnostics;
 }
 
-// This function check for repeated entity name, relations N:M are also
-// treated as entities
+// This function check for repeated entity name, relations
+// can't be repeated also
 // Returns true if there are repeated entity names
 // false if there are not repeated entity names
 export function repeatedEntities(graph) {
@@ -69,9 +69,9 @@ export function repeatedEntities(graph) {
         entityNames.add(entity.name);
     }
 
-    // Check for N:M relations as well
+    // Check for relations as well
     for (const relation of graph.relations) {
-        if (relation.canHoldAttributes && entityNames.has(relation.name)) {
+        if (entityNames.has(relation.name)) {
             return true; // Found a duplicate name
         }
         entityNames.add(relation.name);
