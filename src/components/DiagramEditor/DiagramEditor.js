@@ -70,14 +70,69 @@ export default function App(props) {
     const saveToLocalStorage = () => {
         const diagramData = JSON.stringify(diagramRef.current);
         localStorage.setItem("diagramData", diagramData);
-
-        const encoder = new mxCodec();
-        const node = encoder.encode(graph.getModel());
-        const xmlString = mxUtils.getXml(node); // fetch XML (string or document/node)
-        localStorage.setItem("graphData", xmlString);
-
-        console.log(xmlString);
     };
+
+    const recreateGraphFromLocalStorage = () => {
+        const recreateAttribute = (attribute, source) => {
+            let target;
+            let edge;
+            // Recreate attribute
+            target = graph.insertVertex(
+                null,
+                attribute.idMx,
+                attribute.name,
+                attribute.position.x,
+                attribute.position.y,
+                10,
+                10,
+                `shape=ellipse;rightLabelStyle;notResizeableStyle;transparentColor;${
+                    attribute.key ? "keyAttrStyle" : ""
+                }`,
+            );
+            edge = graph.insertEdge(
+                source,
+                String(+target.id + 1),
+                null,
+                source,
+                target,
+            );
+            graph.orderCells(true, [edge]); // Move front the selected entity so the new vertex aren't on top
+        };
+        const recreateEntity = (entity) => {
+            const source = graph.insertVertex(
+                null,
+                entity.idMx,
+                entity.name,
+                entity.position.x,
+                entity.position.y,
+                100,
+                40,
+                ";shape=rectangle;verticalAlign=middle;align=center;fillColor=#C3D9FF;strokeColor=#6482B9;fontColor=#774400",
+            );
+            for (const attribute of entity.attributes) {
+                recreateAttribute(attribute, source);
+            }
+        };
+
+        const recreateRelation = (relation) => {
+            console.log(relation);
+        };
+
+        // Recreate the graph
+        if (localStorage.getItem("diagramData"))
+            diagramRef.current = JSON.parse(
+                localStorage.getItem("diagramData"),
+            );
+
+        for (const entity of diagramRef.current.entities) {
+            recreateEntity(entity);
+        }
+
+        for (const relation of diagramRef.current.relations) {
+            recreateRelation(relation);
+        }
+    };
+
     React.useEffect(() => {
         if (!graph) {
             mxEvent.disableContextMenu(containerRef.current);
@@ -112,7 +167,9 @@ export default function App(props) {
             graph
                 .getStylesheet()
                 .putCellStyle("transparentColor", transparentColor);
-            // Cleanup function to remove the listener
+
+            recreateGraphFromLocalStorage();
+
             return () => {
                 graph.getModel().removeListener(mxEvent.CHANGE, onSelected);
             };
