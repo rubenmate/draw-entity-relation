@@ -280,17 +280,14 @@ export function processNMRelation(relation) {
         (attr) => attr.key,
     );
 
-    // FIX: When using the relation.name to compose the third table attributes
-    // name there will be repeated attributes name
-    // Hardcode a _1 and _2 at the end?
     const thirdTableAttributes = [
         {
-            name: `${primaryKeyAttributeSide1.name}_${relation.name}`,
+            name: `${primaryKeyAttributeSide1.name}_${relation.name}_1`,
             key: true,
             foreign_key: side1Entity.name,
         },
         {
-            name: `${primaryKeyAttributeSide2.name}_${relation.name}`,
+            name: `${primaryKeyAttributeSide2.name}_${relation.name}_2`,
             key: true,
             foreign_key: side2Entity.name,
         },
