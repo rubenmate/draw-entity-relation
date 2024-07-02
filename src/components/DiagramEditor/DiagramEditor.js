@@ -14,7 +14,7 @@ import {
     Select,
 } from "@mui/material";
 import { default as MxGraph } from "mxgraph";
-import { mxCodec, mxConstants, mxPoint, mxUtils } from "mxgraph-js";
+import { mxConstants, mxPoint } from "mxgraph-js";
 import toast, { Toaster } from "react-hot-toast";
 import { generateSQL } from "../../utils/sql";
 import { POSSIBLE_CARDINALITIES, validateGraph } from "../../utils/validation";
@@ -115,7 +115,87 @@ export default function App(props) {
         };
 
         const recreateRelation = (relation) => {
-            console.log(relation);
+            const source = graph.insertVertex(
+                null,
+                relation.idMx,
+                relation.name,
+                relation.position.x,
+                relation.position.y,
+                100,
+                40,
+                ";shape=rhombus;verticalAlign=middle;align=center;fillColor=#C3D9FF;strokeColor=#6482B9;fontColor=#774400",
+            );
+            for (const attribute of relation.attributes) {
+                recreateAttribute(attribute, source);
+            }
+
+            if (relation.side1.idMx !== "" && relation.side2.idMx !== "") {
+                const target1 = accessCell(relation.side1.entity.idMx);
+                const target2 = accessCell(relation.side2.entity.idMx);
+
+                const edge1 = graph.insertEdge(
+                    source,
+                    null,
+                    null,
+                    source,
+                    target1,
+                );
+                const edge2 = graph.insertEdge(
+                    source,
+                    null,
+                    null,
+                    source,
+                    target2,
+                );
+                const cardinality1 = graph.insertVertex(
+                    edge1,
+                    relation.side1.cell,
+                    relation.side1.cardinality === ""
+                        ? "X:X"
+                        : relation.side1.cardinality,
+                    0,
+                    0,
+                    1,
+                    1,
+                    "fontSize=12;fontColor=#000000;fillColor=#ffffff;strokeColor=none;rounded=1;arcSize=25;strokeWidth=3;",
+                    true,
+                );
+                const cardinality2 = graph.insertVertex(
+                    edge2,
+                    relation.side2.cell,
+                    relation.side2.cardinality === ""
+                        ? "X:X"
+                        : relation.side2.cardinality,
+                    0,
+                    0,
+                    1,
+                    1,
+                    "fontSize=12;fontColor=#000000;fillColor=#ffffff;strokeColor=none;rounded=1;arcSize=25;strokeWidth=3;",
+                    true,
+                );
+                graph.updateCellSize(cardinality1);
+                graph.updateCellSize(cardinality2);
+                if (target1 && target2) {
+                    if (target1.value === target2.value) {
+                        const x1 =
+                            target1.geometry.x + target1.geometry.width / 2;
+                        const x2 =
+                            source.geometry.x + source.geometry.width / 2;
+                        const y1 =
+                            target1.geometry.y + target1.geometry.height / 2;
+                        const y2 =
+                            source.geometry.y + source.geometry.height / 2;
+
+                        edge1.geometry.points = [new mxPoint(x2, y1)];
+                        edge2.geometry.points = [new mxPoint(x1, y2)];
+                    }
+                }
+                graph.orderCells(true, [edge1, edge2]); // Move front the selected entity so the new vertex aren't on top
+                // NOTE: Refresh the graph to visually update the cell values
+                const graphView = graph.getDefaultParent();
+                const view = graph.getView(graphView);
+                view.refresh();
+            }
         };
 
         // Recreate the graph
@@ -218,6 +298,7 @@ export default function App(props) {
                 updateEntityAttributes(relation);
             }
         });
+        saveToLocalStorage();
     };
 
     const onCellsMoved = (_evt) => {
@@ -284,7 +365,6 @@ export default function App(props) {
         }
         // Ensure that the diagram is updated before
         updateDiagramData();
-        saveToLocalStorage();
     };
 
     React.useEffect(() => {
@@ -297,6 +377,8 @@ export default function App(props) {
             graph.addListener(mxEvent.CELLS_MOVED, handleCellsMoved);
 
             updateDiagramData();
+            console.log(diagramRef.current);
+            console.log(graph.model.cells);
 
             // Cleanup function to remove the listener
             return () => {
@@ -413,6 +495,7 @@ export default function App(props) {
                     offsetY: target.geometry.y - selected.geometry.y,
                 });
         }
+        updateDiagramData();
         toast.success("Atributo insertado");
         // TODO:  Increment the offset so that new attributes are not added on top of others
     };
@@ -689,6 +772,7 @@ export default function App(props) {
                 }
             }
 
+            // VOLVER AQUÍ
             const target1 = accessCell(side1.idMx);
             const target2 = accessCell(side2.idMx);
 
@@ -906,6 +990,7 @@ export default function App(props) {
             setSide1("");
             setSide2("");
             setOpen(false);
+            updateDiagramData();
         };
 
         const [side1, setSide1] = React.useState("");
@@ -1123,7 +1208,7 @@ export default function App(props) {
                     });
                 }
             }
-            saveToLocalStorage();
+            updateDiagramData();
         }
         if (isEntity) {
             return (
@@ -1227,7 +1312,7 @@ export default function App(props) {
                     }
                 }
             }
-            saveToLocalStorage();
+            updateDiagramData();
         }
 
         if (
@@ -1277,7 +1362,7 @@ export default function App(props) {
                     graph.removeCells([cell, ...attributeCells]);
                 }
             }
-            saveToLocalStorage();
+            updateDiagramData();
         }
 
         if (isRelation) {
