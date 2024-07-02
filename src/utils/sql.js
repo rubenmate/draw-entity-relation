@@ -327,8 +327,6 @@ const createTableSQL = (table) => {
             if (attr.key && !attr.foreign_key) columnDef += " PRIMARY KEY";
             if (attr.unique) columnDef += " UNIQUE";
             if (attr.notnull) columnDef += " NOT NULL";
-            if (attr.foreign_key)
-                columnDef += ` REFERENCES ${sanitizeName(attr.foreign_key)}`;
             return columnDef;
         })
         .join(",\n  ");
@@ -346,6 +344,24 @@ const createTableSQL = (table) => {
     return `CREATE TABLE ${sanitizeName(
         table.name,
     )} (\n  ${columns}${primaryKeyClause}\n);`;
+};
+
+const createForeignKeySQL = (table) => {
+    const foreignKeys = table.attributes
+        .filter((attr) => attr.foreign_key)
+        .map(
+            (attr) =>
+                `ALTER TABLE ${sanitizeName(
+                    table.name,
+                )} ADD CONSTRAINT FK_${sanitizeName(
+                    attr.name,
+                )} FOREIGN KEY (${sanitizeName(
+                    attr.name,
+                )}) REFERENCES ${sanitizeName(attr.foreign_key)};`,
+        )
+        .join("\n");
+
+    return foreignKeys;
 };
 
 export function generate1NSQL(tables) {
@@ -405,9 +421,11 @@ export function generateSQL(graph) {
 
     // Generate SQL script from the table map
     let sqlScript = "";
+    let foreignKeyScript = "";
     for (const table of tableMap.values()) {
         sqlScript += createTableSQL(table) + "\n\n";
+        foreignKeyScript += createForeignKeySQL(table) + "\n";
     }
 
-    return sqlScript.trim();
+    return sqlScript.trim() + "\n\n" + foreignKeyScript.trim();
 }
