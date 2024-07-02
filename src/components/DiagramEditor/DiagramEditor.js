@@ -227,7 +227,7 @@ export default function App(props) {
                     (entity) => entity.idMx === selected.id,
                 );
 
-                selectedEntityDiag.attributes.forEach((attribute) => {
+                selectedEntityDiag?.attributes.forEach((attribute) => {
                     accessCell(attribute.cell.at(0)).geometry.x =
                         selected.geometry.x + attribute.offsetX;
                     accessCell(attribute.cell.at(0)).geometry.y =
@@ -242,7 +242,7 @@ export default function App(props) {
                     (relation) => relation.idMx === selected.id,
                 );
                 if (selectedRelationDiag.canHoldAttributes) {
-                    selectedRelationDiag.attributes.forEach((attribute) => {
+                    selectedRelationDiag?.attributes.forEach((attribute) => {
                         accessCell(attribute.cell.at(0)).geometry.x =
                             selected.geometry.x + attribute.offsetX;
                         accessCell(attribute.cell.at(0)).geometry.y =
