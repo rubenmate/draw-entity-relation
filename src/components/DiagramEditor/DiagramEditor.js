@@ -600,7 +600,7 @@ export default function App(props) {
                 const cardinality2 = accessCell(relation.side2.idMx);
                 const edge1 = accessCell(relation.side1.edgeId);
                 const edge2 = accessCell(relation.side2.edgeId);
-                let attributes = [];
+                let attributesToDelete = [];
 
                 // Remove the previous edges from the graph
                 if (cardinality1) {
@@ -617,13 +617,18 @@ export default function App(props) {
                     graph.removeCells([edge2]);
                 }
                 if (relation.canHoldAttributes) {
+                    for (const attribute of relation.attributes) {
+                        attributesToDelete.push(
+                            accessCell(attribute.cell.at(0)),
+                        );
+                        attributesToDelete.push(
+                            accessCell(attribute.cell.at(1)),
+                        );
+                    }
+                    graph.removeCells(attributesToDelete);
+
                     relation.canHoldAttributes = false;
                     relation.attributes = [];
-                    for (const attribute of relation.attributes) {
-                        attributes.push(accessCell(attribute.cell.at(0)));
-                        attributes.push(accessCell(attribute.cell.at(1)));
-                    }
-                    graph.removeCells(attributes);
                 }
 
                 relation.side1 = {
@@ -843,7 +848,16 @@ export default function App(props) {
             if (side1.endsWith(":N") && side2.endsWith(":N")) {
                 selectedDiag.canHoldAttributes = true;
             } else {
+                let attributesToDelete = [];
+
+                for (const attribute of selectedDiag.attributes) {
+                    attributesToDelete.push(accessCell(attribute.cell.at(0)));
+                    attributesToDelete.push(accessCell(attribute.cell.at(1)));
+                }
+                graph.removeCells(attributesToDelete);
+
                 selectedDiag.canHoldAttributes = false;
+                selectedDiag.attributes = [];
             }
 
             const label1 = accessCell(selectedDiag.side1.cell);
