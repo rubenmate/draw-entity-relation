@@ -118,7 +118,7 @@ export function process1NRelation(relation) {
                 .filter((attr) => attr.key) // Only include key attributes
                 .map((attr) => {
                     return {
-                        name: `${attr.name}_${oneSide.entity.name}`,
+                        name: `${attr.name}_${relation.name}`,
                         key: false,
                         notnull: notnull,
                         foreign_key: oneSide.entity.name,
@@ -145,14 +145,14 @@ export function process11Relation(relation) {
     ) {
         // Extract attributes from both sides
         const side1Attributes = side1.entity.attributes.map((attr) => ({
-            name: `${attr.name}_${side1.entity.name}`,
+            name: `${attr.name}_${relation.name}`,
             key: attr.key,
             notnull: false,
             unique: false,
         }));
 
         const side2Attributes = side2.entity.attributes.map((attr) => ({
-            name: `${attr.name}_${side2.entity.name}`,
+            name: `${attr.name}_${relation.name}`,
             key: false,
             notnull: attr.key,
             unique: attr.key,
@@ -213,7 +213,7 @@ export function process11Relation(relation) {
     );
     if (foreignKeyAttribute) {
         foreignKeyAttributes.push({
-            name: `${foreignKeyAttribute.name}_${primaryKeySide.entity.name}`,
+            name: `${foreignKeyAttribute.name}_${relation.name}`,
             key: false,
             notnull: notnull,
             unique: true,
@@ -282,12 +282,12 @@ export function processNMRelation(relation) {
 
     const thirdTableAttributes = [
         {
-            name: `${primaryKeyAttributeSide1.name}_${side1Entity.name}`,
+            name: `${primaryKeyAttributeSide1.name}_${relation.name}_1`,
             key: true,
             foreign_key: side1Entity.name,
         },
         {
-            name: `${primaryKeyAttributeSide2.name}_${side2Entity.name}`,
+            name: `${primaryKeyAttributeSide2.name}_${relation.name}_2`,
             key: true,
             foreign_key: side2Entity.name,
         },
@@ -317,7 +317,65 @@ const getSQLType = (attribute) => {
 };
 
 const sanitizeName = (name) => {
-    return name.replace(/\s+/g, "_");
+    const accentMap = {
+        á: "a",
+        é: "e",
+        í: "i",
+        ó: "o",
+        ú: "u",
+        Á: "A",
+        É: "E",
+        Í: "I",
+        Ó: "O",
+        Ú: "U",
+        ä: "a",
+        ë: "e",
+        ï: "i",
+        ö: "o",
+        ü: "u",
+        Ä: "A",
+        Ë: "E",
+        Ï: "I",
+        Ö: "O",
+        Ü: "U",
+        à: "a",
+        è: "e",
+        ì: "i",
+        ò: "o",
+        ù: "u",
+        À: "A",
+        È: "E",
+        Ì: "I",
+        Ò: "O",
+        Ù: "U",
+        â: "a",
+        ê: "e",
+        î: "i",
+        ô: "o",
+        û: "u",
+        Â: "A",
+        Ê: "E",
+        Î: "I",
+        Ô: "O",
+        Û: "U",
+        ã: "a",
+        õ: "o",
+        ñ: "n",
+        Ã: "A",
+        Õ: "O",
+        Ñ: "N",
+        å: "a",
+        Å: "A",
+        ç: "c",
+        Ç: "C",
+        // Add more mappings if needed
+    };
+
+    return name
+        .split("")
+        .map((char) => accentMap[char] || char)
+        .join("")
+        .replace(/\s+/g, "_");
 };
 
 const createTableSQL = (table) => {
