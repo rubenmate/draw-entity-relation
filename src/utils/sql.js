@@ -118,7 +118,7 @@ export function process1NRelation(relation) {
                 .filter((attr) => attr.key) // Only include key attributes
                 .map((attr) => {
                     return {
-                        name: `${attr.name}_${oneSide.entity.name}`,
+                        name: `${attr.name}_${relation.name}`,
                         key: false,
                         notnull: notnull,
                         foreign_key: oneSide.entity.name,
@@ -145,14 +145,14 @@ export function process11Relation(relation) {
     ) {
         // Extract attributes from both sides
         const side1Attributes = side1.entity.attributes.map((attr) => ({
-            name: `${attr.name}_${side1.entity.name}`,
+            name: `${attr.name}_${relation.name}`,
             key: attr.key,
             notnull: false,
             unique: false,
         }));
 
         const side2Attributes = side2.entity.attributes.map((attr) => ({
-            name: `${attr.name}_${side2.entity.name}`,
+            name: `${attr.name}_${relation.name}`,
             key: false,
             notnull: attr.key,
             unique: attr.key,
@@ -213,7 +213,7 @@ export function process11Relation(relation) {
     );
     if (foreignKeyAttribute) {
         foreignKeyAttributes.push({
-            name: `${foreignKeyAttribute.name}_${primaryKeySide.entity.name}`,
+            name: `${foreignKeyAttribute.name}_${relation.name}`,
             key: false,
             notnull: notnull,
             unique: true,
@@ -282,12 +282,12 @@ export function processNMRelation(relation) {
 
     const thirdTableAttributes = [
         {
-            name: `${primaryKeyAttributeSide1.name}_${side1Entity.name}`,
+            name: `${primaryKeyAttributeSide1.name}_${relation.name}_1`,
             key: true,
             foreign_key: side1Entity.name,
         },
         {
-            name: `${primaryKeyAttributeSide2.name}_${side2Entity.name}`,
+            name: `${primaryKeyAttributeSide2.name}_${relation.name}_2`,
             key: true,
             foreign_key: side2Entity.name,
         },
@@ -315,9 +315,66 @@ const getSQLType = (attribute) => {
     // Assuming all attributes are of type VARCHAR for simplicity
     return "VARCHAR(40)";
 };
+const accentMap = {
+    á: "a",
+    é: "e",
+    í: "i",
+    ó: "o",
+    ú: "u",
+    Á: "A",
+    É: "E",
+    Í: "I",
+    Ó: "O",
+    Ú: "U",
+    ä: "a",
+    ë: "e",
+    ï: "i",
+    ö: "o",
+    ü: "u",
+    Ä: "A",
+    Ë: "E",
+    Ï: "I",
+    Ö: "O",
+    Ü: "U",
+    à: "a",
+    è: "e",
+    ì: "i",
+    ò: "o",
+    ù: "u",
+    À: "A",
+    È: "E",
+    Ì: "I",
+    Ò: "O",
+    Ù: "U",
+    â: "a",
+    ê: "e",
+    î: "i",
+    ô: "o",
+    û: "u",
+    Â: "A",
+    Ê: "E",
+    Î: "I",
+    Ô: "O",
+    Û: "U",
+    ã: "a",
+    õ: "o",
+    ñ: "n",
+    Ã: "A",
+    Õ: "O",
+    Ñ: "N",
+    å: "a",
+    Å: "A",
+    ç: "c",
+    Ç: "C",
+    // Add more mappings if needed
+};
 
 const sanitizeName = (name) => {
-    return name.replace(/\s+/g, "_");
+    return name
+        .split("")
+        .map((char) => accentMap[char] || char)
+        .join("")
+        .replace(/\s+/g, "_");
 };
 
 const createTableSQL = (table) => {
@@ -327,8 +384,6 @@ const createTableSQL = (table) => {
             if (attr.key && !attr.foreign_key) columnDef += " PRIMARY KEY";
             if (attr.unique) columnDef += " UNIQUE";
             if (attr.notnull) columnDef += " NOT NULL";
-            if (attr.foreign_key)
-                columnDef += ` REFERENCES ${sanitizeName(attr.foreign_key)}`;
             return columnDef;
         })
         .join(",\n  ");
@@ -348,6 +403,24 @@ const createTableSQL = (table) => {
     )} (\n  ${columns}${primaryKeyClause}\n);`;
 };
 
+const createForeignKeySQL = (table) => {
+    const foreignKeys = table.attributes
+        .filter((attr) => attr.foreign_key)
+        .map(
+            (attr) =>
+                `ALTER TABLE ${sanitizeName(
+                    table.name,
+                )} ADD CONSTRAINT FK_${sanitizeName(
+                    attr.name,
+                )} FOREIGN KEY (${sanitizeName(
+                    attr.name,
+                )}) REFERENCES ${sanitizeName(attr.foreign_key)};`,
+        )
+        .join("\n");
+
+    return foreignKeys;
+};
+
 export function generate1NSQL(tables) {
     const sql = tables.map(createTableSQL).join("\n\n");
     return sql;
@@ -362,6 +435,31 @@ export function generateNMSQL(tables) {
     const sql = tables.map(createTableSQL).join("\n\n");
     return sql;
 }
+
+// Function to remove accents from names
+const removeAccents = (str) => {
+    return str
+        .split("")
+        .map((char) => accentMap[char] || char)
+        .join("");
+};
+
+// Function to ensure unique attribute names within a processed table
+const ensureUniqueAttributeNamesWithinTable = (attributes) => {
+    const uniqueNames = new Set();
+    attributes.forEach((attr) => {
+        let baseName = removeAccents(attr.name);
+        let uniqueName = baseName;
+        let counter = 1;
+        while (uniqueNames.has(uniqueName)) {
+            uniqueName = `${baseName}_${counter}`;
+            counter++;
+        }
+        attr.name = uniqueName;
+        uniqueNames.add(uniqueName);
+    });
+    return attributes;
+};
 
 // Generate SQL
 export function generateSQL(graph) {
@@ -385,16 +483,39 @@ export function generateSQL(graph) {
                 break;
         }
 
+        // Ensure unique attribute names within each processed table
+        processedTablesArray.forEach((processedTable) => {
+            processedTable.attributes = ensureUniqueAttributeNamesWithinTable(
+                processedTable.attributes,
+            );
+        });
+
         // Add the processed tables to the map, merging attributes if needed
         for (const processedTable of processedTablesArray) {
             if (tableMap.has(processedTable.name)) {
                 const existingTable = tableMap.get(processedTable.name);
                 const existingAttributes = new Set(
-                    existingTable.attributes.map((attr) => attr.name),
+                    existingTable.attributes.map((attr) =>
+                        removeAccents(attr.name),
+                    ),
                 );
                 processedTable.attributes.forEach((attr) => {
-                    if (!existingAttributes.has(attr.name)) {
+                    let baseName = removeAccents(attr.name);
+                    if (!existingAttributes.has(baseName)) {
+                        attr.name = baseName;
                         existingTable.attributes.push(attr);
+                        existingAttributes.add(baseName);
+                    } else {
+                        // Handle duplicate attribute names
+                        let newName = baseName;
+                        let counter = 1;
+                        while (existingAttributes.has(newName)) {
+                            newName = `${baseName}_${counter}`;
+                            counter++;
+                        }
+                        attr.name = newName;
+                        existingTable.attributes.push(attr);
+                        existingAttributes.add(newName);
                     }
                 });
             } else {
@@ -405,9 +526,11 @@ export function generateSQL(graph) {
 
     // Generate SQL script from the table map
     let sqlScript = "";
+    let foreignKeyScript = "";
     for (const table of tableMap.values()) {
         sqlScript += createTableSQL(table) + "\n\n";
+        foreignKeyScript += createForeignKeySQL(table) + "\n";
     }
 
-    return sqlScript.trim();
+    return sqlScript.trim() + "\n\n" + foreignKeyScript.trim();
 }
