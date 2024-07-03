@@ -481,8 +481,7 @@ export function generateSQL(graph) {
     }
 
     for (const table of tableMap.values()) {
-        console.log(table);
-
+        table.name = removeAccents(table.name);
         // Iterate over tables. Remove the accents, check for repeated attributes with the
         // same name. Change the name of the repeated items so that there is no repetition
         const attributeNames = new Set();
