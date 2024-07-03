@@ -685,6 +685,8 @@ export default function App(props) {
             graph.orderCells(true, [edge1, edge2]); // Move the new edges to the back
 
             setOpen(false);
+            setSide1("");
+            setSide2("");
         };
 
         const [side1, setSide1] = React.useState("");
