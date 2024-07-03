@@ -176,7 +176,7 @@ export default function App(props) {
                 graph.updateCellSize(cardinality1);
                 graph.updateCellSize(cardinality2);
                 if (target1 && target2) {
-                    if (target1.value === target2.value) {
+                    if (target1.id === target2.id) {
                         const x1 =
                             target1.geometry.x + target1.geometry.width / 2;
                         const x2 =
@@ -191,25 +191,21 @@ export default function App(props) {
                     }
                 }
                 graph.orderCells(true, [edge1, edge2]); // Move front the selected entity so the new vertex aren't on top
-                // NOTE: Refresh the graph to visually update the cell values
-                const graphView = graph.getDefaultParent();
-                const view = graph.getView(graphView);
-                view.refresh();
             }
         };
 
         // Recreate the graph
-        if (localStorage.getItem("diagramData"))
-            diagramRef.current = JSON.parse(
-                localStorage.getItem("diagramData"),
-            );
+        if (localStorage.getItem("diagramData")) {
+            const savedData = JSON.parse(localStorage.getItem("diagramData"));
+            diagramRef.current = savedData; // Deep clone the saved data
 
-        for (const entity of diagramRef.current.entities) {
-            recreateEntity(entity);
-        }
+            for (const entity of diagramRef.current.entities) {
+                recreateEntity(entity);
+            }
 
-        for (const relation of diagramRef.current.relations) {
-            recreateRelation(relation);
+            for (const relation of diagramRef.current.relations) {
+                recreateRelation(relation);
+            }
         }
     };
 
