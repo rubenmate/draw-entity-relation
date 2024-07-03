@@ -279,7 +279,6 @@ export default function App(props) {
                 entity.position.y = cellData.geometry.y;
 
                 updateEntityAttributes(entity);
-                saveToLocalStorage();
             }
         });
 
