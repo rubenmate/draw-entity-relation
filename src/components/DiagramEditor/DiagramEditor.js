@@ -401,7 +401,7 @@ export default function App(props) {
                 graph.removeListener(handleCellsMoved, mxEvent.CELLS_MOVED);
             };
         }
-    }, [graph, selected, refreshDiagram, diagramRef]);
+    }, [graph, selected, diagramRef, refreshDiagram]);
 
     const pushCellsBack = (moveBack) => () => {
         graph.orderCells(moveBack);
@@ -598,9 +598,6 @@ export default function App(props) {
                 cellsToRecreate.push(accessCell(attribute.cell.at(1)));
             });
 
-        // FIX: Removing the cells and then adding may not work
-        // The easiest way to change the style it's to modify it and then
-        // remove the old cells and create the modified ones
         graph.removeCells(cellsToDelete);
         graph.addCells(cellsToRecreate);
         graph.orderCells(true, cellsToRecreate);
@@ -788,7 +785,6 @@ export default function App(props) {
                 }
             }
 
-            // VOLVER AQUÍ
             const target1 = accessCell(side1.idMx);
             const target2 = accessCell(side2.idMx);
 
