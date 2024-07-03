@@ -135,14 +135,14 @@ export default function App(props) {
 
                 const edge1 = graph.insertEdge(
                     source,
-                    null,
+                    relation.side1.edgeId, // id
                     null,
                     source,
                     target1,
                 );
                 const edge2 = graph.insertEdge(
                     source,
-                    null,
+                    relation.side2.edgeId, // id
                     null,
                     source,
                     target2,
