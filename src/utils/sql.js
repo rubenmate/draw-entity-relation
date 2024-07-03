@@ -480,6 +480,28 @@ export function generateSQL(graph) {
         }
     }
 
+    for (const table of tableMap.values()) {
+        console.log(table);
+
+        // Iterate over tables. Remove the accents, check for repeated attributes with the
+        // same name. Change the name of the repeated items so that there is no repetition
+        const attributeNames = new Set();
+        table.attributes.forEach((attr) => {
+            let baseName = removeAccents(attr.name);
+            let uniqueName = baseName;
+            if (attributeNames.has(uniqueName)) {
+                let counter = 1;
+                uniqueName = `${baseName}_${counter}`;
+                while (attributeNames.has(uniqueName)) {
+                    counter++;
+                    uniqueName = `${baseName}_${counter}`;
+                }
+            }
+            attr.name = uniqueName;
+            attributeNames.add(uniqueName);
+        });
+    }
+
     // Generate SQL script from the table map
     let sqlScript = "";
     let foreignKeyScript = "";
