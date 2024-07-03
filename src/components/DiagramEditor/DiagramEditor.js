@@ -1500,6 +1500,221 @@ export default function App(props) {
         );
     };
 
+    const renderExportJSONButton = () => {
+        const [open, setOpen] = React.useState(false);
+        const [acceptDisabled, setAcceptDisabled] = React.useState(true);
+        const [validationMessages, setValidationMessages] = React.useState([]);
+
+        const handleClickOpen = () => {
+            setRefreshDiagram((prevState) => !prevState);
+            const diagnostics = validateGraph(diagramRef.current);
+
+            if (diagnostics.isValid) {
+                setAcceptDisabled(false);
+                setValidationMessages([
+                    "¿Deseas exportar el diagrama en formato JSON?",
+                ]);
+            } else {
+                setAcceptDisabled(true);
+                const messages = [
+                    "No se ha podido exportar el diagrama en formato JSON por los siguientes errores:",
+                ];
+                if (!diagnostics.notEmpty)
+                    messages.push("El diagrama está vacío.");
+                if (!diagnostics.noRepeatedNames)
+                    messages.push("Hay entidades con nombres repetidos.");
+                if (!diagnostics.noRepeatedAttrNames)
+                    messages.push("Hay atributos repetidos en una entidad.");
+                if (!diagnostics.noEntitiesWithoutAttributes)
+                    messages.push("Hay entidades sin atributos.");
+                if (!diagnostics.noEntitiesWithoutPK)
+                    messages.push("Hay entidades sin clave primaria.");
+                if (!diagnostics.noUnconnectedRelations)
+                    messages.push("Hay relaciones desconectadas.");
+                if (!diagnostics.noNotValidCardinalities)
+                    messages.push(
+                        "Hay cardinalidades no válidas en las relaciones.",
+                    );
+                setValidationMessages(messages);
+            }
+            setOpen(true);
+        };
+
+        const handleClose = () => {
+            setOpen(false);
+        };
+
+        const handleAccept = () => {
+            setOpen(false);
+            const jsonString = JSON.stringify(diagramRef.current);
+
+            // Create a blob with the JSON string
+            const blob = new Blob([jsonString], { type: "application/json" });
+
+            // Create a link element
+            const link = document.createElement("a");
+
+            // Set the download attribute with a filename
+            link.download = "diagram.json";
+
+            // Create a URL for the blob and set it as the href attribute
+            link.href = window.URL.createObjectURL(blob);
+
+            // Append the link to the body
+            document.body.appendChild(link);
+
+            // Programmatically click the link to trigger the download
+            link.click();
+
+            // Remove the link from the document
+            document.body.removeChild(link);
+        };
+
+        return (
+            <>
+                <button
+                    type="button"
+                    className="button-toolbar-action"
+                    onClick={handleClickOpen}
+                >
+                    Exportar JSON
+                </button>
+                <Dialog
+                    open={open}
+                    onClose={handleClose}
+                    aria-labelledby="alert-dialog-title"
+                    aria-describedby="alert-dialog-description"
+                >
+                    <DialogTitle id="alert-dialog-title">
+                        {"Exportación diagrama en JSON"}
+                    </DialogTitle>
+                    <DialogContent>
+                        {validationMessages.map((message) => (
+                            <DialogContentText key={message}>
+                                {message}
+                            </DialogContentText>
+                        ))}
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={handleClose}>Cancelar</Button>
+                        <Button
+                            onClick={handleAccept}
+                            autoFocus
+                            disabled={acceptDisabled}
+                        >
+                            Aceptar
+                        </Button>
+                    </DialogActions>
+                </Dialog>
+            </>
+        );
+    };
+
+    const renderImportJSONButton = () => {
+        const [open, setOpen] = React.useState(false);
+        const [validationMessages, setValidationMessages] = React.useState([]);
+
+        const handleClickOpen = () => {
+            setOpen(true);
+        };
+
+        const handleClose = () => {
+            setOpen(false);
+        };
+
+        const handleFileChange = (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const importedDiagram = JSON.parse(e.target.result);
+                        const diagnostics = validateGraph(importedDiagram);
+
+                        if (diagnostics.isValid) {
+                            localStorage.setItem(
+                                "diagramData",
+                                JSON.stringify(importedDiagram),
+                            );
+                            recreateGraphFromLocalStorage();
+                            setOpen(false);
+                            toast.success("Diagrama importado con éxito.");
+                        } else {
+                            const messages = [
+                                "No se ha podido importar el diagrama por los siguientes errores:",
+                            ];
+                            if (!diagnostics.notEmpty)
+                                messages.push("El diagrama está vacío.");
+                            if (!diagnostics.noRepeatedNames)
+                                messages.push(
+                                    "Hay entidades con nombres repetidos.",
+                                );
+                            if (!diagnostics.noRepeatedAttrNames)
+                                messages.push(
+                                    "Hay atributos repetidos en una entidad.",
+                                );
+                            if (!diagnostics.noEntitiesWithoutAttributes)
+                                messages.push("Hay entidades sin atributos.");
+                            if (!diagnostics.noEntitiesWithoutPK)
+                                messages.push(
+                                    "Hay entidades sin clave primaria.",
+                                );
+                            if (!diagnostics.noUnconnectedRelations)
+                                messages.push("Hay relaciones desconectadas.");
+                            if (!diagnostics.noNotValidCardinalities)
+                                messages.push(
+                                    "Hay cardinalidades no válidas en las relaciones.",
+                                );
+                            setValidationMessages(messages);
+                        }
+                    } catch (error) {
+                        setValidationMessages([
+                            "Error al leer el archivo JSON.",
+                        ]);
+                    }
+                };
+                reader.readAsText(file);
+            }
+        };
+
+        return (
+            <>
+                <button
+                    type="button"
+                    className="button-toolbar-action"
+                    onClick={handleClickOpen}
+                >
+                    Importar JSON
+                </button>
+                <Dialog
+                    open={open}
+                    onClose={handleClose}
+                    aria-labelledby="alert-dialog-title"
+                    aria-describedby="alert-dialog-description"
+                >
+                    <DialogTitle id="alert-dialog-title">
+                        {"Importación de diagrama desde JSON"}
+                    </DialogTitle>
+                    <DialogContent>
+                        {validationMessages.map((message) => (
+                            <DialogContentText key={message}>
+                                {message}
+                            </DialogContentText>
+                        ))}
+                        <input
+                            type="file"
+                            accept="application/json"
+                            onChange={handleFileChange}
+                        />
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={handleClose}>Cancelar</Button>
+                    </DialogActions>
+                </Dialog>
+            </>
+        );
+    };
+
     const renderResetCanvasButton = () => {
         const [open, setOpen] = React.useState(false);
 
@@ -1582,6 +1797,8 @@ export default function App(props) {
                 <div>{renderMoveBackAndFrontButtons()}</div>
 
                 <div>{renderGenerateSQLButton()}</div>
+                <div>{renderExportJSONButton()}</div>
+                <div>{renderImportJSONButton()}</div>
                 <div>{renderResetCanvasButton()}</div>
             </div>
             <div ref={containerRef} className="mxgraph-drawing-container" />
