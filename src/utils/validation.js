@@ -177,17 +177,22 @@ export function notNMRelationsWithAttributes(graph) {
 
 export const POSSIBLE_CARDINALITIES = ["0:1", "0:N", "1:1", "1:N"];
 
-// TODO: Return some diagnostics
 export function cardinalitiesNotValid(graph) {
     for (const relation of graph.relations) {
         const side1Cardinality = relation.side1.cardinality;
         const side2Cardinality = relation.side2.cardinality;
 
+        // Check if the cardinalities are not in the possible list
         if (
             !POSSIBLE_CARDINALITIES.includes(side1Cardinality) ||
             !POSSIBLE_CARDINALITIES.includes(side2Cardinality)
         ) {
             return true; // Found an invalid cardinality
+        }
+
+        // Check if both cardinalities are 1:1
+        if (side1Cardinality === "1:1" && side2Cardinality === "1:1") {
+            return true; // Both cardinalities are 1:1, which is invalid
         }
     }
     return false; // All cardinalities are valid
