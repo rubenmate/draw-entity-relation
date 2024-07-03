@@ -149,16 +149,6 @@ export function entitiesWithoutAttributes(graph) {
         }
     }
 
-    // Check N:M relations (relations that can hold attributes)
-    for (const relation of graph.relations) {
-        if (
-            relation.canHoldAttributes &&
-            (!relation.attributes || relation.attributes.length === 0)
-        ) {
-            return true; // Found an N:M relation without attributes
-        }
-    }
-
     return false; // No entities or N:M relations without attributes found
 }
 

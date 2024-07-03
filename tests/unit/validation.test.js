@@ -71,15 +71,6 @@ describe("Every entity should have at least one attribute", () => {
         expect(entitiesWithoutAttributes(graph)).toBe(true);
         expect(validateGraph(graph).noEntitiesWithoutAttributes).toBe(false)
     });
-
-    test("N:M relations must have at least one attribute", () => {
-        // Ensure the graph is valid initially
-        expect(entitiesWithoutAttributes(graph)).toBe(false);
-        // Remove attributes from an N:M relation
-        graph.relations.at(0).attributes = [];
-        expect(entitiesWithoutAttributes(graph)).toBe(true);
-        expect(validateGraph(graph).noEntitiesWithoutAttributes).toBe(false)
-    });
 });
 
 describe("Relations", () => {
