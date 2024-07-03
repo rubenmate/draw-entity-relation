@@ -330,6 +330,27 @@ export default function App(props) {
                     const view = graph.getView(graphView);
                     view.refresh();
                 }
+                if (
+                    selectedRelationDiag.side1.entity.idMx !== "" &&
+                    selectedRelationDiag.side2.entity.idMx !== "" &&
+                    selectedRelationDiag.side1.entity.idMx ===
+                        selectedRelationDiag.side2.entity.idMx
+                ) {
+                    const target1 = accessCell(
+                        selectedRelationDiag.side1.entity.idMx,
+                    );
+                    const source = selected;
+                    const edge1 = accessCell(selectedRelationDiag.side1.edgeId);
+                    const edge2 = accessCell(selectedRelationDiag.side2.edgeId);
+
+                    const x1 = target1.geometry.x + target1.geometry.width / 2;
+                    const x2 = source.geometry.x + source.geometry.width / 2;
+                    const y1 = target1.geometry.y + target1.geometry.height / 2;
+                    const y2 = source.geometry.y + source.geometry.height / 2;
+
+                    edge1.geometry.points = [new mxPoint(x2, y1)];
+                    edge2.geometry.points = [new mxPoint(x1, y2)];
+                }
             } else if (selected?.style?.includes("shape=ellipse")) {
                 let parentEntity = diagramRef.current.entities.find((entity) =>
                     entity.attributes.some((attr) => attr.idMx === selected.id),
