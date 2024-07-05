@@ -1,18 +1,25 @@
 \capitulo{1}{Introducción}
 
-En desarrollo de software el correcto modelado de la información con la que se trata es fundamental. Una de las técnicas más utilizadas para representar la estructura de un modelo de datos, previo a su implementación en base de datos, es el modelo de diagramas entidad-relación (E-R). Estos diagramas permiten visualizar las relaciones entre diferentes entidades, así como sus atributos, facilitando así la comprensión y diseño de sistemas de información complejos.
+En desarrollo de software el correcto modelado de la información con la que se trata es fundamental. Una de las técnicas más utilizadas para representar la estructura de un modelo de datos, previo a su implementación en base de datos, es el modelo de diagramas entidad-relación (E-R) \cite{journals/tods/Chen76}. Estos diagramas permiten visualizar las relaciones entre diferentes entidades, así como sus atributos, facilitando así la comprensión y diseño de sistemas de información complejos.
 
-En la era actual, muy centrada en el entorno web surge la necesidad de tener una aplicación web que nos permita, de manera sencilla y accesible en cualquier dispositivo, modelar diagramas entidad-relación y exportarlos fácilmente a tablas SQL.
+En la era actual, muy centrada en el entorno web surge la necesidad de tener una aplicación web que nos permita, de manera sencilla y accesible en cualquier dispositivo, modelar diagramas entidad-relación y exportarlos fácilmente a tablas SQL. Esta herramienta tiene también un propósito académico, sirve para aprender respecto al paso a tablas SQL de un diagrama E-R.
 
 El objetivo de este proyecto es desarrollar una aplicación web que permita modelar diagramas entidad-relación de manera sencilla, utilizando la biblioteca mxGraph en un entorno React. La aplicación no solo permite la creación y edición de estos diagramas, sino que también permite validarlos y exportarlos a un script SQL listo para ser ejecutado.
 
-Las características principales de esta herramienta incluyen:
+Las características principales de esta versión de la herramienta incluyen:
 \begin{itemize}
 \tightlist
     \item Aplicación web single page application (SPA) usando el framework React.
-    \item Interfaz de usuario simple y accesible que permite a los usuarios diseñar diagramas ER de manera visual.
+    \item Interfaz de usuario simple y accesible que permite a los usuarios diseñar diagramas E-R de manera visual.
     \item Uso de la biblioteca mxGraph para el modelado de los diagramas.
+    \item Soporte para modelado y relaciones más básicas de E-R como son:
+    \begin{itemize}
+    \tightlist
+        \item Interrelaciones binarias.
+        \item Interrelaciones reflexivas.
+    \end{itemize}
     \item Validación de los diagramas para asegurar la consistencia y corrección de los modelos.
+    \item Exportación e importación de los diagramas validados a un archivo JSON, permitiendo su recuperación para posteriores ediciones.
     \item Exportación de los diagramas validados a scripts SQL, facilitando así su implementación en bases de datos reales.
 \end{itemize}
 

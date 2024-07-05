@@ -1,6 +1,6 @@
 \capitulo{5}{Aspectos relevantes del desarrollo del proyecto}
 
-Este apartado pretende recoger los aspectos más interesantes del desarrollo del proyecto, comentados por los autores del mismo. Debe incluir desde la exposición del ciclo de vida utilizado, hasta los detalles de mayor relevancia de las fases de análisis, diseño e implementación.
+Este apartado pretende recoger los aspectos más interesantes del desarrollo del proyecto, comentados por los autores del mismo. Incluye desde la exposición del ciclo de vida utilizado, hasta los detalles de mayor relevancia de las fases de análisis, diseño e implementación.
 
 \subsection{Razonamiento tras la elección de este proyecto}
 Se escogió este proyecto debido a que profesionalmente trabajo muy orientado al desarrollo web, con lo que sería un buen proyecto que añadir a mi portafolio personal. Adicionalmente, siempre me han fascinado aplicaciones como draw.io así que la idea de crear algo similar resultó bastante interesante.
@@ -10,7 +10,7 @@ En su momento durante la carrera me hubiera gustado contar con una herramienta s
 \subsection{Desarrollo ágil}
 Para el desarrollo de este proyecto se ha usado la metodología de desarrollo ágil. No se ha aplicado estrictamente pero sí en bastante grado. Se ha realizado un desarrollo iterativo agrupando las tareas en sprints de aproximadamente 3-4 semanas cada uno de ellos.
 Con cada sprint se definían una serie de tareas cuyo fin era obtener un producto final que cumpliera los objetivos marcados inicialmente. Al realizarse este desarrollo incremental permitía centrarse en estas tareas individuales, organizándose de una mejor manera.
-Se ha combinado esta división en sprints con los issues de GitHub y los milestones para crear los sprints.
+Se ha combinado esta división en sprints con los issues de GitHub y los milestones para representar los sprints.
 
 \imagen{sprints}{Milestones en GitHub}{1}
 
@@ -32,8 +32,10 @@ Cada issue se etiquetó con labels correspondientes a qué tipo de cambio repres
 El uso de git ha sido de una manera determinada, basada en Gitflow \cite{gitflow}. No se ha aplicado estrictamente en todos los cambios. Pero sí se ha hecho con las tareas definidas en cada sprint, sobre todo aquellas que integraban funcionalidades. Este enfoque, combinado con el despliegue continuo en Vercel, proporcionaba un despliegue "Preview" desde el que evaluar la calidad de estos cambios a integrar. No solo eso, también permitía compartir el enlace con el tutor y recibir su feedback de un despliegue real.
 
 \subsubsection{git worktrees}
-Git worktrees \cite{git-worktree} es una herramienta que nos proporciona git que es muy poderosa pero que curiosamente muy desconocida. Al utilizar worktrees, se puede cambiar de una rama a otra simplemente cambiando de directorio puesto que cada worktree representa una rama y es un directorio. No hay necesidad de hacer stash de cambios no comiteados. Esto ha permitido una transición fluida entre diferentes ramas de trabajo y ha facilitado la integración de correcciones en la rama principal (main).
-El uso de git worktrees junto con Gitflow ha ayudado enormemente a moverse entre ramas de funcionalidades, revisar código y asegurar de que los cambios que se introducían fueran correctos. Es una funcionalidad de git que muchos desarrolladores debieran conocer y probar.
+Git worktrees \cite{git-worktree} es una herramienta que nos proporciona git que es muy poderosa pero que curiosamente muy desconocida. Al utilizar worktrees, se puede cambiar de una rama a otra simplemente cambiando de directorio, puesto que cada worktree representa una rama y es un directorio. No hay necesidad de hacer stash de cambios no comiteados\footnote{Un stash es una operación en git que permite guardar temporalmente los cambios no comiteados para poder cambiar de rama sin perder esos cambios.}. Esto ha permitido una transición fluida entre diferentes ramas de trabajo y ha facilitado la integración de correcciones en la rama principal (main).
+
+El uso de git worktrees junto con Gitflow ha ayudado enormemente a moverse entre ramas de funcionalidades, revisar código y asegurar que los cambios que se introducían fueran correctos. Es una funcionalidad de git que muchos desarrolladores debieran conocer y probar.
+
 
 \subsection{Test driven development}
 El desarrollo guiado por pruebas (Test Driven Development, TDD) \cite{wiki:tdd} ha sido clave en la implementación de ciertas funcionalidades importantes de la aplicación, como son la validación de los diagramas entidad-relación y la generación de scripts SQL.
@@ -44,11 +46,79 @@ Inicialmente se definían los requisitos de estas funciones, previo paso a su im
 \subsection{Primeros pasos en el desarrollo del proyecto}
 Durante las primeras semanas de desarrollo se decidió qué tecnologías usar. Inicialmente existía la duda se si hacerlo con Vanilla Javascript o usar un framework frontend como React. Finalmente se optó por usar React debido a las facilidades que puede dar a la hora de crear una aplicación interactiva y con estado dinámico. También es clave en esta decisión comentar que personalmente es una tecnología que uso profesionalmente y que por tanto no iba a requerir formación más allá de la propia integración con mxGraph.
 En una primera fase, se intentó utilizar la librería maxGraph (sucesor de mxGraph) junto con TypeScript 
-\cite{typescript}, lo que nos habría permitido contar con la seguridad de un tipado estático. Sin embargo, hubo problemas que hicieron desestimar esta opción: maxGraph es una librería que surgió con la idea de continuar el desarrollo de mxGraph que se encuentra en su fin de vida, sin embargo se han hecho bastantes cambios en la API y la documentación no se ha completado. Esto implica que para encontrar las equivalencias de la API había que indagar constantemente en el código fuente en busca de las nuevas APIs.
-Finalmente se acabó migrando a un proyecto plantilla que integraba mxGraph con React. Esta plantilla proporcionaba una toolbar y permitía inicializarla con elementos que podían ser arrastrados y soltarlos al canvas donde se añadían visualmente. Este punto será la base desde la que partió el desarrollo.
+\cite{typescript}, lo que nos habría permitido contar con la seguridad de un tipado estático. Sin embargo, hubo problemas que hicieron desestimar esta opción: maxGraph es una librería que surgió con la idea de continuar el desarrollo de mxGraph que se encuentra en su fin de vida, sin embargo se han hecho bastantes cambios en la API con respecto a mxGraph y la documentación no se ha completado. Esto implica que para encontrar los métodos para la nueva API de maxGraph equivalentes a la antigua de mxGraph había que indagar constantemente en el código fuente en busca de las nuevas APIs.
 
-\imagen{first-stage-app-code-0}{Inicialización de mxGraph}{1}
-\imagen{first-stage-app-code-1}{HTML con el canvas y toolbar}{1}
+\subsubsection{Punto de partida}
+Finalmente se acabó usando como punto de partida a un proyecto plantilla \footnote{\url{https://codesandbox.io/p/sandbox/react-kos1g?file=/src/App.js}} que integraba mxGraph con React. Esta plantilla proporcionaba una toolbar y permitía inicializarla con elementos que podían ser arrastrados y soltarlos al canvas donde se añadían visualmente. Este punto será la base desde la que partió el desarrollo.
+
+Este proyecto plantilla cuenta con la inicialización de mxGraph así como una estructura de archivos para crear una barra lateral de herramientas. No obstante, tan solo nos sirve como base.
+
+Apreciamos las siguientes diferencias entre el proyecto base y la solución final de este trabajo de fin de grado.
+\begin{table}[h]
+\centering
+\begin{tabular}{l c c}
+\hline
+\multicolumn{1}{l}{Características} & \textbf{Proyecto plantilla} & \textbf{Draw-E-R-App} \\
+\hline
+Añadir rectángulos & X & - \\
+Relacionar objetos directamente & X & - \\
+Cambiar nombres de los objetos & X & X \\
+Modelar diagramas E-R & - & X \\
+Añadir entidades & - & X \\
+Añadir atributos a entidades & - & X \\
+Añadir relaciones & - & X \\
+Configurar relaciones & - & X \\
+Validar un diagrama & - & X \\
+Generar un script SQL & - & X \\
+Exportar el diagrama como JSON & - & X \\
+Importar y recrear el diagrama & - & X \\
+Recuperar el estado entre sesiones & - & X \\
+\hline
+\end{tabular}
+\caption{Comparativa del Proyecto plantilla frente a Draw-E-R-App}
+\label{comparativa}
+\end{table}
+
+\begin{figure}
+\lstset{breaklines=true, basicstyle=\footnotesize}
+\begin{lstlisting}[frame=single]
+React.useEffect(() => {
+    // Create the graph if it's not loaded when the component renders
+    if (!graph) {
+        mxEvent.disableContextMenu(containerRef.current);
+        setGraph(new mxGraph(containerRef.current));
+    }
+    // Wait for the graph to be loaded
+    if (graph) {
+        setInitialConfiguration(graph, toolbarRef);
+
+        // Updates the display
+        graph.getModel().endUpdate();
+        graph.getModel().addListener(mxEvent.CHANGE, onChange);
+        graph.getSelectionModel().addListener(mxEvent.CHANGE, onSelected);
+        graph.getModel().addListener(mxEvent.ADD, onElementAdd);
+        graph.getModel().addListener(mxEvent.MOVE_END, onDragEnd);
+    }
+}, [graph]);
+\end{lstlisting}
+\caption{Inicialización de mxGraph}
+\end{figure}
+
+
+\begin{figure}
+\lstset{breaklines=true, basicstyle=\footnotesize}
+\begin{lstlisting}[frame=single]
+return (
+    <div className="mxgraph-container">
+        <div className="mxgraph-toolbar-container">
+            <div className="mxgraph-toolbar-container" ref={toolbarRef} />
+        </div>
+        <div ref={containerRef} className="mxgraph-drawing-container" />
+    </div>
+);
+\end{lstlisting}
+\caption{HTML renderizado por el componente de React \textbf{DiagramEditor.js}}
+\end{figure}
 
 \subsection{Implementando las primeras funcionalidades}
 \subsubsection{Añadir entidades}
@@ -59,25 +129,74 @@ Esto supone un problema que habrá que resolver posteriormente, en nuestro caso 
 \imagen{first-stage-app}{Aplicación tras implementar la posibilidad de añadir entidades}{1}
 
 \subsubsection{Representación interna del diagrama E-R}
-Se comienza también a trabajar en la funcionalidad que nos permita pasar de las celdas con las que trabaja mxGraph, que representan los distintos elementos que se han creado en el canvas, a una representación interna más acorde a lo que es un diagrama entidad relación. Hay que conocer qué elemento es una entidad, cuáles son sus atributos, qué elementos está conectando una relación, etc
+Se comienza también a trabajar en la funcionalidad que nos permita pasar de las celdas con las que trabaja mxGraph, que representan los distintos elementos que se han creado en el canvas, a una representación interna más acorde a lo que es un diagrama entidad relación. Hay que conocer qué elemento es una entidad, cuáles son sus atributos, qué elementos está conectando una relación, etc.
 Al estar trabajando con Javascript la preferencia es usar un objeto por su facilidad a ser convertido a JSON.
 
-\imagen{internal-diagram-er}{Primera versión de la representación interna del diagrama ER}{1}
+\begin{figure}
+\lstset{breaklines=true, basicstyle=\footnotesize}
+\begin{lstlisting}[frame=single]
+{
+    "entities": [
+        {
+            "idMx": "2",
+            "name": "Entidad",
+            "position": {
+                "x": 254,
+                "y": 130
+            },
+            "attributes": [
+                {
+                    "idMx": "3",
+                    "name": "Atributo",
+                    "position": {
+                        "x": 374,
+                        "y": 130
+                    }
+                },
 
-Aunque esta captura es de un punto más avanzado donde ya se pueden añadir atributos a las entidades sí representa la información que se quiere guardar en esta representación interna.
+            ]
+        }
+    ],
+    "relations": []
+}
+\end{lstlisting}
+\caption{Primera versión de la representación interna del diagrama E-R}
+\end{figure}
+
+Aunque esta captura es de un punto más avanzado donde ya se pueden añadir atributos a las entidades, ya representa la información que se quiere guardar en esta representación interna.
 \begin{itemize}\tightlist
     \item idMx: Es el id que tiene este elemento en las celdas de la librería mxGraph.
     \item name: Es el nombre que tiene esta entidad.
     \item position: Coordenadas de esta entidad en el canvas.
     \item attributes: Array de atributos, de cada uno de ellos se guardarán sus datos.
 \end{itemize}
-Este paso es realmente importante puesto que hay que establecer condiciones y límites que solo con mxGraph no podremos. Será clave en todo el desarrollo posterior, puesto que si un atributo es clave habrá que guardarlo como tal, si una relación es N:M podrá tener atributos, la validación del grafo tratará directamente con esta representación, etc.
+Este paso es realmente importante puesto que hay que establecer condiciones y límites que solo con mxGraph no podremos. Será clave en todo el desarrollo posterior, , puesto que, por ejemplo: si un atributo es clave habrá que guardarlo como tal,
+si una relación es N:M podrá tener atributos, etc. La validación del grafo tratará directamente con esta representación.
 
 \subsubsection{Menús contextuales según el elemento seleccionado}
 Otra funcionalidad importante especialmente en el desarrollo de la interfaz de usuario es el de que la toolbar muestre diferentes botones según el elemento seleccionado.
 Con React se crea un estado que evalúa qué elemento está seleccionado en cada momento y cada botón que se crea en la toolbar comprueba el estilo del elemento seleccionado para saber si es una entidad o atributo y se muestra o no.
 
-\imagen{contextual-button}{Botón contextual para entidades}{1}
+\begin{figure}[h]
+\lstset{breaklines=true, basicstyle=\footnotesize}
+\begin{lstlisting}[frame=single]
+const renderAddAttribute = () => {
+    if (selected?.style?.includes("shape=rectangle")) {
+        return (
+            <button
+                type="button"
+                className="button-toolbar-action"
+                onClick={addAttribute}
+            >
+                Anadir atributo
+            </button>
+        );
+    }
+};
+\end{lstlisting}
+\caption{Botón contextual para entidades}
+\end{figure}
+
 
 \subsubsection{Añadiendo atributos a las entidades}
 La siguiente funcionalidad a implementar fue la de añadir atributos a las entidades, para ello hizo falta añadir un botón contextual al seleccionar una entidad y desde ahí en su versión inicial nos dejaba escoger entre si se quería añadir un atributo primario (clave) o uno normal.
@@ -89,8 +208,10 @@ Además la etiqueta ha de emplazarse a la derecha de la elipse y mantenerse en e
 \subsection{Creando un flujo de CI/CD}
 Con la aplicación en un estado temprano pero estable, no iba haber más cambios de librerías o frameworks, se decidió añadir un flujo completo de integración continua que garantizase la corrección del código (y un estilo común en caso de que en el futuro colaboren más desarrolladores) y su correcto funcionamiento.
 Se usaron algunas de las siguientes utilidades.
+
 \subsubsection{Biome y Lefthook}
-Se añadió Biome como formateador y como linter. Biome ejecuta dos funciones que tradicionalmente en el desarrollo web se encuentran desacopladas en diferentes herramientas. Funciona de tal modo que formatea el código de manera automática y comprueba posibles errores (que no tienen por qué ser sintácticos) resolviendo aquellos que puede de forma automática y notificando con una serie de diagnósticos aquellos que no.
+Se añadió Biome como formateador y como linter. Biome ejecuta dos funciones que, tradicionalmente, en el desarrollo web se encuentran desacopladas en diferentes herramientas. Funciona de tal modo que formatea el código de manera automática y comprueba posibles errores (que no tienen por qué ser sintácticos), resolviendo aquellos que puede de forma automática y notificando, con una serie de diagnósticos, aquellos que no.
+
 \imagen{biome}{Muestra de una ejecución de Biome con errores}{1}
 
 Se añadió también Leftook al proyecto. Se ejecuta de forma local como un hook pre-commit, esto quiere decir que cuando hacemos un commit Lefthook ejecuta una determinada acción con aquellos ficheros (o hunks) que hayamos añadido para hacer commit. En este caso ejecuta Biome sobre todos ellos.
@@ -106,10 +227,12 @@ El siguiente paso para verificar la calidad y funcionamiento del código era añ
 \end{itemize}
 
 Los tests unitarios inicialmente no se implementaron puesto que la mayor parte de la funcionalidad era a nivel de interfaz. Se utilizarán posteriormente en el desarrollo de las funcionalidades de validación del diagrama y generación del script SQL.
+
 \imagen{unit-tests-1}{Ejecución de pruebas unitarias}{1}
 
 Los tests end to end se ejecutan con Playwright, y consisten en una serie de pruebas que se comportan como el usuario final. Van interactuando con la interfaz pulsando botones y esperando ciertos elementos.
 En esta figura posterior podemos ver la ejecución de uno de ellos desde su interfaz gráfica, se pueden ver las capturas que va haciendo el framework de tests de la ejecución segundo a segundo.
+
 \imagen{e2e-tests}{Ejecución de pruebas End to End}{1}
 
 \subsubsection{GitHub Actions}
@@ -118,7 +241,8 @@ Ninguna de estas herramientas que hemos añadido tienen sentido si no nos acorda
 En este proyecto, se utilizan varias acciones:
 \begin{itemize}
 \tightlist
-    \item Biome: Verifica la calidad del código.
+    \item Biome: Verifica posibles problemas en el código.
+    \item SonarCloud: Da un diagnóstico de la calidad del código.
     \item Tests: 
     \begin{itemize}
         \tightlist
@@ -137,8 +261,11 @@ Inicialmente se había creado una action que instalaba las dependencias del proy
 
 \subsubsection{Gestionando atributos clave}
 Se cambió el modo de añadir atributos clave así como su estética. Los edges dejaron de ser dirigidos y en lugar de colorear la elipse de una forma determinada en su lugar se subraya aquel atributo que sea clave.
+
 \imagen{add-attributes-1}{Atributo clave subrayado con elipse no coloreada y lado no dirigido}{1}
+
 También se elimina la posibilidad de elegir añadir un atributo como clave, en su lugar el primer atributo que se añade a una entidad será clave y el resto no. Esto requiere un botón contextual en atributos no clave para poder convertirlos en clave eliminando esta propiedad de aquel que fuera clave hasta ese momento.
+
 \imagen{add-attributes-2}{Botón contextual para convertir un atributo que no es clave en clave}{1}
 
 \subsection{Implementando relaciones}
@@ -146,15 +273,60 @@ Con las entidades y sus atributos ya implementados en la aplicación nos faltaba
 
 \subsubsection{Configurando relaciones}
 Era necesario un modo de añadir relaciones. Se optó por añadir el elemento rombo representando una relación y mostrar botones contextuales con las siguientes acciones.
+
 \imagen{relations-0}{Botones contextuales al seleccionar una relación}{1}
+
 Al hacer click en configurar relación se nos muestra una interfaz con Material UI con dos selectores para escoger qué entidades va a vincular esta relación.
+
 \imagen{relations-1}{Interfaz de configuración de los lados de una relación}{.75}
+
 Tan solo falta el escoger las cardinalidades de la relación, se realizan en el siguiente menú contextual. Sigue la misma dinámica que la propia configuración de las relaciones.
+
 \imagen{relations-2}{Interfaz de configuración de las cardinalidades de los lados de una relación}{.75}
+
 \imagen{relations-app}{Relaciones en el canvas}{1}
+
 Todos estos cambios hemos de reflejarlos en nuestra estructura interna en memoria del diagrama donde ahora también estamos guardando las relaciones.
-\imagen{internal-diagram-er-1}{Diagrama interno guardando relaciones}{1}
-La información canHoldAttributes y el campo attributes de la relación tendrá relevancia en el siguiente apartado.
+
+\begin{figure}
+\lstset{breaklines=true, basicstyle=\footnotesize}
+\begin{lstlisting}[frame=single]
+{
+...
+"relations": [
+    {
+      "idMx": "8",
+      "name": "Relacion",
+      "position": {
+        "x": 215,
+        "y": 110
+      },
+      "side1": {
+        "idMx": "11",
+        "cardinality": "0:1",
+        "cell": "11",
+        "entity": {
+          "idMx": "2"
+        }
+      },
+      "side2": {
+        "idMx": "12",
+        "cardinality": "1:N",
+        "cell": "12",
+        "entity": {
+          "idMx": "5"
+        }
+      },
+      "canHoldAttributes": false,
+      "attributes": []
+    }
+  ]
+}
+\end{lstlisting}
+\caption{Diagrama interno guardando relaciones}
+\end{figure}
+
+La información \textbf{canHoldAttributes} y el campo attributes de la relación tendrá relevancia en el siguiente apartado.
 \subsubsection{Relaciones N:M}
 Las relaciones que forman una relación varios a varios pueden contener atributos, algo que no estaba implementado. Para implementar esta función se realiza en el paso de configuración de la relación, cuando detectamos que es N:M establecemos en la propia relación una clave canHoldAttributes: true y guardamos los atributos como si de una entidad se tratase en un array.
 Se modifica la interfaz para que al seleccionar una relación N:M nos deje también añadir atributos (con la salvedad de que no puedan ser clave) y ocultarlos.
@@ -162,8 +334,9 @@ Se modifica la interfaz para que al seleccionar una relación N:M nos deje tambi
 
 \subsection{Validación del diagrama y generación SQL}
 En este punto la parte de modelado está prácticamente finalizada y nos falta tan solo el validar el diagrama y poder exportarlo a un script SQL.
-Como últimos retoques se implementa una prevención que comprueba si se está usando el placeholder "Relación", "Entidad" o "Atributo" con el que se insertan los elementos para añadir un número incremental al final y evitar que se repitan.
+Como últimos retoques se implementa una prevención que comprueba si se está usando el placeholder \textbf{Relación}, \textbf{Entidad} o \textbf{Atributo} con el que se insertan los elementos para añadir un número incremental al final (p.e., Relación 1, Relación 2 ...), y evitar que se repitan.
 También se cambia el framework de Jest a Vitest por problemas en la transpilación de los tests.
+
 \subsubsection{Validación del diagrama}
 Para esta función y la de generación del script SQL se hizo uso intensivo del TDD.
 Definimos grafos de ejemplo con y sin errores y desde ese punto se implementaron las diversas funciones que han de comprobar la validez del diagrama.
@@ -172,31 +345,304 @@ Se están comprobando los siguientes criterios:
 \tightlist
     \item Nombres de entidades repetidos (las relaciones N:M cuentan como entidad).
     \item Nombres de atributos repetidos (en una misma entidad).
+    \item Nombres de relaciones repetidos.
     \item Entidades sin atributos.
     \item Entidades sin clave primaria.
+    \item Entidades con más de una clave.
+    \item Atributos clave en relaciones N:M.
     \item Relaciones sin conectar.
-    \item Relaciones sin lados con cardinalidades válidas.
+    \item Relaciones sin lados con cardinalidades válidas. Existe una particularidad en este caso, las relaciones 1:1-1:1. Se controla que no se pueda establecer también a nivel de interfaz (aparte de en la función de validación). \footnote{Al escoger 1:1 en alguno de los lados se elimina como opción del otro.}
+    \item Ninguna relación que no sea N:M puede contener atributos.
     \item El diagrama no puede estar vacío.
 \end{itemize}
-\imagen{validate-graph-0}{Función de validación del diagrama con diagnósticos}{.75}
+
+\begin{figure}[h]
+\lstset{breaklines=true, basicstyle=\footnotesize}
+\begin{lstlisting}[frame=single]
+export function validateGraph(graph) {
+    const diagnostics = {
+        noRepeatedNames: true,
+        noRepeatedAttrNames: true,
+        noEntitiesWithoutAttributes: true,
+        noEntitiesWithoutPK: true,
+        noUnconnectedRelations: true,
+        noNotValidCardinalities: true,
+        notEmpty: true,
+        isValid: true,
+    };
+
+    // The graph is empty
+    if (graph.entities.length === 0 && graph.relations.length === 0) {
+        diagnostics.notEmpty = false;
+        diagnostics.isValid = false;
+    }
+
+    // Check for repeated entity names
+    if (repeatedEntities(graph)) {
+        diagnostics.noRepeatedNames = false;
+        diagnostics.isValid = false;
+    }
+
+    // Check for repeated attribute names in the same entity
+    if (repeatedAttributesInEntity(graph)) {
+        diagnostics.noRepeatedAttrNames = false;
+        diagnostics.isValid = false;
+    }
+
+    // Check for entities without attributes
+    if (entitiesWithoutAttributes(graph)) {
+        diagnostics.noEntitiesWithoutAttributes = false;
+        diagnostics.isValid = false;
+    }
+\end{lstlisting}
+\caption{Función de validación del diagrama con diagnósticos (Parte 1)}
+\end{figure}
+\clearpage
+\begin{figure}[h]
+\lstset{breaklines=true, basicstyle=\footnotesize}
+\begin{lstlisting}[frame=single]
+// Check for entities without a primary key attribute
+    if (entitiesWithoutPK(graph)) {
+        diagnostics.noEntitiesWithoutPK = false;
+        diagnostics.isValid = false;
+    }
+
+    // Check for unconnected relations
+    if (relationsUnconnected(graph)) {
+        diagnostics.noUnconnectedRelations = false;
+        diagnostics.isValid = false;
+    }
+
+    // Check for relations with invalid cardinalities
+    if (cardinalitiesNotValid(graph)) {
+        diagnostics.noNotValidCardinalities = false;
+        diagnostics.isValid = false;
+    }
+
+    return diagnostics;
+}
+\end{lstlisting}
+\caption{Función de validación del diagrama con diagnósticos (Parte 2)}
+\end{figure}
 
 \subsubsection{Generación del script SQL}
 La generación del script SQL fue una de las partes más complicadas de implementar. Requiere un paso intermedio donde recorremos el diagrama y cogemos las relaciones y sus correspondientes entidades procesándolas.
 Si una entidad ya ha sido procesada como parte de una relación la quitamos de las entidades sueltas puesto que no queremos tablas repetidas.
-\imagen{sql-0}{Filtrado de tablas a la hora de generar el script SQL}{1}
-Procesamos las relaciones según su tipo.
-\imagen{sql-1}{Procesado de relaciones}{1}
+
+\imagen{sql-generation-flow}{Flujo para procesar la estructura interna y generar el script SQL}{1}
+
+\begin{figure}[h]
+\lstset{breaklines=true, basicstyle=\footnotesize}
+\begin{lstlisting}[frame=single]
+function processRelation(relation) {
+        const side1 = relation.side1;
+        const side2 = relation.side2;
+        const cardinalityType = getCardinalityType(
+            side1.cardinality.split(":")[1],
+            side2.cardinality.split(":")[1],
+        );
+
+        const table = {
+            name: relation.name,
+            type: cardinalityType,
+            side1: {
+                entity: entities.find((e) => e.idMx === side1.entity.idMx),
+                cardinality: {
+                    minimum: side1.cardinality.split(":")[0],
+                    maximum: side1.cardinality.split(":")[1],
+                },
+            },
+            side2: {
+                entity: entities.find((e) => e.idMx === side2.entity.idMx),
+                cardinality: {
+                    minimum: side2.cardinality.split(":")[0],
+                    maximum: side2.cardinality.split(":")[1],
+                },
+            },
+            attributes: [...relation.attributes],
+        };
+
+        // Mark entities as used
+        usedEntities.add(side1.entity.idMx);
+        usedEntities.add(side2.entity.idMx);
+
+        return table;
+    }
+\end{lstlisting}
+\caption{Procesado de relaciones (Parte 1)}
+\end{figure}
+
+\clearpage
+
+\begin{figure}[h]
+\lstset{breaklines=true, basicstyle=\footnotesize}
+\begin{lstlisting}[frame=single]
+    // Process relations first
+    for (const relation of graph.relations) {
+        tables.push(processRelation(relation));
+    }
+
+    // Add remaining entities as tables
+    for (const entity of entities) {
+        if (!usedEntities.has(entity.idMx)) {
+            tables.push(entity);
+        }
+    }
+
+    return tables;
+}
+\end{lstlisting}
+\caption{Procesado de relaciones (Parte 2)}
+\end{figure}
+
+
 Con este array que contiene relaciones y entidades sueltas se llama a la función que genera las tablas finales haciendo merge en caso de que  este procesado genere tablas repetidas.
 El paso final es convertir este objeto interno en un string SQL.
-\imagen{sql-2}{Procesado de relaciones y tablas y generación del string SQL final}{.75}
+
+\begin{figure}[h]
+\lstset{breaklines=true, basicstyle=\footnotesize}
+\begin{lstlisting}[frame=single]
+for (const table of tables) {
+    let processedTablesArray;
+    switch (table.type) {
+        case "1:1":
+            processedTablesArray = process11Relation(table);
+            break;
+        case "1:N":
+            processedTablesArray = process1NRelation(table);
+            break;
+        case "N:M":
+            processedTablesArray = processNMRelation(table);
+            break;
+        default:
+            processedTablesArray = [table];
+            break;
+    }
+
+    // Add the processed tables to the map, merging attributes if needed
+    for (const processedTable of processedTablesArray) {
+        if (tableMap.has(processedTable.name)) {
+            const existingTable = tableMap.get(processedTable.name);
+            const existingAttributes = new Set(
+                existingTable.attributes.map((attr) => attr.name),
+            );
+            processedTable.attributes.forEach((attr) => {
+                if (!existingAttributes.has(attr.name)) {
+                    existingTable.attributes.push(attr);
+                }
+            });
+        } else {
+            tableMap.set(processedTable.name, processedTable);
+        }
+    }
+}
+\end{lstlisting}
+\caption{Procesado de tablas y merge}
+\end{figure}
+\clearpage
+
+\begin{figure}[h]
+\lstset{breaklines=true, basicstyle=\footnotesize}
+\begin{lstlisting}[frame=single]
+for (const table of tableMap.values()) {
+    table.name = removeAccents(table.name);
+    // Iterate over tables. Remove the accents, check for repeated attributes with the
+    // same name. Change the name of the repeated items so that there is no repetition
+    const attributeNames = new Set();
+    table.attributes.forEach((attr) => {
+        let baseName = removeAccents(attr.name);
+        let uniqueName = baseName;
+        if (attributeNames.has(uniqueName)) {
+            let counter = 1;
+            uniqueName = `${baseName}_${counter}`;
+            while (attributeNames.has(uniqueName)) {
+                counter++;
+                uniqueName = `${baseName}_${counter}`;
+            }
+        }
+        attr.name = uniqueName;
+        attributeNames.add(uniqueName);
+    });
+}
+\end{lstlisting}
+\caption{Procesado de tablas finales para eliminar acentos y evitar posibles atributos repetidos.}
+\end{figure}
+
+\begin{figure}[h]
+\lstset{breaklines=true, basicstyle=\footnotesize}
+\begin{lstlisting}[frame=single]
+// Generate SQL script from the table map
+let sqlScript = "";
+let foreignKeyScript = "";
+for (const table of tableMap.values()) {
+    sqlScript += createTableSQL(table) + "\n\n";
+    foreignKeyScript += createForeignKeySQL(table) + "\n";
+}
+
+return sqlScript.trim() + "\n\n" + foreignKeyScript.trim();
+\end{lstlisting}
+\caption{Generación del string SQL final}
+\end{figure}
+
+Inicialmente, para las foreign keys, se hacía el {'}REFERENCES{'} en la propia tabla. Esto no siempre es viable, puesto que requiere que la tabla de la que es clave foránea haya sido creada previamente.
+Se cambió a crear las tablas sin hacer {'}REFERENCES{'} a otras tablas y en el paso final de generación del string SQL incluir tantos {'}ALTER TABLE{'} como sean necesarios para crear esas claves foráneas.
+
+\begin{figure}[h]
+\lstset{breaklines=true, basicstyle=\footnotesize}
+\begin{lstlisting}[frame=single]
+ALTER TABLE A ADD CONSTRAINT FK_a1_R1 FOREIGN KEY (a1_R1) REFERENCES A;
+ALTER TABLE B ADD CONSTRAINT FK_a1_R3 FOREIGN KEY (a1_R3) REFERENCES A;
+ALTER TABLE R2 ADD CONSTRAINT FK_a1_R2_1 FOREIGN KEY (a1_R2_1) REFERENCES A;
+ALTER TABLE R2 ADD CONSTRAINT FK_b1_R2_2 FOREIGN KEY (b1_R2_2) REFERENCES B;
+\end{lstlisting}
+\caption{Ejemplo de script SQL con ALTER TABLE al final para crear las relaciones foráneas.}
+\end{figure}
+
 Para el desarrollo de esta función ha sido de vital importancia contar con tests que han permitido ir iterando y añadiendo funcionalidad asegurándose de que todo seguía funcionando correctamente.
+
+\subsection{Persistencia}
+Una funcionalidad bastante importante en este tipo de aplicación es poder contar con una persistencia, que permita recuperar estados de diagramas previamente modelados.
+
+En este caso, se ha incluido a dos niveles:
+\begin{itemize}
+    \item Guardar estado de la aplicación web para recuperar el diagrama en proceso modelado.
+    \item Exportar e importar diagramas haciendo uso de la estructura interna.
+\end{itemize}
+
+\subsubsection{Persistencia a nivel de navegador}
+Para lograr esta persistencia se ha  creado una función que guarda nuestra estructura interna en el almacenamiento local del navegador.
+
+\imagen{local-storage}{Diagrama interno guardado en el almacenamiento local del navegador}{1}
+
+No basta con realizar este proceso, es también necesario crear una función que se ejecute al renderizar el componente por primera vez. Esta función recupera este estado guardado previamente y recrea el diagrama.
+
+\subsubsection{Persistencia a nivel de exportar e importar diagramas}
+Esta funcionalidad se apoya completamente en la anterior. Tan solo se encarga de validar el diagrama previo a su exportación (no se pueden exportar diagramas no válidos) y volcar la estructura interna en un archivo JSON.
+
+Para importarlo, se hace desde un diálogo que pide un fichero. Este fichero debe ser un diagrama en JSON que será validado. Una vez lo tenemos, se guarda el diagrama recuperado en el almacenamiento local del navegador y  se fuerza a recrearlo.
+
+\imagen{export-diagram}{Exportar diagrama}{1}
+
+\imagen{import-diagram}{Importar diagrama}{1}
+
 \subsection{Retoques finales}
 \subsubsection{Borrado de elementos}
-Hasta este punto existe un mapeo de teclado para borrar elementos con la tecla Suprimir, el problema es que la borra pero sin reflejar este borrado en nuestro diagrama interno en memoria. Lo cuál supone un problema.
+Hasta este punto existe un mapeo de teclado para borrar elementos con la tecla Suprimir, el problema es que la borra pero sin reflejar este borrado en nuestro diagrama interno en memoria. Lo cuál supone un problema, por tanto se decidió eliminar este atajo de teclado.
+
 Para esta función nos aseguraremos de que al borrar una entidad no deje atributos, edges, labels o cualquier otro elemento descolgado sin un padre.
+
 \subsubsection{Reconfiguración de relaciones}
 Otro punto a implementar es el de poder reconfigurar los lados de una relación para poder reasignarla a otras entidades sin tener que borrarla y añadirla de nuevo.
 Requiere retocar la función ya implementada de configuración para eliminar posibles atributos que pudiera tener la relación, edges, cardinalidades ya establecidas o resetear la clave que permite a una relación tener atributos.
+
+\subsubsection{Movimiento de objetos}
+Otro punto que requirió una mejora en su comportamiento es el correspondiente al movimiento de ciertos objetos.
+
+Cuando se mueven entidades, los atributos que están enlazados a estas entidades, no lo hacen con ellas. Esto requirió calcular el offset del atributo con respecto a la entidad, para que al detectar movimiento de una entidad se recalculase la posición de todos sus atributos.
+
+Cuando se crean relaciones reflexivas, y para evitar que los dos lados se solapen en uno solo, se crean puntos intermedios en los edges.
+El problema es genera al mover la relación, estos puntos quedan estáticos donde fueron creados.
+La solución fue detectar el movimiento de relaciones reflexivas y recalcular este punto intermedio de los edges para que siempre se mantenga la misma estética.
 
 \subsection{Resolución de problemas técnicos}
 A lo largo del proyecto, se enfrentaron varios desafíos técnicos.

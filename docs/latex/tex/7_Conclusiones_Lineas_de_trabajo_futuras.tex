@@ -11,11 +11,9 @@ Su sucesora, maxGraph, no estaba lista para ser utilizada debido a que la docume
 
 A pesar de que la interfaz de usuario cumple con su propósito, considero que es demasiado parca y carece de elementos que la hagan visualmente agradable. Existe un amplio margen de mejora en este aspecto, como por ejemplo el uso de usar Material UI en toda la aplicación y no solo en determinadas partes para establecer un sistema de diseño coherente y agradable.
 
-Otro aspecto a mejorar es la capacidad de exportar e importar diagramas. Esto proporcionaría una mayor flexibilidad a los usuarios, permitiendo trabajar con diagramas existentes entre diferentes entornos de trabajo.
-
 Además, la aplicación se beneficiaría enormemente de un sistema de usuarios integrado con un backend. Este cambio permitiría a los usuarios guardar sus diagramas en una base de datos (sin necesidad de exportar e importar) y continuar editándolos desde diferentes dispositivos. Objetivo que iría en línea con el marcado inicialmente de crear una aplicación de modelado E-R lo más accesible posible.
 
-Por último, la aplicación podría expandirse para soportar casos más complejos. Como son las relaciones ternarias, agregaciones e ISAs, ofreciendo una herramienta totalmente completa a la hora de modelar diagramas E-R.
+Por último, la aplicación podría expandirse para soportar casos más complejos. Como son las entidades débiles, claves y atributos compuestos, relaciones ternarias, agregaciones e ISAs, ofreciendo una herramienta totalmente completa a la hora de modelar diagramas E-R.
 
 En resumen, el balance del proyecto ha sido muy positivo. A pesar de los desafíos técnicos y las áreas identificadas para mejoras, he logrado cumplir con los objetivos iniciales y adquirir habilidades valiosas que serán útiles en presentes y futuros proyectos profesionales.
 
@@ -26,5 +24,9 @@ En resumen, el balance del proyecto ha sido muy positivo. A pesar de los desafí
     \item Mejorar la interfaz de usuario para hacerla visualmente atractiva.
     \item Implementar un sistema de exportación e importación de diagramas para facilitar el trabajo con diagramas existentes.
     \item Integrar un sistema de usuarios y un backend que permita guardar diagramas en una base de datos, permitiendo a los usuarios continuar editándolos desde diferentes dispositivos.
-    \item Soportar el modelado de casos más complejos como relaciones ternarias, agregaciones e ISAs.
+    \item Soportar el modelado de casos más complejos como entidades débiles, claves y atributos compuestos, relaciones ternarias, agregaciones e ISAs.
+    \item Poder especificar los tipos de datos de los atributos para que en SQL se generen con los tipos escogidos por el usuario
+    \item Poder dividir el diagrama en vistas, que permitan ver un subsistema y no perderse en un diagrama global que tenga demasiadas entidades.
+    \item Hacer que sea capaz de generar clases persistentes para un ORM (e.g., JPA, SQL-Alchemy)
+    \item Generar diagramas de patas de cuervo o de clases UML a partir del diagrama E-R.
 \end{itemize}

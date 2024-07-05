@@ -12,7 +12,7 @@ Material UI \cite{material-ui} es una biblioteca de componentes de interfaz de u
 \section{Biome}
 Biome \cite{biome} es una herramienta que incorpora tanto formateo como linting para JavaScript. Ayuda a mantener un código limpio, coherente y libre de errores. En este proyecto, Biome se utiliza para asegurar la calidad del código antes de cada commit.
 
-\section{Validación y pruebas}
+\section{Herramientas utilizadas para validación y pruebas}
 
 \subsection{Pruebas unitarias}
 Inicialmente se utilizó Jest \cite{jest} para las pruebas unitarias, pero debido a problemas con la transpilación del código, se migró a Vitest \cite{vitest}. Vitest ofrece una API igual a Jest, con lo que la migración es directa.
@@ -21,9 +21,9 @@ Inicialmente se utilizó Jest \cite{jest} para las pruebas unitarias, pero debid
 Para las pruebas funcionales, se utiliza Playwright \cite{playwright}, una herramienta moderna que permite simular las interacciones del usuario con la aplicación en varios navegadores. Playwright ejecuta la aplicación en un entorno real y prueba las funcionalidades desde la perspectiva del usuario final.
 
 \subsection{Test Driven Development (TDD)}
-El desarrollo guiado por pruebas de software, o TDD es una práctica de ingeniería de software que requiere el escribir las pruebas primero y refactorizar después. En primer lugar, se escribe una prueba y se comprueba que esta prueba falla. A continuación, se implementa el código que hace que la prueba pase satisfactoriamente y finalmente se refactoriza el código con la seguridad de que este cambio no afectará a la funcionalidad. Esta técnica nos permite pensar en inputs y outputs esperados ayudándonos a desarrollar la funcionalidad desde el test, así mismo nos permite asegurarnos que posteriores cambios no romperán la funcionalidad.
+El desarrollo guiado por pruebas de software, o TDD \cite{wiki:tdd} es una práctica de ingeniería de software que requiere el escribir las pruebas primero y refactorizar después. En primer lugar, se escribe una prueba y se comprueba que esta prueba falla. A continuación, se implementa el código que hace que la prueba pase satisfactoriamente y finalmente se refactoriza el código con la seguridad de que este cambio no afectará a la funcionalidad. Esta técnica nos permite pensar en inputs y outputs esperados ayudándonos a desarrollar la funcionalidad desde el test, así mismo nos permite asegurarnos que posteriores cambios no romperán la funcionalidad.
 
-\section{Integración continua}
+\section{Herramientas utilizadas para integración continua}
 La integración continua es una práctica en desarrollo de software que consiste en realizar integraciones automáticas con una gran frecuencia para así poder detectar fallos. Este concepto de integración comprende la compilación (en este caso despliegue) y ejecución de las diferentes pruebas.
 
 \subsection{Local}

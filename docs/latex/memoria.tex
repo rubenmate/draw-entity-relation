@@ -8,6 +8,8 @@
 \usepackage{lmodern} % Scalable font
 \usepackage{microtype}
 \usepackage{placeins}
+\usepackage{listings}
+\usepackage{listingsutf8}
 
 \RequirePackage{booktabs}
 \RequirePackage[table]{xcolor}
@@ -374,7 +376,7 @@
 
 \noindent\includegraphics[width=\textwidth]{cabecera}\vspace{1cm}
 
-\noindent D. Jesús Manuel Maudes Raedo, profesor del departamento de nombre departamento , área de nombre área.
+\noindent D. Jesús Manuel Maudes Raedo, profesor del departamento de Ingeniería Informática, área de Lenguajes y Sistemas Informáticos.
 
 \noindent Expone:
 
@@ -389,30 +391,29 @@ En Burgos, {\large \today}
 \vfill\vfill\vfill
 
 % Author and supervisor
-\begin{minipage}{0.45\textwidth}
-\begin{flushleft} %\large
-Vº. Bº. del Tutor:\\[2cm]
-D. nombre tutor
-\end{flushleft}
-\end{minipage}
-\hfill
-\begin{minipage}{0.45\textwidth}
-\begin{flushleft} %\large
-Vº. Bº. del co-tutor:\\[2cm]
-D. nombre co-tutor
-\end{flushleft}
-\end{minipage}
-\hfill
+%\begin{minipage}{0.45\textwidth}
+%\begin{flushleft} %\large
+%Vº. Bº. del Tutor:\\[2cm]
+%D. nombre tutor
+%\end{flushleft}
+%\end{minipage}
+%\hfill
+%\begin{minipage}{0.45\textwidth}
+%\begin{flushleft} %\large
+%Vº. Bº. del co-tutor:\\[2cm]
+%D. nombre co-tutor
+%\end{flushleft}
+%\end{minipage}
+%\hfill
 
-\vfill
+%\vfill
 
 % para casos con solo un tutor comentar lo anterior
 % y descomentar lo siguiente
-%Vº. Bº. del Tutor:\\[2cm]
-%D. nombre tutor
-
-TODO: Cuál es el nombre concreto del departamento y el área.
-TODO: Dejo un único tutor?
+\begin{center}
+Vº. Bº. del Tutor:\\[2cm]
+D. Jesús Manuel Maudes Raedo
+\end{center}
 
 
 \newpage\null\thispagestyle{empty}\newpage
@@ -425,7 +426,7 @@ TODO: Dejo un único tutor?
 % Abstract en castellano
 \renewcommand*\abstractname{Resumen}
 \begin{abstract}
-Este proyecto permite modelar diagramas entidad-relación en una aplicación web y exportarlos a un script SQL tras su validación. La aplicación está desarrollada en React y utiliza la librería mxGraph para la creación y manipulación de los diagramas. 
+Este proyecto permite modelar diagramas entidad-relación en una aplicación web y exportarlos a un script SQL tras su validación. Es también un punto de partida para que futuros proyectos puedan expandir su funcionalidad con relaciones más complejas. La aplicación está desarrollada en React y utiliza la librería mxGraph para la creación y manipulación de los diagramas. 
 \end{abstract}
 
 \renewcommand*\abstractname{Descriptores}
@@ -439,7 +440,7 @@ Modelado de bases de datos, diagramas entidad-relación, exportación a SQL, apl
 % Abstract en inglés
 \renewcommand*\abstractname{Abstract}
 \begin{abstract}
-This project allows modeling entity-relationship diagrams in a web application and exporting them to an SQL script after validation. The application is developed in React and uses the mxGraph library for the creation and manipulation of the diagrams.
+This project allows modeling entity-relationship diagrams in a web application and exporting them to an SQL script after validation. It's also a starting point for future projects that will add features and more complex relations. Tusehe application is developed in React and uses the mxGraph library for the creation and manipulation of the diagrams.
 \end{abstract}
 
 \renewcommand*\abstractname{Keywords}

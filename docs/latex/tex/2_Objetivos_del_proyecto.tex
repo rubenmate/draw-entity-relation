@@ -5,14 +5,13 @@ En este apartado se detallan los objetivos a completar en el desarrollo del proy
 \section{Objetivos generales}
 \begin{itemize}
 \tightlist
-    \item Desarrollar una aplicación web para modelar diagramas entidad-relación.
+    \item Desarrollar una aplicación web para modelar diagramas básicos entidad-relación.
     \item Proporcionar una interfaz sencilla y fácil de usar para el modelado de diagramas.
     \item Implementar funcionalidades para añadir y manipular entidades y relaciones.
     \item Permitir la validación de los diagramas modelados.
+    \item Permitir exportar e importar los diagramas modelados como JSON.
     \item Exportar los diagramas validados a scripts SQL.
 \end{itemize}
-
-% TODO: Necesario? \clearpage
 
 \section{Objetivos técnicos}
 \begin{itemize}
@@ -20,7 +19,11 @@ En este apartado se detallan los objetivos a completar en el desarrollo del proy
     \item Utilizar React para el desarrollo de la aplicación web.
     \item Integrar la librería mxGraph para la creación y manipulación de diagramas.
     \item Implementar un sistema de menús contextuales para facilitar la manipulación de elementos del diagrama.
-    \item Almacenar los datos de los diagramas en una estructura interna eficiente.
+    \item Almacenar los datos de los diagramas en una estructura interna eficiente con las siguientes características:
+    \begin{itemize}
+        \item Es fácilmente procesable para la generación de las tablas SQL correspondientes.
+        \item Es fácilmente extensible para expandir las interrelaciones que pueden modelarse.
+    \end{itemize}
     \item Implementar la funcionalidad para validación de diagramas entidad-relación.
     \item Desarrollar la funcionalidad de exportación de diagramas a scripts SQL.
     \item Integrar pruebas unitarias y pruebas end-to-end.
