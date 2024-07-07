@@ -1,40 +1,210 @@
 \apendice{Especificación de Requisitos}
 
 \section{Introducción}
+En este apartado se enumeran y desarrollan los objetivos y requisitos que debe tener la aplicación según han sido marcados al comienzo del proyecto.
 
-Una muestra de cómo podría ser una tabla de casos de uso:
+\section{Objetivos generales}
+Este proyecto tiene como objetivo los siguientes puntos:
+\begin{itemize}
+\tightlist
+\item Modelar diagramas E-R.
+\item Almacenar los diagramas en una estructura interna fácilmente extensible.
+\item Validar esa estructura interna para conocer si un diagrama E-R es válido.
+\item Exportar un diagrama válido a JSON.
+\item Importar y recrear un diagrama en JSON válido.
+\item Exportar los diagramas válidos a scripts SQL.
+\end{itemize}
+\newpage
 
-% Caso de Uso 1 -> Consultar Experimentos.
+\section{Catálogo de requisitos}
+En este apartado se definirán los requisitos funcionales y no funcionales del proyecto.
+
+\subsection{Requisitos funcionales}
+\begin{itemize}
+\tightlist
+\item \textbf{RF1 - Modelar diagramas E-R:} La aplicación debe permitir a los usuarios crear y manipular diagramas E-R.
+\item \textbf{RF2 - Almacenar diagramas:} La aplicación debe almacenar los diagramas en una estructura interna que sea fácilmente extensible.
+\item \textbf{RF3 - Validar diagramas:} La aplicación debe validar la estructura interna del diagrama para asegurar su corrección al generar el SQL o exportar/importar JSON.
+\item \textbf{RF4 - Exportar diagramas:} La aplicación debe permitir exportar los diagramas validados a un archivo JSON.
+\item \textbf{RF5 - Importar diagramas:} La aplicación debe permitir importar diagramas desde un archivo JSON y recrearlos en el entorno de la aplicación.
+\item \textbf{RF6 - Generar SQL:} La aplicación debe permitir generar scripts SQL a partir de los diagramas validados.
+\end{itemize}
+
+\newpage
+
+\subsection{Requisitos no funcionales}
+\begin{itemize}
+\tightlist
+\item \textbf{RNF1 - Usabilidad:} La aplicación debe ser fácil de usar y tener una interfaz intuitiva para mejorar la experiencia del usuario.
+\item \textbf{RNF2 - Rendimiento:} La aplicación debe ser eficiente en términos de rendimiento.
+\item \textbf{RNF3 - Compatibilidad:} La aplicación debe ser compatible con diferentes navegadores.
+\item \textbf{RNF4 - Seguridad:} La aplicación debe garantizar la seguridad de los datos manejados y almacenados.
+\item \textbf{RNF5 - Mantenibilidad:} La aplicación debe ser fácil de mantener y actualizar. Debe poder expandirse en el futuro con nuevos tipos de relaciones y funcionalidades.
+\end{itemize}
+\clearpage
+
+\section{Especificación de requisitos}
+
+\subsection{Casos de uso}
+
 \begin{table}[p]
 	\centering
 	\begin{tabularx}{\linewidth}{ p{0.21\columnwidth} p{0.71\columnwidth} }
 		\toprule
-		\textbf{CU-1}    & \textbf{Ejemplo de caso de uso}\\
+		\textbf{CU-1}    & \textbf{Modelar diagramas E-R}\\
 		\toprule
 		\textbf{Versión}              & 1.0    \\
-		\textbf{Autor}                & Alumno \\
-		\textbf{Requisitos asociados} & RF-xx, RF-xx \\
-		\textbf{Descripción}          & La descripción del CU \\
-		\textbf{Precondición}         & Precondiciones (podría haber más de una) \\
+		\textbf{Autor}                & Rubén Maté Iturriaga \\
+		\textbf{Requisitos asociados} & RF-1 \\
+		\textbf{Descripción}          & Permite al usuario crear y manipular diagramas E-R. \\
+		\textbf{Precondición}         & La aplicación debe estar abierta y funcionando. \\
 		\textbf{Acciones}             &
 		\begin{enumerate}
 			\def\labelenumi{\arabic{enumi}.}
 			\tightlist
-			\item Pasos del CU
-			\item Pasos del CU (añadir tantos como sean necesarios)
+			\item El usuario arrastra y suelta elementos (entidades, relaciones) al canvas.
+            \item El usuario añade atributos a las entidades y relaciones (en caso de que fueran N:M).
+            \item El usuario edita los nombres y atributos de las entidades y relaciones.
+            \item El usuario vincula entidades configurando las relaciones y asignándolas cardinalidades. 
 		\end{enumerate}\\
-		\textbf{Postcondición}        & Postcondiciones (podría haber más de una) \\
-		\textbf{Excepciones}          & Excepciones \\
-		\textbf{Importancia}          & Alta o Media o Baja... \\
+		\textbf{Postcondición}        & El diagrama se almacena en la estructura interna de la aplicación. \\
+		\textbf{Excepciones}          & - \\
+		\textbf{Importancia}          & Alta \\
 		\bottomrule
 	\end{tabularx}
-	\caption{CU-1 Nombre del caso de uso.}
+	\caption{CU-1 Modelar diagramas E-R.}
 \end{table}
 
-\section{Objetivos generales}
+\begin{table}[p]
+	\centering
+	\begin{tabularx}{\linewidth}{ p{0.21\columnwidth} p{0.71\columnwidth} }
+		\toprule
+		\textbf{CU-2}    & \textbf{Almacenar diagramas}\\
+		\toprule
+		\textbf{Versión}              & 1.0    \\
+	\textbf{Autor}                & Rubén Maté Iturriaga \\
+		\textbf{Requisitos asociados} & RF-2 \\
+		\textbf{Descripción}          & Permite almacenar los diagramas creados en una estructura interna. \\
+		\textbf{Precondición}         & El usuario debe haber creado un diagrama E-R. \\
+		\textbf{Acciones}             &
+		\begin{enumerate}
+			\def\labelenumi{\arabic{enumi}.}
+			\tightlist
+            \item La estructura interna se mantiene actualizada automáticamente ante los diversos cambios y acciones.
+		\end{enumerate}\\
+		\textbf{Postcondición}        & El diagrama se almacena correctamente y puede ser recuperado. \\
+		\textbf{Excepciones}          & Problemas de almacenamiento (mensaje de error). \\
+		\textbf{Importancia}          & Alta \\
+		\bottomrule
+	\end{tabularx}
+	\caption{CU-2 Almacenar diagramas.}
+\end{table}
 
-\section{Catálogo de requisitos}
+\begin{table}[p]
+	\centering
+	\begin{tabularx}{\linewidth}{ p{0.21\columnwidth} p{0.71\columnwidth} }
+		\toprule
+		\textbf{CU-3}    & \textbf{Validar diagramas}\\
+		\toprule
+		\textbf{Versión}              & 1.0    \\
+	\textbf{Autor}                & Rubén Maté Iturriaga \\
+		\textbf{Requisitos asociados} & RF-3 \\
+		\textbf{Descripción}          & Permite validar la estructura interna del diagrama para asegurar su corrección al generar el SQL o exportar/importar JSON. \\
+		\textbf{Precondición}         & El usuario debe haber creado y modelado un diagrama. \\
+		\textbf{Acciones}             &
+		\begin{enumerate}
+			\def\labelenumi{\arabic{enumi}.}
+			\tightlist
+			\item El usuario selecciona la opción de generar SQL o exportar/importar diagrama.
+			\item La aplicación verifica la corrección del diagrama según las reglas E-R.
+		\end{enumerate}\\
+		\textbf{Postcondición}        & La aplicación muestra un mensaje indicando si el diagrama es válido o no antes de generar el SQL o exportar/importar JSON. \\
+		\textbf{Excepciones}          & Mensajes de error con diagnóstico en caso de diagrama no válido. \\
+		\textbf{Importancia}          & Alta \\
+		\bottomrule
+	\end{tabularx}
+	\caption{CU-3 Validar diagramas.}
+\end{table}
 
-\section{Especificación de requisitos}
+\begin{table}[p]
+	\centering
+	\begin{tabularx}{\linewidth}{ p{0.21\columnwidth} p{0.71\columnwidth} }
+		\toprule
+		\textbf{CU-4}    & \textbf{Exportar diagramas}\\
+		\toprule
+		\textbf{Versión}              & 1.0    \\
+	\textbf{Autor}                & Rubén Maté Iturriaga \\
+		\textbf{Requisitos asociados} & RF-4 \\
+		\textbf{Descripción}          & Permite exportar los diagramas válidos a un archivo JSON. \\
+		\textbf{Precondición}         & El diagrama debe ser válido. \\
+		\textbf{Acciones}             &
+		\begin{enumerate}
+			\def\labelenumi{\arabic{enumi}.}
+			\tightlist
+			\item El usuario selecciona la opción de exportar diagrama.
+			\item La aplicación genera un archivo JSON con la estructura interna del diagrama.
+			\item El usuario descarga (la descarga se realiza automáticamente al pulsar el botón \texttt{Aceptar}) el archivo JSON.
+		\end{enumerate}\\
+		\textbf{Postcondición}        & El archivo JSON se guarda en el dispositivo del usuario. \\
+		\textbf{Excepciones}          & Problemas de exportación (mensaje de error). \\
+		\textbf{Importancia}          & Media \\
+		\bottomrule
+	\end{tabularx}
+	\caption{CU-4 Exportar diagramas.}
+\end{table}
 
+\begin{table}[p]
+	\centering
+	\begin{tabularx}{\linewidth}{ p{0.21\columnwidth} p{0.71\columnwidth} }
+		\toprule
+		\textbf{CU-5}    & \textbf{Importar diagramas}\\
+		\toprule
+		\textbf{Versión}              & 1.0    \\
+	\textbf{Autor}                & Rubén Maté Iturriaga \\
+		\textbf{Requisitos asociados} & RF-5 \\
+		\textbf{Descripción}          & Permite importar diagramas desde un archivo JSON y recrearlos en la aplicación. \\
+		\textbf{Precondición}         & El usuario debe tener un archivo JSON válido. \\
+		\textbf{Acciones}             &
+		\begin{enumerate}
+			\def\labelenumi{\arabic{enumi}.}
+			\tightlist
+			\item El usuario selecciona la opción de importar diagrama.
+			\item El usuario carga el archivo JSON en la aplicación.
+            \item La aplicación hace una validación del diagrama importado y si es correcta recrea el diagrama.
+		\end{enumerate}\\
+		\textbf{Postcondición}        & El diagrama se visualiza correctamente en la aplicación. \\
+		\textbf{Excepciones}          & Problemas de importación (mensaje de error). \\
+		\textbf{Importancia}          & Media \\
+		\bottomrule
+	\end{tabularx}
+	\caption{CU-5 Importar diagramas.}
+\end{table}
+
+\begin{table}[p]
+	\centering
+	\begin{tabularx}{\linewidth}{ p{0.21\columnwidth} p{0.71\columnwidth} }
+		\toprule
+		\textbf{CU-6}    & \textbf{Generar SQL del diagrama modelado}\\
+		\toprule
+		\textbf{Versión}              & 1.0    \\
+		\textbf{Autor}                & Rubén Maté Iturriaga \\
+		\textbf{Requisitos asociados} & RF-6 \\
+		\textbf{Descripción}          & Permite generar un script SQL a partir del diagrama E-R modelado y validado. \\
+		\textbf{Precondición}         & El diagrama debe ser válido. \\
+		\textbf{Acciones}             &
+		\begin{enumerate}
+			\def\labelenumi{\arabic{enumi}.}
+			\tightlist
+			\item El usuario selecciona la opción de generar SQL.
+			\item La aplicación valida el diagrama E-R.
+			\item La aplicación genera un script SQL con el paso a tablas del diagrama.
+			\item El usuario descarga el archivo SQL (La descarga se realiza automáticamente al pulsar el botón \texttt{Aceptar}).
+		\end{enumerate}\\
+		\textbf{Postcondición}        & El archivo SQL se guarda en el dispositivo del usuario. \\
+		\textbf{Excepciones}          & Problemas de generación de SQL (mensaje de error). \\
+		\textbf{Importancia}          & Media \\
+		\bottomrule
+	\end{tabularx}
+	\caption{CU-6 Generar SQL del diagrama modelado.}
+\end{table}
 

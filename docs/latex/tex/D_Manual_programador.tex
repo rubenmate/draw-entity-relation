@@ -1,11 +1,171 @@
 \apendice{Documentación técnica de programación}
 
 \section{Introducción}
+Este anexo proporciona una guía detallada sobre la estructura de directorios del proyecto, un manual del programador, instrucciones para la compilación, instalación y ejecución del proyecto, así como una descripción de las pruebas del sistema. Está destinado a desarrolladores y posibles contribuidores que deseen comprender mejor el código y colaborar en su desarrollo.
 
 \section{Estructura de directorios}
+El proyecto está organizado de la siguiente manera:
+
+\begin{verbatim}
+.github/workflows
+assets
+docs
+public
+src/
+    components/
+        DiagramEditor/
+            DiagramEditor.js
+            utils/
+    utils/
+        validation.js
+        sql.js
+tests/
+    e2e/
+    unit/
+        graphs/
+\end{verbatim}
+
+\begin{itemize}
+    \item \textbf{.github/workflows}: Contiene archivos de configuración para las acciones de github y que establecen los procesos de integración y despliegue continuo.
+    \item \textbf{assets}: Archivos de recursos para el proyecto.
+    \item \textbf{docs}: Documentación del proyecto donde se encuentran los archivos LateX de esta memoria.
+    \item \textbf{public}: Archivos que servirá el servidor web de la aplicación al levantarse.
+    \item \textbf{src/components/DiagramEditor}: Contiene la inicialización de mxGraph, el canvas, la toolbar y toda la lógica para modelar el diagrama e interactuar con la aplicación. Hay una explicación un tanto más detallada en el Apéndice C.4.
+    \item \textbf{src/utils}: Módulos para validar y exportar el diagrama como SQL.
+    \item \textbf{tests/e2e}: Pruebas end-to-end.
+    \item \textbf{tests/unit}: Pruebas unitarias.
+    \item \textbf{tests/unit/graphs}: Diagramas JSON de ejemplo utilizados en las pruebas unitarias.
+\end{itemize}
 
 \section{Manual del programador}
+Se proporciona una guía para configurar el proyecto y poder contribuir a su desarrollo.
+
+\subsection{Configuración del entorno de desarrollo}
+Para configurar el entorno de desarrollo, se necesitan las siguientes herramientas:
+\begin{itemize}
+    \item Node.js (versión 18, el repositiorio cuenta con un archivo \texttt{.node-version} que determina la versión node a usar.
+    \item npm
+    \item git
+\end{itemize}
+
+\subsection{Clonación del proyecto}
+Uno de los primeros pasos será el de clonar el repositorio remoto a uno local. Preferiblmente se trabajará a través de un fork \cite{github:fork}.
+\begin{verbatim}
+git clone git@github.com:rubenmate/draw-entity-relation.git
+\end{verbatim}
+
+O si se estamos clonando a través del protocolo http (no recomendable, es mejor usar ssh).
+\begin{verbatim}
+git clone https://github.com/rubenmate/draw-entity-relation.git
+\end{verbatim}
+
+\subsection{Instalación de dependencias}
+Para instalar las dependencias del proyecto, ejecutar el siguiente comando en la raíz del proyecto:
+\begin{verbatim}
+npm install
+\end{verbatim}
+
+\subsection{Estructura del código}
+El código se organiza en módulos para facilitar su mantenimiento y comprensión. Los componentes principales de la aplicación se encuentran en  \textbf{src/components/DiagramEditor}, que contiene toda la lógica para modelar diagramas E-R. Los módulos de validación y generación SQL se encuentran en \textbf{src/utils}.
+
+\subsection{Añadir nuevas funcionalidades}
+Para añadir nuevas funcionalidades, hay que seguir estos pasos:
+\begin{enumerate}
+    \item Crear una rama nueva para su funcionalidad siguiendo la convención de nomenclatura:
+    \begin{verbatim}
+    git checkout -b <num. del issue>-funcionalidad
+    \end{verbatim}
+    \item Realizar los cambios necesarios en el código.
+    \item Realizar los commits siguiendo la convención \textbf{conventional commits} \cite{conventional-commits}.
+    \item Asegurarse de que las pruebas pasen correctamente.
+    \item Crear una pull request describiendo los cambios realizados.
+\end{enumerate}
+
+Ejemplos de nombres de rama:
+\begin{itemize}
+    \item Para una nueva funcionalidad: \texttt{29-diagram-persistence}
+    \item Para una corrección: \texttt{34-fix-toolbar-bug}
+\end{itemize}
+
+Este proyecto cuenta con varias herramientas de integración continua:
+
+Github Actions \cite{github-actions} que se ejecutan automáticamente al hacer commits a la rama principal main o en cualquier rama cuyo objetivo de integración sea la rama principal.
+
+\imagen{github-actions}{Ejecución de las diferentes GitHub Actions en nuestro proyecto.}
+
+Las pruebas pueden ejecutarse también de forma local como se explica en el apartado de \textbf{Pruebas} posterior.
+
+Al realizar un commit se ejecuta un hook que comprueba contra el código incluido en ese commit su corrección semántica según las reglas del linter Biome \cite{biome}.
 
 \section{Compilación, instalación y ejecución del proyecto}
+Para compilar, instalar y ejecutar el proyecto, seguir estos pasos:
+
+\subsection{Compilación}
+Para compilar el proyecto, ejecutar el siguiente comando:
+\begin{verbatim}
+npm run build
+\end{verbatim}
+Con esto se crearía la carpeta build, más información para desplegarla en la sección Despliegue.
+
+\subsection{Ejecución en modo de desarrollo}
+Para ejecutar el proyecto en modo de desarrollo, use el siguiente comando:
+\begin{verbatim}
+npm start
+\end{verbatim}
+Se levantará el proyecto en la dirección por defecto:
+\begin{verbatim}
+    http:localhost:3000
+\end{verbatim}
+Aunque si dicho puerto estaría ocupado se preguntaría al usuario para levantarlo en otro.
+
+\subsection{Despliegue}
+Para desplegar el proyecto, se recomienda utilizar Vercel. La configuración es muy básica, tan solo e necesario iniciar sesión en su cuenta de Vercel y conectar con el repositorio del proyecto para que se realice el despliegue de manera automática (inicialmente y con cada nuevo commit).
+
+En caso de querer realizar el despliegue en otra plataforma habría que hacer la build con el comando explicado en el apartado \textbf{Compilación}.
+En este punto ya se habría hecho la build y tan solo quedaría servirla con una utilidad como \textbf{serve} \cite{npm:serve}
+
+\begin{enumerate}
+    \item Instalar \texttt{serve} a nivel global en el sistema:
+    \begin{verbatim}
+    npm install -g serve
+    \end{verbatim}
+    \item Hacer build del proyecto:
+    \begin{verbatim}
+    npm run build
+    \end{verbatim}
+    \item Servir la aplicación con \texttt{serve}:
+    \begin{verbatim}
+    serve -s build
+    \end{verbatim}
+\end{enumerate}
 
 \section{Pruebas del sistema}
+Las pruebas del sistema están divididas en pruebas end-to-end (e2e) y pruebas unitarias.
+
+\subsection{Pruebas unitarias}
+Las pruebas unitarias se encuentran en el directorio \textbf{tests/unit}. Estas pruebas verifican la funcionalidad de los componentes individuales del sistema. Los diagramas JSON de ejemplo utilizados en estas pruebas están en \textbf{tests/unit/graphs}.
+
+Para ejecutar las pruebas unitarias, utilizar el siguiente comando:
+\begin{verbatim}
+npm run test
+\end{verbatim}
+
+\imagen{unit-tests}{Ejecución de pruebas unitarias}
+
+\subsection{Pruebas end-to-end}
+Las pruebas end-to-end se encuentran en el directorio \textbf{tests/e2e}. Estas pruebas verifican la funcionalidad completa del sistema desde un punto de vista de usuario final.
+
+Para ejecutar las pruebas end-to-end, utilizar el siguiente comando:
+\begin{verbatim}
+npm run test:e2e
+\end{verbatim}
+
+También se pueden lanzar de forma gráfica con \begin{verbatim}
+    npx playwright test --ui
+\end{verbatim}.
+
+Con este comando se lanza la interfaz gráfica de la herramienta Playwright \cite{playwright} desde donde podemos ver los diferentes tests y ejecutarlos gráficamente.
+
+\imagen{e2e-tests}{Ejecución de pruebas End to End con la interfaz gráfica de Playwright}
+
+

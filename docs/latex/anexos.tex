@@ -8,6 +8,9 @@
 \usepackage{lmodern} % scalable font
 \usepackage{microtype}
 \usepackage{placeins}
+\usepackage{listings}
+\usepackage{listingsutf8}
+\usepackage{adjustbox}
 
 \RequirePackage{booktabs}
 \RequirePackage[table]{xcolor}
@@ -55,7 +58,14 @@
 	\end{figure}
 }
 
-
+\newcommand{\imagencontamano}[3]{
+	\begin{figure}[!h]
+		\centering
+		\includegraphics[width=#3\textwidth]{#1}
+		\caption{#2}\label{fig:#1}
+	\end{figure}
+	\FloatBarrier
+}
 
 % El comando \figura nos permite insertar figuras comodamente, y utilizando
 % siempre el mismo formato. Los parametros son:

@@ -1,11 +1,155 @@
 \apendice{Documentación de usuario}
 
 \section{Introducción}
+En este apartado se proporciona una guía completa para los usuarios de la aplicación. Se detallan los requisitos necesarios, el proceso de instalación y un manual de usuario para facilitar el uso de la aplicación.
 
 \section{Requisitos de usuarios}
+Para utilizar esta aplicación, los usuarios deben cumplir con los siguientes requisitos:
+\begin{itemize}
+    \item Disponer de un navegador web actualizado (Chrome, Firefox, Safari, Edge o similar).
+    \item Conexión a internet.
+    \item Es conveniente tener algún conocimiento del modelo E-R.
+\end{itemize}
 
 \section{Instalación}
+La aplicación se puede utilizar directamente desde el navegador sin necesidad de instalación y es el modo recomendado de uso \footnote{\url{https://draw-entity-relation.vercel.app}}. Sin embargo, para aquellos usuarios que deseen ejecutar la aplicación localmente, se pueden seguir estos pasos:
+
+\begin{enumerate}
+    \item Clonar el repositorio del proyecto desde GitHub:
+    \begin{verbatim}
+    git clone https://github.com/rubenmate/draw-entity-relation.git
+    \end{verbatim}
+    \item Acceder al directorio del proyecto:
+    \begin{verbatim}
+    cd draw-entity-relation
+    \end{verbatim}
+    \item Instalar las dependencias necesarias:
+    \begin{verbatim}
+    npm install
+    \end{verbatim}
+    \item Iniciar el servidor de desarrollo:
+    \begin{verbatim}
+    npm start
+    \end{verbatim}
+    \item Abrir navegador web y acceder a \texttt{http://localhost:3000}.
+\end{enumerate}
+
+Para levantar la aplicación en un entorno de producción, se puede utilizar la herramienta \texttt{serve} de npm \cite{npm:serve}:
+\begin{enumerate}
+    \item Instalar \texttt{serve} a nivel global en el sistema:
+    \begin{verbatim}
+    npm install -g serve
+    \end{verbatim}
+    \item Hacer build del proyecto:
+    \begin{verbatim}
+    npm run build
+    \end{verbatim}
+    \item Servir la aplicación con \texttt{serve}:
+    \begin{verbatim}
+    serve -s build
+    \end{verbatim}
+\end{enumerate}
 
 \section{Manual del usuario}
+Este manual proporciona una guía paso a paso sobre cómo utilizar las principales funcionalidades de la aplicación.
 
+\subsection{Inicio}
+Al entrar en la aplicación encontraremos las diferentes partes de la aplicación y el canvas vacío.
+Con el click derecho del ratón se puede hacer drag del canvas y movernos por si necesitásemos más espacio.
 
+\imagen{app}{Pantalla inicial de la aplicación.}
+
+\imagen{app-parts}{Diferentes componentes de la aplicación.}
+
+\subsection{Crear un nuevo diagrama E-R}
+\begin{enumerate}
+    \item En caso de tuviéramos un diagrama en proceso de modelar el proceso sería hacer click en el botón \texttt{Reiniciar} y \texttt{Aceptar} en el diálogo.
+    \item Con el canvas vacío el proceso de funcionamiento es tan simple como arrastrar los diferentes objetos (Entidades-rectángulos, Relaciones-Rombos) al canvas.
+\end{enumerate}
+
+\subsection{Acciones comunes sobre objetos}
+Con un objeto cualquiera (Entidades, Atributos y Relaciones) podemos realizar estas acciones:
+\begin{enumerate}
+    \item Seleccionar un elemento: Al hacer click  sobre un elemento se selecciona.
+    \item Desseleccionar un elemento: Al hacer click sobre un área vacía se desselecciona el elemento seleccionado.
+    \item Doble click para cambiar de nombre: Al hacer doble click sobre un objeto nos deja usar el teclado para cambiarlo de nombre.
+    \item Move back y Move front: Son comunes a todos los objetos y sirven para aquellos casos que queramos recuperar algún objeto que ha quedado detrás de otro. Con \texttt{Move back} el objeto queda por detrás del resto, \texttt{Move front} hace lo contrario.
+\end{enumerate}
+
+\subsection{Acciones sobre una Entidad}
+Con una entidad seleccionada podemos realizar las siguientes acciones:
+\begin{enumerate}
+    \item Añadir atributo: Añade un atributo a esta entidad, el primer atributo siempre será clave (no así los siguientes) y la posición de los siguientes siempre será un poco debajo del último atributo añadido.
+    \item Ocultar atributos: Oculta los atributos de una entidad para evitar sobrecargar la visualización.
+    \item Mostrar atributos: Muestra los atributos de una entidad previamente ocultos.
+    \item Borrar: Elimina la entidad así como sus atributos y vinculación con relaciones si los hubiera.
+\end{enumerate}
+
+\imagen{entity-actions-app}{Acciones contextuales sobre una entidad.}
+
+\subsection{Acciones sobre un Atributo}
+Con un atributo seleccionado (no clave, el atributo clave está protegido) podemos realizar las siguientes acciones:
+\begin{enumerate}
+    \item Convertir en clave: Convierte el atributo en clave. Como en esta versión no se permiten claves compuestas, el resultado será que la anterior clave pasará a ser atributo normal.
+    \item Borrar: Elimina el atributo de la entidad.
+\end{enumerate}
+
+\imagen{attribute-actions-app}{Acciones contextuales sobre un atributo.}
+
+\subsection{Acciones sobre una Relación}
+Con una relación seleccionada podemos realizar las siguientes acciones:
+\begin{enumerate}
+    \item Convertir en clave: Convierte el atributo en clave. Como en esta versión no se permiten claves compuestas, el resultado será que la anterior clave pasará a ser atributo normal.
+    \item Borrar: Elimina el atributo de la entidad.
+\end{enumerate}
+
+\imagen{relation-actions-app}{Acciones contextuales sobre una relación.}
+
+Las relaciones N:M pueden contener atributos y por tanto también muestran los botones \texttt{Añadir atributo} o \texttt{Ocultar atributos} que se comportan del mismo modo que las entidades con la salvedad de que estos atributos no serán clave.
+
+\imagen{n-m-relation-actions-app}{Añadir atributos en una relación N-M.}
+
+\subsubsection{Configurar relaciones}
+Para configurar una relación hay que hacer click sobre el botón \texttt{Configurar relación}, se mostrarán dos diálogos con selectores (que muestran las diferentes entidades del diagrama).
+Al escoger entidades en los dos lados (pueden ser la misma, se permiten relaciones reflexivas).
+Las relaciones se pueden reconfigurar con este mismo procedimiento.
+
+\imagen{configure-relation-app}{Diálogo para configurar relaciones.}
+
+\subsubsection{Configurar cardinalidades}
+Para configurar las cardinalidades de los lados de una relación hay que hacer click sobre el botón \texttt{Configurar cardinalidades}. Se mostrarán dos diálogos con selectores (que muestran las posibles cardinalidades).
+El caso 1:1-1:1 no está permitido, al escoger 1:1 en uno de los dos lados desaparecerá del otro.
+Las cardinalidades se pueden reconfigurar con este mismo procedimiento.
+
+\imagen{configure-cardinalities-app}{Diálogo para configurar cardinalidades de una relación.}
+
+\subsection{Generar script SQL}
+\begin{enumerate}
+    \item Al hacer click al botón \texttt{Generar SQL} se valida el diagrama internamente.
+    \item En caso de que el diagrama sea válido se generará un archivo SQL que se descargará automáticamente.
+    \item En caso de no ser válido se mostrará una serie de diagnósticos que están causando que el diagrama no sea válido.
+\end{enumerate}
+
+\imagen{validation-sql-app}{Diagnóstico al generar SQL con un diagrama no válido.}
+
+\subsection{Exportar un diagrama a JSON}
+El funcionamiento es exactamente igual que para generar un script SQL, pero con la salvedad de que se exporta el diagrama en formato JSON. Este archivo está listo para ser importado y recreado.
+
+\subsection{Importar un diagrama desde JSON}
+\begin{enumerate}
+    \item Haga clic en el botón \texttt{Importar JSON} y seleccione el archivo JSON que contiene el diagrama.
+    \item La aplicación comprobará la validez del diagrama y lo recreará.
+\end{enumerate}
+
+\imagen{import-json-app}{Diálogo con selección de archivo para import diagrama JSON.}
+
+\subsection{Reiniciar canvas}
+\begin{enumerate}
+    \item Haga clic en el botón \texttt{Reiniciar}.
+    \item Aparecerá un diálogo de confirmación con las opciones \texttt{Aceptar} y \texttt{Cancelar}.
+    \item Al hacer click en \texttt{Aceptar} se borrará el estado del diagrama y se reiniciará el canvas.
+\end{enumerate}
+
+\imagen{reset-canvas-app}{Diálogo de confimación para reiniciar el canvas.}
+
+Con estas instrucciones, los usuarios podrán utilizar la aplicación de manera efectiva para crear, validar, exportar e importar diagramas E-R, así como generar scripts SQL a partir de sus diagramas modelados.

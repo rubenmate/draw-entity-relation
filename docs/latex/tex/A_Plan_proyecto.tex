@@ -4,52 +4,269 @@
 En este apartado se realiza un pequeño resumen del desarrollo del proyecto y de los diferentes sprints que lo han compuesto, así como un estudio de viabilidad en el que se presenta tanto la viabilidad económica como legal del proyecto.
 
 \section{Planificación temporal}
-Se ha usado una metodología de desarrollo ágil, los sprints han sido de aproxidamente 3-4 semanas para poder compaginarlo con mi trabajo.
-Los sprints se han administrado con las Milestones de la plataforma GitHub en combinación con las labels que determinan el tipo de tarea que es cada issue.
+Para el desarrollo de este trabajo de fin de grado se ha usado una metodología de desarrollo ágil. Los sprints han sido de aproximadamente unas 3-4 semanas, lo cuál ha permitido poder compaginarlo con mi trabajo.
+Se han administrado con las Milestones de la plataforma GitHub en combinación con las labels que determinan el tipo de tarea que es cada issue.
+
 \imagen{sprints}{División en sprints del desarrollo}
 \imagen{labels}{Labels a asignar a los diferentes issues y pull requests}
 
-\subsection{Sprint 0 - 13/03/2024-8/04/2024 }
-\imagen{sprint-0}{Issues del Sprint 0}{1}
+\subsection{Sprint 0 - 13/03/2024 - 8/04/2024 }
+El primer sprint ha consistido en plantear las bases sobre las que se iba a cimentar el proyecto. Esto es:
+\begin{itemize}
+    \item Decidir el framework tecnológico a usar. El debate estaba entre React \cite{react} o Javascript \cite{wiki:javascript}, se optó finalmente por este primero puesto que no se le ve un gran sentido a desarrollar puramente con Javascript a estas alturas del desarrollo web.
+    \item Decidir la librería para dibujar/modelar: Se optó finalmente por mxGraph\cite{mxgraph}/maxGraph\cite{maxgraph}.
+\end{itemize}
+
+\imagen{sprint-0}{Issues del Sprint 0}
+
 \begin{table}[ht!]
     \centering
     \resizebox{14cm}{!} {
     \begin{tabular}{|l|c|}
     \hline
     \rowcolor[rgb]{0.9, 0.9, 0.9}
-    \textbf{Issues completadas} & \textbf{Label} \\ \hline
+    \textbf{Issues} & \textbf{Label} \\ \hline
     \textbf{Decision: Canvas Drawing Library Selection} & \cellcolor[rgb]{0.83, 0.77, 0.97}research \\ \hline 
     \textbf{Consideration: Framework Selection - React vs Vanilla Javascript} & \cellcolor[rgb]{0.83, 0.77, 0.97}research \\ \hline 
     \end{tabular}}
     \caption{Issues completadas Sprint 0}
-    \label{tab:my_label}
+\end{table}
+
+\subsection{Sprint 1 - 9/04/2024 - 24/04/2024 }
+El segundo sprint ha consistido en:
+\begin{itemize}
+    \item Decidir qué formato de datos va a usarse para guardar y poder tratar un diagrama E-R. Este issue no se completará totalmente hasta una fase casi final del proyecto.
+    \item Añadir la plantilla de la memoria LaTeX al repositorio.
+    \item Implementar la funcionalidad inicial de poder añadir Entidades y cambiar su nombre.
+\end{itemize}
+
+\imagen{sprint-1}{Issues del Sprint 1}
+
+\begin{table}[ht!]
+    \centering
+    \resizebox{14cm}{!} {
+    \begin{tabular}{|l|c|}
+    \hline
+    \rowcolor[rgb]{0.9, 0.9, 0.9}
+    \textbf{Issues} & \textbf{Label} \\ \hline
+    \textbf{Decision: Choose Data Format for Saving E-R Diagrams} & \cellcolor[rgb]{0.83, 0.77, 0.97}research \\ \hline 
+    \textbf{Documentation: Add LaTeX Final Degree Project Report} & \cellcolor[rgb]{0.0, 0.46, 0.79}\textcolor{white}{documentation} \\ \hline 
+    \textbf{Feature: Add Interlinked Entities and Text Labels to Canvas} & \cellcolor[rgb]{0.64, 0.93, 0.94}enhancement \\ \hline 
+    \end{tabular}}
+    \caption{Issues completadas Sprint 1}
 \end{table}
 
 
+\subsection{Sprint 2 - 25/04/2024 - 29/05/2024 }
+El tercer sprint ha consistido en:
+\begin{itemize}
+    \item Establecer un framework de testing, tanto para pruebas unitarias como end to end.
+    \item Establecer un pipeline de integración y despliegue continuos haciendo uso de las Actions de GitHub \cite{github-actions}.
+    \item Añadir atributos a las entidades.
+    \item Mostrar/ocultar atributos de las entidades con un menú contextual.
+    \item Añadir una función de utilidad que compruebe si un determinado diagrama es válido. Esta función no se completará en su totalidad hasta un punto posterior.
+\end{itemize}
+
+\imagen{sprint-2}{Issues del Sprint 2}
+
+\begin{table}[ht!]
+    \centering
+    \resizebox{14cm}{!} {
+    \begin{tabular}{|l|c|}
+    \hline
+    \rowcolor[rgb]{0.9, 0.9, 0.9}
+    \textbf{Issues} & \textbf{Label} \\ \hline
+    \textbf{Tooling: Add CI/CD pipeline} & \cellcolor[rgb]{0.0, 0.42, 0.46}\textcolor{white}{testing} \\ \hline 
+    \textbf{Tooling: Add a testing framework} & \cellcolor[rgb]{0.0, 0.42, 0.46}\textcolor{white}{testing} \\ \hline 
+    \textbf{Feature: Add attributes to the entities} & \cellcolor[rgb]{0.64, 0.93, 0.94}enhancement \\ \hline 
+    \textbf{Feature: Show/hide entities attributes with a contextual menu} & \cellcolor[rgb]{0.64, 0.93, 0.94}enhancement \\ \hline 
+    \textbf{Feature: Add a utility function to check if a certain graph is valid} & \cellcolor[rgb]{0.64, 0.93, 0.94}enhancement \\ \hline 
+    \end{tabular}}
+    \caption{Issues completadas Sprint 2}
+\end{table}
 
 
-\subsection{Sprint 1}
-\imagen{sprint-1}{Issues del Sprint 1}{1}
+\subsection{Sprint 3 - 29/05/2024 - 15/06/2024 }
+El cuarto sprint ha consistido en:
+\begin{itemize}
+    \item Cambiar la iconografía alrededor de los atributos de las entidades para que el atributo clave tuviera su label subrayada.
+    \item Cambiar el modo en que se añaden los atributos. Ya no se escoge si se quiere añadir clave, sino que el primer atributo añadido es clave y el resto no. Con un menú contextual se puede convertir no clave en clave.
+    \item Añadir relaciones (simples) entre entidades.
+\end{itemize}
 
-\subsection{Sprint 2}
-\imagen{sprint-2}{Issues del Sprint 2}{1}
+\imagen{sprint-3}{Issues del Sprint 3}
 
-\subsection{Sprint 3}
-\imagen{sprint-3}{Issues del Sprint 3}{1}
+\begin{table}[ht!]
+    \centering
+    \resizebox{14cm}{!} {
+    \begin{tabular}{|l|c|}
+    \hline
+    \rowcolor[rgb]{0.9, 0.9, 0.9}
+    \textbf{Issues} & \textbf{Label} \\ \hline
+    \textbf{Feature: Underline key attribute} & \cellcolor[rgb]{0.64, 0.93, 0.94}enhancement \\ \hline 
+    \textbf{Feature: Primary (key) and secondary attributes management via contextual menu} & \cellcolor[rgb]{0.64, 0.93, 0.94}enhancement \\ \hline 
+    \textbf{Feature: Add (simple) relations between entities} & \cellcolor[rgb]{0.64, 0.93, 0.94}enhancement \\ \hline 
+    \end{tabular}}
+    \caption{Issues completadas Sprint 3}
+\end{table}
 
-\subsection{Sprint 4}
-\imagen{sprint-4}{Issues del Sprint 4}{1}
+\subsection{Sprint 4 - 15/06/2024 - 05/07/2024 }
+El cuarto y último sprint ha consistido en:
+\begin{itemize}
+    \item Implementar la funcionalidad para que las relaciones 'N:M' puedan tener atributos.
+    \item Implementar la funcionalidad para prevenir que atributos, entidades y relaciones se inicien con nombres repetidos.
+    \item Implementar la funcionalidad para generar el script SQL correspondiente al paso a tablas del diagrama modelado.
+    \item Implementar la funcionalidad para añadir botones de Borrar en los diversos elementos.
+    \item Implementar la funcionalidad para poder reconfigurar relaciones.
+    \item Implementar la funcionalidad para que los atributos se muevan al mover la entidad y evitar que los nuevos atributos se inicialicen todos apilados.
+    \item Implementar la funcionalidad para guardar el diagrama en el almacenamiento local del navegador y poder importar/exportar los diagramas en formato JSON.
+\end{itemize}
 
+\imagen{sprint-4-1}{Issues del Sprint 4 (Parte 1)}
+\imagen{sprint-4-2}{Issues del Sprint 4 (Parte 2)}
+
+\begin{table}[ht!]
+    \centering
+    \resizebox{14cm}{!} {
+    \begin{tabular}{|l|c|}
+    \hline
+    \rowcolor[rgb]{0.9, 0.9, 0.9}
+    \textbf{Issues} & \textbf{Label} \\ \hline
+    \textbf{Feature: 'N:M' relations can have attributes} & \cellcolor[rgb]{0.64, 0.93, 0.94}enhancement \\ \hline 
+    \textbf{Feature: Prevent Duplicate Names in Attributes, Entities and Relations} & \cellcolor[rgb]{0.64, 0.93, 0.94}enhancement \\ \hline 
+    \textbf{Feature: Generate SQL script for the tables of the current diagram} & \cellcolor[rgb]{0.64, 0.93, 0.94}enhancement \\ \hline 
+    \textbf{Feature: Add delete buttons for the different elements} & \cellcolor[rgb]{0.64, 0.93, 0.94}enhancement \\ \hline 
+    \textbf{Feature: Reconfigure relations} & \cellcolor[rgb]{0.64, 0.93, 0.94}enhancement \\ \hline
+    \textbf{Feature: Better attributes drawing management} & \cellcolor[rgb]{0.64, 0.93, 0.94}enhancement \\ \hline
+    \textbf{Feature: Save the diagram on localhost, add export/import diagram} & \cellcolor[rgb]{0.64, 0.93, 0.94}enhancement \\ \hline
+    \textbf{Documentation} & \cellcolor[rgb]{0.0, 0.46, 0.79}\textcolor{white}{documentation} \\ \hline
+    \end{tabular}}
+    \caption{Issues completadas Sprint 4}
+\end{table}
+
+\newpage
 \section{Estudio de viabilidad}
+En esta sección se va a realizar un estudio de la viabilidad económica y legal del proyecto.
 
 \subsection{Viabilidad económica}
 
+\subsubsection{Costes}
+En primer lugar, se detallan los costes asociados al proyecto.
+
+\begin{itemize}
+\item \textbf{Costes de personal}
+
+En este apartado se detalla el gasto asociado al personal involucrado en el proyecto. 
+La estimación que se ha hecho de horas de trabajo es de 400 horas repartidas a lo largo de 4 meses, con un cálculo de 25 horas semanales. El salario del alumno se estima en 20 EUR/hora, lo que se traduce en un salario bruto mensual de:
+
+$$ 25\frac{horas}{semana} \times 20\frac{\text{EUR}}{hora} \times 4\frac{semanas}{mes} = 2000 \text{ EUR} \hspace{0.5em}al\hspace{0.5em}mes $$
+
+Este cálculo corresponde al salario bruto del empleado.
+
+Para determinar el salario neto que recibirá el empleado, se deben incluir los impuestos que la empresa debe pagar por él. Estos impuestos se han consultado y obtenido de la página oficial de la seguridad social: \url{http://www.seg-social.es/wps/portal/wss/internet/Trabajadores/CotizacionRecaudacionTrabajadores/36537}.
+
+\begin{table}[ht!]
+    \centering
+    \begin{tabular}{|l|c|}
+    \hline
+    \textbf{Tipo de impuesto} & \textbf{Porcentaje} \\ \hline
+    Contingencias & 23.6\% \\ \hline
+    Desempleo & 5.5\% \\ \hline
+    FOGASA & 0.20\% \\ \hline
+    Formación profesional & 0.60\% \\ \hline
+    \end{tabular}
+    \caption{Porcentajes de impuestos aplicables}
+    \label{tab:impuestos}
+\end{table}
+
+\imagen{seg-social}{Régimen general de la Seguridad Social}
+
+Teniendo en cuenta estos impuestos, el coste total del empleado es:
+
+$$\frac{2000\frac{\text{ EUR}}{mes}}{1 - (0.236 + 0.055 + 0.002 + 0.006)} = 2.855,77 \text{ EUR} \hspace{0.5em}al\hspace{0.5em}mes$$
+
+Además, se cuenta con un profesor contratado como apoyo, con un salario de 35 EUR/hora debido a su experiencia. El profesor trabaja tres horas a la semana:
+
+$$ 3\frac{horas}{semana} \times 35\frac{\text{EUR}}{hora} \times 4\frac{semanas}{mes} = 420 \text{ EUR} \hspace{0.5em}al\hspace{0.5em}mes $$
+
+Sumando el profesor, se obtiene un total de 420 EUR brutos, a los cuales también se deben sumar los impuestos:
+
+$$\frac{420\frac{\text{ EUR}}{mes}}{1 - (0.236 + 0.055 + 0.002 + 0.006)} = 599,18 \text{ EUR} \hspace{0.5em}al\hspace{0.5em}mes \hspace{0.5em}para\hspace{0.5em}el\hspace{0.5em}profesor$$
+
+En resumen, la empresa deberá pagar mensualmente 3.454,95 EUR en total. Dado que el proyecto ha durado cuatro meses, el coste total asciende a \textbf{13.819,80 EUR}.
+
+\item \textbf{Hardware}
+
+Los recursos de hardware utilizados han sido un ordenador portátil MacBook Air cuyo coste fue de 1250 EUR y que ha sido amortizado completamente en ejercicios anteriores.
+Por lo tanto, podemos concluir que los costes de hardware han sido de \textbf{0 EUR}.
+
+\item \textbf{Software}
+
+En el proyecto, se han utilizado diversas herramientas de software, la mayoría de las cuales son gratuitas. Estas herramientas incluyen:
+
+\begin{itemize}
+    \item \textbf{neovim}: Editor de texto gratuito.
+    \item \textbf{Navegador web}: Herramienta gratuita para la navegación y pruebas web.
+    \item \textbf{CleanShot X}: Herramienta para realizar capturas de pantalla, cuyo coste ha sido de 20 EUR como pago único.
+\end{itemize}
+
+Por lo tanto, el coste total del software utilizado en el proyecto ha sido de \textbf{20 EUR}.
+
+\item \textbf{Costes indirectos}
+
+En este apartado se incluyen los costes indirectos asociados al proyecto. Se ha utilizado una tarifa de internet por la que se está pagando 20 EUR mensuales. Dado que el proyecto ha durado cuatro meses, el coste total asciende a:
+
+$$ 20 \text{ EUR/mes} \times 4 \text{ meses} = 80 \text{ EUR} $$
+
+\item \textbf{Total}
+
+La tabla de costes totales se detalla a continuación: \ref{tab:costes-totales}
+
+\begin{table}[ht!]
+    \centering
+    \resizebox{6.5cm}{!} {
+    \begin{tabular}{l c}
+    
+         \textbf{Tipo de costes}     &  \textbf{Total } \\ \hline
+         \textit{Personal}       & 13.819,80 \text{ EUR} \\ 
+         \textit{Hardware}    & 0 \text{ EUR} \\  
+         \textit{Software}      & 20 \text{ EUR} \\  
+         \textit{Costes indirectos} & 80 \text{ EUR} \\ \hline
+         \textbf{Total}         & 13.919,80 \text{ EUR}\\ 
+    \end{tabular}}
+    \caption{Costes totales}
+    \label{tab:costes-totales}
+\end{table}
+\end{itemize}
+
+\subsubsection{Beneficios}
+Este es un proyecto con carácter educativo, por lo que no se espera obtener beneficios económicos directos.
+
 \subsection{Viabilidad legal}
-Licencias de los proyectos usados
-Material UI
-mxGraph
-React
+A continuación podemos observar en una tabla las licencias que tienen las diferentes dependencias que se encuentran en nuestra aplicación.
 
-Hacer tabla comparativa con las licencias de los proyectos en busca de si hay alguna que no permita licencia comercial.
+\begin{table}[ht!]
+    \centering
+    \resizebox{15cm}{!} {
+    \begin{tabular}{|l|l|l|}
+    \hline
+         \textbf{Herramienta/Librería} & \textbf{Versión} & \textbf{Licencia} \\ \hline
+         {React}       & {17.0.0}  & {MIT} \\ \hline
+         {mxGraph}     & {4.1.0}  & {Apache License 2.0} \\ \hline
+         {Material UI} & {5.15.19}  & {MIT} \\ \hline
+         {Biome}       & {1.7.3}  & {MIT} \\ \hline
+         {Playwright}  & {1.44.0}  & {Apache License 2.0} \\ \hline
+         {Lefthook}    & {1.6.11}  & {MIT} \\ \hline
+         {Vitest}      & {1.6.0}  & {MIT} \\ \hline
+    \end{tabular}}
+    \caption{Tabla de licencias}
+    \label{tab:licencias}
+\end{table}
 
+Las herramientas y librerías utilizadas en este proyecto están cubiertas por dos tipos exclusivamente: la licencia MIT\cite{mit:license} y la licencia Apache 2.0\cite{apache:license}. Ambas son permisivas y permiten la reutilización, modificación y distribución del software.
 
+La licencia MIT es muy permisiva y permite a los usuarios utilizar, copiar, modificar, fusionar, publicar, distribuir, sublicenciar y/o vender copias del software \cite{sistemasoperativos:mit}. Siempre que se incluya esta licencia en todas las copias o partes sustanciales del software.
+
+La licencia Apache 2.0 es también muy permisiva a la hora de utilizar, distribuir y modificar versiones del software. También, protege a los desarrolladores de ser responsables de los daños ocasionados \cite{sistemasoperativos:apache}.
+
+Por lo tanto, la licencia de nuestro proyecto puede ser licencia MIT, ya que todas las herramientas y librerías utilizadas permiten su uso bajo estas condiciones. Esto facilita la integración y distribución del proyecto, asegurando que cumpla con las licencias de todas las dependencias utilizadas.

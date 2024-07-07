@@ -2,10 +2,137 @@
 
 \section{Introducción}
 
+En este apéndice se detallan las decisiones de diseño tomadas durante el desarrollo. Se cubren los aspectos relacionados con el diseño de datos, el diseño procedimental y el diseño arquitectónico.
+
 \section{Diseño de datos}
+Esta aplicación no tiene como tal una estructura de datos definida puesto que no cuenta con un backend ni base de datos. Sin embargo sí que tiene la estructura JSON interna que contiene nuestro diagrama.
+
+\begin{figure}
+\lstset{breaklines=true, basicstyle=\footnotesize}
+\begin{lstlisting}[frame=single]
+{
+    "entities": [
+        {
+            "idMx": "2",
+            "name": "Entidad",
+            "position": {
+                "x": 254,
+                "y": 130
+            },
+            "attributes": [
+                {
+                    "idMx": "3",
+                    "name": "Atributo",
+                    "position": {
+                        "x": 374,
+                        "y": 130
+                    }
+                },
+
+            ]
+        }
+    ],
+    "relations": [
+    {
+      "idMx": "8",
+      "name": "Relacion",
+      "position": {
+        "x": 215,
+        "y": 110
+      },
+      "side1": {
+        "idMx": "11",
+        "cardinality": "0:1",
+        "cell": "11",
+        "entity": {
+          "idMx": "2"
+        }
+      },
+      "side2": {
+        "idMx": "12",
+        "cardinality": "1:N",
+        "cell": "12",
+        "entity": {
+          "idMx": "2"
+        }
+      },
+      "canHoldAttributes": false,
+      "attributes": []
+    }
+  ]
+}
+\end{lstlisting}
+\caption{Representación interna del diagrama E-R}
+\end{figure}
+
+En esta estructura tenemos 3 entidades definidas que son: Entidades, Relaciones y Atributos.
+
+Su diagrama E-R es el siguiente: \ref{fig:structure-er}
+\imagen{structure-er}{Diagrama E-R que representa la estructura interna sobra la que funciona la aplicación.}
 
 \section{Diseño procedimental}
+En esta sección se describen los procesos más complejos de la aplicación utilizando diagramas de flujo para entenderlos más fácilmente.
+
+En general ninguno de los procesos de la aplicación requiere grandes diagramas de flujo para comprenderlos. Sin embargo, sí que hay dos funcionalidades que ameritan el tener sus propios diagramas de flujo.
+
+\subsection{Mover objetos}
+Es una de las partes más complejas puesto que mover objetos ha de activar diversas tareas según el tipo de objeto que se esté moviendo.
+Los objetos pueden ser:
+\begin{itemize}
+    \item Entidades.
+    \item Relaciones.
+    \begin{itemize}
+        \item Reflexivas.
+        \item No reflexivas.
+    \end{itemize}
+    \item Atributos.
+\end{itemize}
+
+\imagen{flow-move-object}{Diagrama de flujo que representa la funcionalidad de mover objetos en el canvas de la aplicación.}
+
+\subsection{Generar el script SQL}
+El script SQL es una de las funcionalidades más complejas de la aplicación. Requiere, aparte de la validación, un gran número de pasos y tablas intermedias donde se procesan los diferentes tipos de relaciones.
+\imagencontamano{flow-generate-sql}{Diagrama de flujo que representa la funcionalidad de generar el script SQL en la aplicación.}{0.6}
+
 
 \section{Diseño arquitectónico}
+El diseño arquitectónico de la aplicación es bastante simple, puesto que se basa en una arquitectura frontend utilizando React y la librería mxGraph para el modelado de los diagramas E-R.
 
+\subsection{Estructura de paquetes}
+La estructura de paquetes de la aplicación se organiza de la siguiente manera:
+\begin{itemize}
+    \item \textbf{src}: Contiene todo el código fuente de la aplicación.
+    \begin{itemize}
+        \item \textbf{components/DiagramEditor}
+        \begin{itemize}
+            \item styles: Carpeta con el css que afecta al componente DiagramEditor
+            \item \textbf{DiagramEditor.js}: Componente principal de nuestra aplicación, llama al resto de módulos e inicializa la librería mxGraph.
+            \item utils
+            \begin{itemize}
+                \item \textbf{setInitialConfiguration.js}: Ajusta la configuración la que se inicializa la librería mxGraph.
+                \item \textbf{initToolbar.js}: Inicializa la barra de herramientas.
+                \item \textbf{addToolbarItem.js}: Función auxiliar que se llama al arrastrar un componente de la barra de tareas al canvas.
+                \item configureToolbar.js: Función auxiliar para configurar la barra de herramientas.
+                \item getStyleByKey.js: Función auxiliar para obtener estilos de un objeto.
+                \item getStyleStringByObj.js: Función auxiliar para obtener estilos de un objeto.
+            \end{itemize}
+        \end{itemize}
+        \item \textbf{utils}:
+        \begin{itemize}
+            \item \textbf{validation.js}: Módulo que contiene las funciones necesarias para procesar y determina si la estructura interna E-R conforma un diagrama válido.
+            \item \textbf{sql.js}: Módulo que contiene las funciones necesarias para procesar y convertir la estructura interna E-R en un script SQL.
+        \end{itemize}
+    \end{itemize}
+\end{itemize}
 
+\subsection{Componentes de la arquitectura}
+Aunque la aplicación es puramente frontend, sí se pueden apreciar ciertos componentes externos a la aplicación:
+\begin{itemize}
+    \item \textbf{Archivos JSON}: Utilizados para la persistencia de los diagramas. Pueden ser importados.
+    \item \textbf{LocalStorage}: Almacenamiento local del navegador donde se guarda el estado del diagrama que cuyo modelado esté en curso.
+    \item \textbf{Navegador}: Medio a través del cual el usuario interactúa con la aplicación.
+\end{itemize}
+
+El siguiente diagrama ilustra estos componentes y su interacción con la aplicación:
+
+\imagen{architecture}{Diagrama con las partes de la aplicación en su ejecución en el navegador.}
