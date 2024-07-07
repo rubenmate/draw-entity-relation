@@ -8,7 +8,6 @@ test('add entities to the canvas and change name', async ({ page }) => {
 
     await canvas.click();
 
-    // await page.locator('rect').first().dblclick();
     await page.getByText('Entidad').first().dblclick();
     await page.keyboard.type('Clientes');
 
