@@ -518,7 +518,6 @@ export default function App(props) {
         }
         updateDiagramData();
         toast.success("Atributo insertado");
-        // TODO:  Increment the offset so that new attributes are not added on top of others
     };
 
     const hideAttributes = (isRelationNM) => {
