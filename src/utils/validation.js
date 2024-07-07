@@ -217,7 +217,7 @@ export function relationsUnconnected(graph) {
 
 export function notNMRelationsWithAttributes(graph) {
     for (const relation of graph.relations) {
-        if (!relation.canHoldAttributes && relation.attributes !== []) {
+        if (!relation.canHoldAttributes && relation.attributes.length > 0) {
             return true; // Found an relation that cant hold attributes that holds them
         }
     }
