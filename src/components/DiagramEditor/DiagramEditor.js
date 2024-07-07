@@ -296,87 +296,94 @@ export default function App(props) {
         saveToLocalStorage();
     };
 
+    const refreshGraph = () => {
+        const graphView = graph.getDefaultParent();
+        const view = graph.getView(graphView);
+        view.refresh();
+    };
+
+    const handleEntityMove = (selected) => {
+        const selectedEntityDiag = diagramRef.current.entities.find(
+            (entity) => entity.idMx === selected.id,
+        );
+
+        selectedEntityDiag?.attributes.forEach((attribute) => {
+            accessCell(attribute.cell.at(0)).geometry.x =
+                selected.geometry.x + attribute.offsetX;
+            accessCell(attribute.cell.at(0)).geometry.y =
+                selected.geometry.y + attribute.offsetY;
+        });
+        refreshGraph();
+    };
+
+    const handleRelationMove = (selected) => {
+        const selectedRelationDiag = diagramRef.current.relations.find(
+            (relation) => relation.idMx === selected.id,
+        );
+        if (selectedRelationDiag.canHoldAttributes) {
+            selectedRelationDiag?.attributes.forEach((attribute) => {
+                accessCell(attribute.cell.at(0)).geometry.x =
+                    selected.geometry.x + attribute.offsetX;
+                accessCell(attribute.cell.at(0)).geometry.y =
+                    selected.geometry.y + attribute.offsetY;
+            });
+            refreshGraph();
+        }
+        if (
+            selectedRelationDiag.side1.entity.idMx !== "" &&
+            selectedRelationDiag.side2.entity.idMx !== "" &&
+            selectedRelationDiag.side1.entity.idMx ===
+                selectedRelationDiag.side2.entity.idMx
+        ) {
+            const target1 = accessCell(selectedRelationDiag.side1.entity.idMx);
+            const source = selected;
+            const edge1 = accessCell(selectedRelationDiag.side1.edgeId);
+            const edge2 = accessCell(selectedRelationDiag.side2.edgeId);
+
+            const x1 = target1.geometry.x + target1.geometry.width / 2;
+            const x2 = source.geometry.x + source.geometry.width / 2;
+            const y1 = target1.geometry.y + target1.geometry.height / 2;
+            const y2 = source.geometry.y + source.geometry.height / 2;
+
+            edge1.geometry.points = [new mxPoint(x2, y1)];
+            edge2.geometry.points = [new mxPoint(x1, y2)];
+        }
+    };
+
+    const handleAttributeMove = (selected) => {
+        let parentEntity = diagramRef.current.entities.find((entity) =>
+            entity.attributes.some((attr) => attr.idMx === selected.id),
+        );
+        // If no parent entity found, check if it's an N:M relation
+        if (!parentEntity) {
+            parentEntity = diagramRef.current.relations.find((relation) =>
+                relation.attributes.some((attr) => attr.idMx === selected.id),
+            );
+        }
+
+        if (parentEntity) {
+            const attribute = parentEntity.attributes.find(
+                (attr) => attr.idMx === selected.id,
+            );
+
+            if (attribute) {
+                // Update offset
+                attribute.offsetX =
+                    selected.geometry.x - parentEntity.position.x;
+                attribute.offsetY =
+                    selected.geometry.y - parentEntity.position.y;
+            }
+        }
+    };
+
     const onCellsMoved = (_evt) => {
         if (selected) {
             if (selected?.style?.includes("shape=rectangle")) {
-                const selectedEntityDiag = diagramRef.current.entities.find(
-                    (entity) => entity.idMx === selected.id,
-                );
-
-                selectedEntityDiag?.attributes.forEach((attribute) => {
-                    accessCell(attribute.cell.at(0)).geometry.x =
-                        selected.geometry.x + attribute.offsetX;
-                    accessCell(attribute.cell.at(0)).geometry.y =
-                        selected.geometry.y + attribute.offsetY;
-                });
-                // NOTE: Refresh the graph to visually update the cell values
-                const graphView = graph.getDefaultParent();
-                const view = graph.getView(graphView);
-                view.refresh();
+                handleEntityMove(selected);
             } else if (selected?.style?.includes("shape=rhombus")) {
-                const selectedRelationDiag = diagramRef.current.relations.find(
-                    (relation) => relation.idMx === selected.id,
-                );
-                if (selectedRelationDiag.canHoldAttributes) {
-                    selectedRelationDiag?.attributes.forEach((attribute) => {
-                        accessCell(attribute.cell.at(0)).geometry.x =
-                            selected.geometry.x + attribute.offsetX;
-                        accessCell(attribute.cell.at(0)).geometry.y =
-                            selected.geometry.y + attribute.offsetY;
-                    });
-                    // NOTE: Refresh the graph to visually update the cell values
-                    const graphView = graph.getDefaultParent();
-                    const view = graph.getView(graphView);
-                    view.refresh();
-                }
-                if (
-                    selectedRelationDiag.side1.entity.idMx !== "" &&
-                    selectedRelationDiag.side2.entity.idMx !== "" &&
-                    selectedRelationDiag.side1.entity.idMx ===
-                        selectedRelationDiag.side2.entity.idMx
-                ) {
-                    const target1 = accessCell(
-                        selectedRelationDiag.side1.entity.idMx,
-                    );
-                    const source = selected;
-                    const edge1 = accessCell(selectedRelationDiag.side1.edgeId);
-                    const edge2 = accessCell(selectedRelationDiag.side2.edgeId);
-
-                    const x1 = target1.geometry.x + target1.geometry.width / 2;
-                    const x2 = source.geometry.x + source.geometry.width / 2;
-                    const y1 = target1.geometry.y + target1.geometry.height / 2;
-                    const y2 = source.geometry.y + source.geometry.height / 2;
-
-                    edge1.geometry.points = [new mxPoint(x2, y1)];
-                    edge2.geometry.points = [new mxPoint(x1, y2)];
-                }
+                handleRelationMove(selected);
             } else if (selected?.style?.includes("shape=ellipse")) {
-                let parentEntity = diagramRef.current.entities.find((entity) =>
-                    entity.attributes.some((attr) => attr.idMx === selected.id),
-                );
-                // If no parent entity found, check if it's an N:M relation
-                if (!parentEntity) {
-                    parentEntity = diagramRef.current.relations.find(
-                        (relation) =>
-                            relation.attributes.some(
-                                (attr) => attr.idMx === selected.id,
-                            ),
-                    );
-                }
-
-                if (parentEntity) {
-                    const attribute = parentEntity.attributes.find(
-                        (attr) => attr.idMx === selected.id,
-                    );
-
-                    if (attribute) {
-                        // Update offset
-                        attribute.offsetX =
-                            selected.geometry.x - parentEntity.position.x;
-                        attribute.offsetY =
-                            selected.geometry.y - parentEntity.position.y;
-                    }
-                }
+                handleAttributeMove(selected);
             }
         }
         // Ensure that the diagram is updated before
@@ -526,10 +533,7 @@ export default function App(props) {
             accessCell(cell.at(0)).setVisible(false);
             accessCell(cell.at(1)).setVisible(false);
         });
-        // NOTE: Refresh the graph to visually update the cell values
-        const graphView = graph.getDefaultParent();
-        const view = graph.getView(graphView);
-        view.refresh();
+        refreshGraph();
 
         const updatedAttributesHidden = { ...entityWithAttributesHidden };
         updatedAttributesHidden[selected.id] = true;
@@ -548,10 +552,7 @@ export default function App(props) {
             accessCell(cell.at(0)).setVisible(true);
             accessCell(cell.at(1)).setVisible(true);
         });
-        // NOTE: Refresh the graph to visually update the cell values
-        const graphView = graph.getDefaultParent();
-        const view = graph.getView(graphView);
-        view.refresh();
+        refreshGraph();
 
         const updatedAttributesHidden = { ...entityWithAttributesHidden };
         updatedAttributesHidden[selected.id] = false;
@@ -1033,10 +1034,8 @@ export default function App(props) {
 
             graph.model.setValue(label1, side1);
             graph.model.setValue(label2, side2);
-            // NOTE: Refresh the graph to visually update the cell values
-            const graphView = graph.getDefaultParent();
-            const view = graph.getView(graphView);
-            view.refresh();
+
+            refreshGraph();
 
             setSide1("");
             setSide2("");
