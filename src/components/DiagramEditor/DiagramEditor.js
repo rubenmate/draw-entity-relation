@@ -393,8 +393,6 @@ export default function App(props) {
             graph.addListener(mxEvent.CELLS_MOVED, handleCellsMoved);
 
             updateDiagramData();
-            console.log(diagramRef.current);
-            console.log(graph.model.cells);
 
             // Cleanup function to remove the listener
             return () => {
@@ -1673,8 +1671,41 @@ export default function App(props) {
                     try {
                         const importedDiagram = JSON.parse(e.target.result);
                         const diagnostics = validateGraph(importedDiagram);
+                        const messages = [
+                            "No se ha podido importar el diagrama por los siguientes errores:",
+                        ];
+                        if (!diagnostics.notEmpty)
+                            messages.push("El diagrama está vacío.");
+                        if (!diagnostics.noRepeatedNames)
+                            messages.push(
+                                "Hay entidades con nombres repetidos.",
+                            );
+                        if (!diagnostics.noRepeatedAttrNames)
+                            messages.push(
+                                "Hay atributos repetidos en una entidad.",
+                            );
+                        if (!diagnostics.noEntitiesWithoutAttributes)
+                            messages.push("Hay entidades sin atributos.");
+                        if (!diagnostics.noEntitiesWithoutPK)
+                            messages.push("Hay entidades sin clave primaria.");
+                        if (!diagnostics.noEntitiesWithMoreThanOnePK)
+                            messages.push(
+                                "Hay entidades con más de una clave primaria.",
+                            );
+                        if (!diagnostics.noNMRelationsWithPK)
+                            messages.push(
+                                "Hay relaciones N-M con clave primaria.",
+                            );
+                        if (!diagnostics.noUnconnectedRelations)
+                            messages.push("Hay relaciones desconectadas.");
+                        if (!diagnostics.noNotValidCardinalities)
+                            messages.push(
+                                "Hay cardinalidades no válidas en las relaciones.",
+                            );
+                        setValidationMessages(messages);
 
                         if (diagnostics.isValid) {
+                            resetCanvas();
                             localStorage.setItem(
                                 "diagramData",
                                 JSON.stringify(importedDiagram),
@@ -1683,45 +1714,12 @@ export default function App(props) {
                             setOpen(false);
                             toast.success("Diagrama importado con éxito.");
                         } else {
-                            const messages = [
-                                "No se ha podido importar el diagrama por los siguientes errores:",
-                            ];
-                            if (!diagnostics.notEmpty)
-                                messages.push("El diagrama está vacío.");
-                            if (!diagnostics.noRepeatedNames)
-                                messages.push(
-                                    "Hay entidades con nombres repetidos.",
-                                );
-                            if (!diagnostics.noRepeatedAttrNames)
-                                messages.push(
-                                    "Hay atributos repetidos en una entidad.",
-                                );
-                            if (!diagnostics.noEntitiesWithoutAttributes)
-                                messages.push("Hay entidades sin atributos.");
-                            if (!diagnostics.noEntitiesWithoutPK)
-                                messages.push(
-                                    "Hay entidades sin clave primaria.",
-                                );
-                            if (!diagnostics.noEntitiesWithMoreThanOnePK)
-                                messages.push(
-                                    "Hay entidades con más de una clave primaria.",
-                                );
-                            if (!diagnostics.noNMRelationsWithPK)
-                                messages.push(
-                                    "Hay relaciones N-M con clave primaria.",
-                                );
-                            if (!diagnostics.noUnconnectedRelations)
-                                messages.push("Hay relaciones desconectadas.");
-                            if (!diagnostics.noNotValidCardinalities)
-                                messages.push(
-                                    "Hay cardinalidades no válidas en las relaciones.",
-                                );
-                            setValidationMessages(messages);
+                            toast.error(
+                                "El diagrama no se ha podido porque no es válido.",
+                            );
                         }
                     } catch (error) {
-                        setValidationMessages([
-                            "Error al leer el archivo JSON.",
-                        ]);
+                        toast.error("El diagrama no se ha podido importar.");
                     }
                 };
                 reader.readAsText(file);
@@ -1766,6 +1764,20 @@ export default function App(props) {
         );
     };
 
+    const resetCanvas = () => {
+        diagramRef.current.entities = [];
+        diagramRef.current.relations = [];
+        localStorage.removeItem("diagramData");
+
+        // Filter out cells that aren't key 0 or 1
+        const cellsToRemove = Object.keys(graph.model.cells)
+            .filter((key) => key !== "0" && key !== "1")
+            .map((key) => graph.model.cells[key]);
+
+        // Remove the filtered cells
+        graph.removeCells(cellsToRemove);
+    };
+
     const renderResetCanvasButton = () => {
         const [open, setOpen] = React.useState(false);
 
@@ -1778,17 +1790,7 @@ export default function App(props) {
         };
 
         const handleAccept = () => {
-            diagramRef.current.entities = [];
-            diagramRef.current.relations = [];
-            localStorage.removeItem("diagramData");
-
-            // Filter out cells that aren't key 0 or 1
-            const cellsToRemove = Object.keys(graph.model.cells)
-                .filter((key) => key !== "0" && key !== "1")
-                .map((key) => graph.model.cells[key]);
-
-            // Remove the filtered cells
-            graph.removeCells(cellsToRemove);
+            resetCanvas();
 
             setRefreshDiagram((prevState) => !prevState);
             setOpen(false);
