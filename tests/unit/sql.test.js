@@ -6,9 +6,6 @@ import {
     process1NRelation,
     process11Relation,
     processNMRelation,
-    generateNMSQL,
-    generate1NSQL,
-    generate11SQL,
     generateSQL
 } from "../../src/utils/sql"
 
