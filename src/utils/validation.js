@@ -4,6 +4,8 @@ export function validateGraph(graph) {
         noRepeatedAttrNames: true,
         noEntitiesWithoutAttributes: true,
         noEntitiesWithoutPK: true,
+        noEntitiesWithMoreThanOnePK: true,
+        noNMRelationsWithPK: true,
         noUnconnectedRelations: true,
         noNotValidCardinalities: true,
         notEmpty: true,
@@ -37,6 +39,18 @@ export function validateGraph(graph) {
     // Check for entities without a primary key attribute
     if (entitiesWithoutPK(graph)) {
         diagnostics.noEntitiesWithoutPK = false;
+        diagnostics.isValid = false;
+    }
+
+    // Check for entities with more than one primary key
+    if (entitiesWithMoreThanOnePK(graph)) {
+        diagnostics.noEntitiesWithMoreThanOnePK = false;
+        diagnostics.isValid = false;
+    }
+
+    // Check for NM relations with a primary key
+    if (nmRelationsWithPK(graph)) {
+        diagnostics.noNMRelationsWithPK = false;
         diagnostics.isValid = false;
     }
 
@@ -138,6 +152,41 @@ export function entitiesWithoutPK(graph) {
         }
     }
     // If all entities have at least one primary key, return false
+    return false;
+}
+
+// True if there is an entity that has two or more keys
+export function entitiesWithMoreThanOnePK(graph) {
+    for (const entity of graph.entities) {
+        let primaryKeyCount = 0;
+        for (const attribute of entity.attributes) {
+            if (attribute.key) {
+                primaryKeyCount++;
+                // If more than one primary key is found, return true
+                if (primaryKeyCount > 1) {
+                    return true;
+                }
+            }
+        }
+    }
+    // If no entity with more than one primary key is found, return false
+    return false;
+}
+
+// True if there is an N:M relation that has a key
+export function nmRelationsWithPK(graph) {
+    for (const relation of graph.relations) {
+        // Check if the relation is of type N:M
+        if (relation.canHaveAttributes) {
+            for (const attribute of relation.attributes) {
+                // If any attribute has key set to true, return true
+                if (attribute.key) {
+                    return true;
+                }
+            }
+        }
+    }
+    // If no N:M relation with a key is found, return false
     return false;
 }
 

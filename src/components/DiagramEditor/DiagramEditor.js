@@ -1702,6 +1702,14 @@ export default function App(props) {
                                 messages.push(
                                     "Hay entidades sin clave primaria.",
                                 );
+                            if (!diagnostics.noEntitiesWithMoreThanOnePK)
+                                messages.push(
+                                    "Hay entidades con más de una clave primaria.",
+                                );
+                            if (!diagnostics.noNMRelationsWithPK)
+                                messages.push(
+                                    "Hay relaciones N-M con clave primaria.",
+                                );
                             if (!diagnostics.noUnconnectedRelations)
                                 messages.push("Hay relaciones desconectadas.");
                             if (!diagnostics.noNotValidCardinalities)
